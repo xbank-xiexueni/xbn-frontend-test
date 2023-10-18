@@ -4,7 +4,8 @@ import './index.css'
 import App from './App'
 import reportWebVitals from './reportWebVitals'
 import { WagmiConfig } from 'wagmi'
-import wagmiConfig from 'setup-wallet-connect'
+import { Web3Modal } from '@web3modal/react'
+import wagmiConfig, { ethereumClient, projectId } from 'setup-wallet-connect'
 import { ChakraProvider, Heading, Spinner } from '@chakra-ui/react'
 import { client } from './setup-apollo'
 import ApolloProvider from './setup-apollo'
@@ -15,6 +16,8 @@ import 'slick-carousel/slick/slick.css'
 import 'video-react/dist/video-react.css'
 import theme from 'themes'
 import { TOAST_OPTION_CONFIG } from './constants/index'
+import { TransactionsProvider } from 'context/TransactionContext'
+
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
   <React.StrictMode>
@@ -25,23 +28,29 @@ root.render(
           defaultOptions: { ...TOAST_OPTION_CONFIG },
         }}>
         <WagmiConfig config={wagmiConfig}>
-          <PhotoProvider
-            maskOpacity={0.4}
-            bannerVisible={false}
-            maskClosable
-            photoClosable
-            loadingElement={
-              <Spinner
-                colorScheme={'blue'}
-                color='blue.1'
-              />
-            }
-            brokenElement={
-              <Heading color={'gray.1'}>something went wrong...</Heading>
-            }>
-            <App />
-          </PhotoProvider>
+          <TransactionsProvider>
+            <PhotoProvider
+              maskOpacity={0.4}
+              bannerVisible={false}
+              maskClosable
+              photoClosable
+              loadingElement={
+                <Spinner
+                  colorScheme={'blue'}
+                  color='blue.1'
+                />
+              }
+              brokenElement={
+                <Heading color={'gray.1'}>something went wrong...</Heading>
+              }>
+              <App />
+            </PhotoProvider>
+          </TransactionsProvider>
         </WagmiConfig>
+        <Web3Modal
+          projectId={projectId}
+          ethereumClient={ethereumClient}
+        />
       </ChakraProvider>
     </ApolloProvider>
   </React.StrictMode>,

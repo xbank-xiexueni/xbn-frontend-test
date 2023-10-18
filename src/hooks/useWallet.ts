@@ -33,7 +33,7 @@ const useWallet = () => {
   const handleOpenEtherscan = useCallback(() => {
     interceptFn(async () => {
       window.open(
-        `${import.meta.env.VITE_TARGET_CHAIN_BASE_URL}/address/${currentAccount?.address
+        `${process.env.REACT_APP_TARGET_CHAIN_BASE_URL}/address/${currentAccount?.address
         }`,
       )
     })

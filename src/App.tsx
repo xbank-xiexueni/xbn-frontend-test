@@ -1,28 +1,9 @@
-import { Button } from '@chakra-ui/react'
 import { Fallback } from 'components'
-import Test from 'components/Test'
 import NewComer from 'pages/new-comer/NewComer'
 import { Suspense } from 'react'
-import {
-  createBrowserRouter,
-  Navigate,
-  RouterProvider,
-  useNavigate,
-} from 'react-router-dom'
+import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'
 import lazyWithRetries from 'utils/lazyWithRetries'
-function Index() {
-  const navigate = useNavigate()
-  return (
-    <div>
-      <Button
-        onClick={() => {
-          navigate('/test')
-        }}>
-        test
-      </Button>
-    </div>
-  )
-}
+
 // Lend
 const Lend = lazyWithRetries(() => import('./pages/lending/Lend'))
 const PoolCreateAndEdit = lazyWithRetries(
@@ -51,11 +32,12 @@ const History = lazyWithRetries(() => import('./pages/history/History'))
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <Index />,
-  },
-  {
-    path: '/test',
-    element: <Test />,
+    element: (
+      <Navigate
+        to={'/market'}
+        replace
+      />
+    ),
   },
   {
     path: '/lending',
@@ -169,6 +151,14 @@ const router = createBrowserRouter([
     element: (
       <Suspense fallback={<Fallback />}>
         <NewComer />
+      </Suspense>
+    ),
+  },
+  {
+    path: '*',
+    element: (
+      <Suspense>
+        <NotFound />
       </Suspense>
     ),
   },

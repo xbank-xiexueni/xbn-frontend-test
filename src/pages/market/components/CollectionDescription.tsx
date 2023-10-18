@@ -417,9 +417,7 @@ const CollectionDescription: FunctionComponent<{
             <Flex gap={'12px'}>
               {/* contract */}
               <MediaWrapper
-                data={`${
-                  import.meta.env.VITE_TARGET_CHAIN_BASE_URL
-                }/address/${contractAddress}`}
+                data={`${process.env.REACT_APP_TARGET_CHAIN_BASE_URL}/address/${contractAddress}`}
                 svgId={'icon-eth'}
               />
               {/* website */}
