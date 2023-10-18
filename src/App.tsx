@@ -1,26 +1,36 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { Button } from '@chakra-ui/react'
+import Test from 'components/Test'
+import {
+  createBrowserRouter,
+  RouterProvider,
+  useNavigate,
+} from 'react-router-dom'
+function Index() {
+  const navigate = useNavigate()
+  return (
+    <div>
+      <Button
+        onClick={() => {
+          navigate('/test')
+        }}>
+        test
+      </Button>
+    </div>
+  )
+}
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <Index />,
+  },
+  {
+    path: '/test',
+    element: <Test />,
+  },
+])
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+  return <RouterProvider router={router} />
 }
 
-export default App;
+export default App
