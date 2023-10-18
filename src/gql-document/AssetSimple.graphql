@@ -1,0 +1,11 @@
+query AssetSimple($assetContractAddress: String, $assetTokenId: String) {
+  asset(
+    assetContractAddress: $assetContractAddress
+    assetTokenID: $assetTokenId
+  ) {
+    id
+    imagePreviewUrl
+    name
+    tokenID
+  }
+}

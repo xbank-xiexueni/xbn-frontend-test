@@ -1,0 +1,1152 @@
+[
+  {
+    "inputs": [],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "inputs": [],
+    "name": "ErrorCollateralNotExist",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ErrorInsufficientERC20Balance",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ErrorIsUsedOrder",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ErrorLoanInvalid",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ErrorLoanOverdued",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ErrorMsgValue",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ErrorParameters",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ErrorPermissionDenied",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ErrorVerifySignature",
+    "type": "error"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "previousAdmin",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "newAdmin",
+        "type": "address"
+      }
+    ],
+    "name": "AdminChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "beacon",
+        "type": "address"
+      }
+    ],
+    "name": "BeaconUpgraded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [],
+    "name": "EIP712DomainChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint8",
+        "name": "version",
+        "type": "uint8"
+      }
+    ],
+    "name": "Initialized",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "loanID",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint8",
+        "name": "status",
+        "type": "uint8"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "principal",
+        "type": "uint256"
+      }
+    ],
+    "name": "LoanClosed",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "loanID",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "orderID",
+        "type": "uint256"
+      }
+    ],
+    "name": "LoanCreated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "orderID",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "fee",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "offerHash",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint8",
+        "name": "offerSide",
+        "type": "uint8"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "isCreditSale",
+        "type": "bool"
+      }
+    ],
+    "name": "LoanPrepared",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "loanID",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint8",
+        "name": "no",
+        "type": "uint8"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "currency",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "payment",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "principal",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "interest",
+        "type": "uint256"
+      }
+    ],
+    "name": "LoanRepaid",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "previousOwner",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "implementation",
+        "type": "address"
+      }
+    ],
+    "name": "Upgraded",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "orderID",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "nonce",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "loanAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "downPayment",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "collateralFactor",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "tokenID",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "eachPayment",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "currency",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "borrower",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "lender",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "collateralContract",
+            "type": "address"
+          },
+          {
+            "internalType": "uint32",
+            "name": "offerIR",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "tenor",
+            "type": "uint32"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "offerHash",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "uint16",
+            "name": "protocolFeeRate",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "numberOfInstallments",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "offerSide",
+            "type": "uint8"
+          },
+          {
+            "internalType": "bool",
+            "name": "isCreditSale",
+            "type": "bool"
+          }
+        ],
+        "internalType": "struct AcceptOfferRequest",
+        "name": "req",
+        "type": "tuple"
+      }
+    ],
+    "name": "beginLoan",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "custody",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "eip712Domain",
+    "outputs": [
+      {
+        "internalType": "bytes1",
+        "name": "fields",
+        "type": "bytes1"
+      },
+      {
+        "internalType": "string",
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "version",
+        "type": "string"
+      },
+      {
+        "internalType": "uint256",
+        "name": "chainId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "verifyingContract",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "salt",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "extensions",
+        "type": "uint256[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "loanID",
+        "type": "uint256"
+      }
+    ],
+    "name": "getLoan",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "loanID",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "tokenID",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "eachPayment",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "loanAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "outstandingPrincipal",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "collateralContract",
+            "type": "address"
+          },
+          {
+            "internalType": "uint32",
+            "name": "tenor",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "startTime",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "offerIR",
+            "type": "uint32"
+          },
+          {
+            "internalType": "address",
+            "name": "currency",
+            "type": "address"
+          },
+          {
+            "internalType": "uint8",
+            "name": "status",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "numberOfInstallments",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "repaidTimes",
+            "type": "uint8"
+          },
+          {
+            "internalType": "address",
+            "name": "lender",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "borrower",
+            "type": "address"
+          }
+        ],
+        "internalType": "struct Loan",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_custody",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_signer",
+        "type": "address"
+      }
+    ],
+    "name": "initialize",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "isUsedOrder",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "loanID",
+        "type": "uint256"
+      }
+    ],
+    "name": "liquidateOverdueLoan",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "loanIDToLoan",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "loanID",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "tokenID",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "eachPayment",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "loanAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "outstandingPrincipal",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "collateralContract",
+        "type": "address"
+      },
+      {
+        "internalType": "uint32",
+        "name": "tenor",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint32",
+        "name": "startTime",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint32",
+        "name": "offerIR",
+        "type": "uint32"
+      },
+      {
+        "internalType": "address",
+        "name": "currency",
+        "type": "address"
+      },
+      {
+        "internalType": "uint8",
+        "name": "status",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint8",
+        "name": "numberOfInstallments",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint8",
+        "name": "repaidTimes",
+        "type": "uint8"
+      },
+      {
+        "internalType": "address",
+        "name": "lender",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "borrower",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "loanID",
+        "type": "uint256"
+      }
+    ],
+    "name": "payoffLoan",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "loanID",
+        "type": "uint256"
+      }
+    ],
+    "name": "payoffLoanBySellNFT",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "orderID",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "nonce",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "loanAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "downPayment",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "collateralFactor",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "tokenID",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "eachPayment",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "currency",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "borrower",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "lender",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "collateralContract",
+            "type": "address"
+          },
+          {
+            "internalType": "uint32",
+            "name": "offerIR",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "tenor",
+            "type": "uint32"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "offerHash",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "uint16",
+            "name": "protocolFeeRate",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "numberOfInstallments",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "offerSide",
+            "type": "uint8"
+          },
+          {
+            "internalType": "bool",
+            "name": "isCreditSale",
+            "type": "bool"
+          }
+        ],
+        "internalType": "struct AcceptOfferRequest",
+        "name": "req",
+        "type": "tuple"
+      },
+      {
+        "internalType": "bytes",
+        "name": "signature",
+        "type": "bytes"
+      }
+    ],
+    "name": "prepareCreditSaleLoan",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "orderID",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "nonce",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "loanAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "downPayment",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "collateralFactor",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "tokenID",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "eachPayment",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "currency",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "borrower",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "lender",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "collateralContract",
+            "type": "address"
+          },
+          {
+            "internalType": "uint32",
+            "name": "offerIR",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "tenor",
+            "type": "uint32"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "offerHash",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "uint16",
+            "name": "protocolFeeRate",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "numberOfInstallments",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "offerSide",
+            "type": "uint8"
+          },
+          {
+            "internalType": "bool",
+            "name": "isCreditSale",
+            "type": "bool"
+          }
+        ],
+        "internalType": "struct AcceptOfferRequest",
+        "name": "req",
+        "type": "tuple"
+      },
+      {
+        "internalType": "bytes",
+        "name": "signature",
+        "type": "bytes"
+      }
+    ],
+    "name": "prepareLoan",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "proxiableUUID",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "orderID",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "nonce",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "loanAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "downPayment",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "collateralFactor",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "tokenID",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "eachPayment",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "currency",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "borrower",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "lender",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "collateralContract",
+            "type": "address"
+          },
+          {
+            "internalType": "uint32",
+            "name": "offerIR",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "tenor",
+            "type": "uint32"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "offerHash",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "uint16",
+            "name": "protocolFeeRate",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "numberOfInstallments",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "offerSide",
+            "type": "uint8"
+          },
+          {
+            "internalType": "bool",
+            "name": "isCreditSale",
+            "type": "bool"
+          }
+        ],
+        "internalType": "struct AcceptOfferRequest",
+        "name": "req",
+        "type": "tuple"
+      }
+    ],
+    "name": "refundPrepareLoan",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "renounceOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "loanID",
+        "type": "uint256"
+      }
+    ],
+    "name": "repayLoan",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_custody",
+        "type": "address"
+      }
+    ],
+    "name": "setCustody",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_signer",
+        "type": "address"
+      }
+    ],
+    "name": "setSigner",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "signer",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "totalNumLoans",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "transferOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newImplementation",
+        "type": "address"
+      }
+    ],
+    "name": "upgradeTo",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newImplementation",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes",
+        "name": "data",
+        "type": "bytes"
+      }
+    ],
+    "name": "upgradeToAndCall",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "stateMutability": "payable",
+    "type": "receive"
+  }
+]

@@ -1,0 +1,48 @@
+@media screen and (min-width: 768px) {
+  .table-container::-webkit-scrollbar-track {
+    background: white;
+  }
+  .table-container::-webkit-scrollbar-thumb {
+    background: white;
+  }
+}
+.table-container:hover::-webkit-scrollbar-thumb {
+  background: var(--chakra-colors-gray-1);
+}
+.table-container:hover::-webkit-scrollbar-track {
+  background: var(--chakra-colors-gray-5);
+}
+
+.my-table {
+  border-collapse: separate !important;
+  tbody {
+    tr:hover {
+      th:nth-child(1) div {
+        background-color: white;
+        border-radius: 12px;
+      }
+    }
+    tr {
+      th:nth-child(1) {
+        padding-inline-start: 8px;
+        div {
+          padding: 0 4px;
+        }
+      }
+    }
+  }
+  th {
+    text-transform: initial;
+  }
+}
+
+.cell-fixed-right {
+  box-sizing: border-box;
+  transition: box-shadow 0.3s;
+  content: '';
+  pointer-events: none;
+}
+
+.cell-fixed-right::after {
+  box-shadow: inset -10px 0 8px -8px pink;
+}

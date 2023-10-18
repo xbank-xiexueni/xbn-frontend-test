@@ -1,0 +1,5 @@
+.custom-hover-style:hover {
+  .icon {
+    fill: var(--chakra-colors-blue-1);
+  }
+}

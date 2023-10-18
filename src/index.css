@@ -1,13 +1,214 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* @font-face {
+  font-family: HarmonyOS;
+  src: url(/public/font/HarmonyOS_Sans_SC_Regular.ttf);
+} */
+
+/* @font-face {
+  font-family: 'HarmonyOS Sans Black';
+  src: url(/public/font/HarmonyOS_Sans_Black.ttf);
+} */
+/* @font-face {
+  font-family: 'HarmonyOS Sans Bold';
+  src: url(/public/font/HarmonyOS_Sans_Bold.ttf);
+} */
+/* @font-face {
+  font-family: 'HarmonyOS Sans Light';
+  src: url(/public/font/HarmonyOS_Sans_Light.ttf);
+} */
+/* @font-face {
+  font-family: 'HarmonyOS Sans Medium';
+  src: url(/public/font/HarmonyOS_Sans_Medium.ttf);
+} */
+/* @font-face {
+  font-family: 'HarmonyOS Sans Regular';
+  src: url(/public/font/HarmonyOS_Sans_Regular.ttf);
+} */
+@font-face {
+  font-family: 'HarmonyOS Sans SC Black';
+  src: url(/public/font/HarmonyOS_Sans_SC_Black.ttf);
+}
+@font-face {
+  font-family: 'HarmonyOS Sans SC Bold';
+  src: url(/public/font/HarmonyOS_Sans_SC_Bold.ttf);
+}
+/* @font-face {
+  font-family: 'HarmonyOS Sans SC Light';
+  src: url(/public/font/HarmonyOS_Sans_SC_Light.ttf);
+} */
+@font-face {
+  font-family: 'HarmonyOS Sans SC Medium';
+  src: url(/public/font/HarmonyOS_Sans_SC_Medium.ttf);
+}
+@font-face {
+  font-family: 'HarmonyOS Sans SC Regular';
+  src: url(/public/font/HarmonyOS_Sans_SC_Regular.ttf);
+}
+/* @font-face {
+  font-family: 'HarmonyOS Sans SC Thin';
+  src: url(/public/font/HarmonyOS_Sans_SC_Thin.ttf);
+} */
+/* @font-face {
+  font-family: 'HarmonyOS Sans Thin';
+  src: url(/public/font/HarmonyOS_Sans_Thin.ttf);
+} */
+@font-face {
+  font-family: 'HarmonyOS Sans SC';
+  src: url(/public/font/HarmonyOS_Sans_SC_Regular.ttf);
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+html {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+  font-family: 'HarmonyOS Sans SC';
+}
+
+.icon {
+  width: 1em;
+  height: 1em;
+  overflow: hidden;
+  fill: currentColor;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-button {
+  width: 0;
+  height: 0;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--chakra-colors-gray-1);
+  border-radius: 20px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 20px;
+}
+
+::selection {
+  color: white;
+  background: var(--chakra-colors-blue-1);
+}
+
+::-moz-selection {
+  color: white;
+  background: var(--chakra-colors-blue-1);
+}
+
+::-webkit-selection {
+  color: white;
+  background: var(--chakra-colors-blue-1);
+}
+
+@media screen and (min-width: 768px) {
+  .scroll-hover-show::-webkit-scrollbar-track {
+    background: white;
+  }
+
+  .scroll-hover-show::-webkit-scrollbar-thumb {
+    background: white;
+  }
+}
+
+.scroll-hover-show:hover::-webkit-scrollbar-thumb {
+  background: var(--chakra-colors-gray-1);
+}
+
+.scroll-hover-show:hover::-webkit-scrollbar-track {
+  background: var(--chakra-colors-gray-5);
+}
+
+@keyframes loading {
+  /*以百分比来规定改变发生的时间 也可以通过"from"和"to",等价于0% 和 100%*/
+  0% {
+    /*rotate(2D旋转) scale(放大或者缩小) translate(移动) skew(翻转)*/
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@-moz-keyframes slide {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(2);
+    opacity: 0.3;
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@-webkit-keyframes slide {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(2);
+    opacity: 0.3;
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@-o-keyframes slide {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(2);
+    opacity: 0.3;
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes slide {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(2);
+    opacity: 0.3;
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+.scroll-bar-hidden::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
+}
+
+.custom-hover-style:hover {
+  .icon {
+    fill: var(--chakra-colors-blue-1);
+  }
+}
+
+/* lending reminder */
+#chakra-toast-manager-top-right {
+  z-index: 20 !important;
 }

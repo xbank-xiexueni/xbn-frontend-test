@@ -1,22 +1,10 @@
-import { Box, Button } from '@chakra-ui/react'
-import { useNavigate } from 'react-router-dom'
+import RootLayout from 'layouts/RootLayout'
 
 const Test = () => {
-  const navigate = useNavigate()
   return (
-    <Box>
-      <w3m-button />
-      <Button
-        marginTop={'20px'}
-        onClick={() => {
-          navigate('/')
-        }}
-        variant={'solid'}
-        bg={'red.100'}>
-        Index
-      </Button>
-    </Box>
+    <RootLayout>
+      <div>test abc</div>
+    </RootLayout>
   )
 }
-
 export default Test

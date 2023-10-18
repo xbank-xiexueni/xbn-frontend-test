@@ -1,0 +1,28 @@
+query Asset(
+  $assetId: ID
+  $assetContractAddress: String
+  $assetTokenId: String
+) {
+  asset(
+    id: $assetId
+    assetContractAddress: $assetContractAddress
+    assetTokenID: $assetTokenId
+  ) {
+    id
+    assetContractAddress
+    tokenID
+    imageUrl
+    imagePreviewUrl
+    imageThumbnailUrl
+    imageOriginalUrl
+    animationUrl
+    animationOriginalUrl
+    backgroundColor
+    name
+    owner
+    orderChain
+    orderCoin
+    orderPrice
+    orderPriceMarket
+  }
+}

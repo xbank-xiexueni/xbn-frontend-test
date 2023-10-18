@@ -1,0 +1,25 @@
+query NftCollectionSearchAsset($collectionId: ID!, $search: String!) {
+  nftCollectionSearchAsset(collectionId: $collectionId, search: $search) {
+    id
+    assetContractAddress
+    tokenID
+    imageUrl
+    imagePreviewUrl
+    imageThumbnailUrl
+    imageOriginalUrl
+    animationUrl
+    animationOriginalUrl
+    backgroundColor
+    name
+    owner
+    orderPrice
+    nftAssetContract {
+      id
+      address
+      name
+      totalSupply
+      imageUrl
+    }
+    orderPriceMarket
+  }
+}

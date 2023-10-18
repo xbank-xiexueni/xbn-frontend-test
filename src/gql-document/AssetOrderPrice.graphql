@@ -1,0 +1,24 @@
+query AssetOrdersPrice(
+  $assetContractAddress: String
+  $assetTokenId: String
+  $withUpdate: Boolean
+) {
+  assetOrders(
+    assetContractAddress: $assetContractAddress
+    assetTokenID: $assetTokenId
+    withUpdate: $withUpdate
+  ) {
+    edges {
+      node {
+        assetContractAddress
+        updatedAt
+        price
+        tokenId
+        orderType
+        nftPaymentToken {
+          decimals
+        }
+      }
+    }
+  }
+}

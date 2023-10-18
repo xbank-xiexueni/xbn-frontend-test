@@ -1,0 +1,47 @@
+query NftCollectionAssets(
+  $collectionId: ID!
+  $orderBy: NFTAssetOrderBy!
+  $first: Int
+  $after: Cursor
+  $where: NFTAssetWhere
+) {
+  nftCollectionAssets(
+    collectionID: $collectionId
+    orderBy: $orderBy
+    first: $first
+    after: $after
+    where: $where
+  ) {
+    edges {
+      node {
+        id
+        assetContractAddress
+        tokenID
+        imageUrl
+        imagePreviewUrl
+        imageThumbnailUrl
+        imageOriginalUrl
+        animationUrl
+        animationOriginalUrl
+        backgroundColor
+        name
+        owner
+        orderPrice
+        nftAssetContract {
+          id
+          address
+          name
+          totalSupply
+          imageUrl
+        }
+        orderPriceMarket
+      }
+      cursor
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+    totalCount
+  }
+}

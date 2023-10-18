@@ -1,0 +1,8 @@
+query BestCollectionBid($slug: String!) {
+  nftCollectionMetadata(slug: $slug) {
+    bestCollectionBid {
+      amount
+      unit
+    }
+  }
+}
