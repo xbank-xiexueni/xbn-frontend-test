@@ -85,7 +85,7 @@ const Index: FunctionComponent<IndexProps> = ({
 
       if (
         !!currentAddress
-        // && currentChainId === Number(import.meta.env.VITE_TARGET_CHAIN_ID)
+        // && currentChainId === Number(process.env.REACT_APP_TARGET_CHAIN_ID)
       ) {
         setStep('sign')
         const res = await handleSign(currentAddress)
@@ -218,7 +218,7 @@ const Index: FunctionComponent<IndexProps> = ({
                     setCurrentConnector(connector.id)
                     handleConnectWallet({
                       connector,
-                      // chainId: Number(import.meta.env.VITE_TARGET_CHAIN_ID),
+                      // chainId: Number(process.env.REACT_APP_TARGET_CHAIN_ID),
                     })
                   }}
                   cursor='pointer'>

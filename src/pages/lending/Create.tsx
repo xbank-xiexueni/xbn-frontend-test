@@ -195,7 +195,7 @@ const Create = () => {
   const isBanban = useMemo(() => {
     return isAddressEqual(
       selectCollection?.contractAddress,
-      process.env.VITE_BANBAN_COLLECTION_ADDRESS,
+      process.env.REACT_APP_BANBAN_COLLECTION_ADDRESS,
     )
   }, [selectCollection])
   useEffect(() => {
@@ -770,7 +770,7 @@ const Create = () => {
         toast({
           title: error?.cause?.code || error?.error?.code,
           description: error?.cause?.message || error?.error?.message,
-          duration: 5000,
+          duration: 10000,
           status: 'error',
         })
       }

@@ -213,7 +213,7 @@ const Item: FunctionComponent<
 
 // 目前还不知道怎么获取
 const gas = 0
-const BANBAN_PRICE = import.meta.env.VITE_BANBAN_ASSET_PRICE
+const BANBAN_PRICE = process.env.REACT_APP_BANBAN_ASSET_PRICE
 
 const MyAssetNftListCard: FunctionComponent<
   {
@@ -232,7 +232,7 @@ const MyAssetNftListCard: FunctionComponent<
   const isBanban = useMemo(() => {
     return isAddressEqual(
       contractData?.asset_contract_address,
-      import.meta.env.VITE_BANBAN_COLLECTION_ADDRESS,
+      process.env.REACT_APP_BANBAN_COLLECTION_ADDRESS,
     )
   }, [contractData])
 

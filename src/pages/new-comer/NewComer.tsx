@@ -285,9 +285,7 @@ export default function NewComer() {
                         onOpen()
                       } else {
                         if (typeof window !== 'undefined') {
-                          window.location.href = `/market/${
-                            import.meta.env.VITE_BANBAN_COLLECTION_ADDRESS
-                          }`
+                          window.location.href = `/market/${process.env.REACT_APP_BANBAN_COLLECTION_ADDRESS}`
                         }
                       }
                     }}
@@ -394,9 +392,7 @@ export default function NewComer() {
                         onOpen()
                       } else {
                         if (typeof window !== 'undefined') {
-                          window.location.href = `/lending/create/${
-                            import.meta.env.VITE_BANBAN_COLLECTION_ADDRESS
-                          }?from=campaign`
+                          window.location.href = `/lending/create/${process.env.REACT_APP_BANBAN_COLLECTION_ADDRESS}?from=campaign`
                         }
                       }
                     }}
@@ -480,7 +476,7 @@ export default function NewComer() {
                       } else {
                         if (typeof window !== 'undefined') {
                           window.location.href = `/lending/create/${
-                            import.meta.env.VITE_BANBAN_COLLECTION_ADDRESS
+                            process.env.REACT_APP_BANBAN_COLLECTION_ADDRESS
                           }?from=campaign`
                         }
                       }

@@ -47,7 +47,7 @@ const useSign = () => {
         // console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
         return tokenData
       } catch (e: any) {
-        console.log(e.cause.message, 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
+        console.log(e?.cause?.message, 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
       }
     },
     [currentAccount, signMessageAsync],

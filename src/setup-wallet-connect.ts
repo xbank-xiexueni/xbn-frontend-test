@@ -19,7 +19,7 @@ const { chains, publicClient, webSocketPublicClient } = configureChains(
   [mainnet, goerli],
   // [publicProvider()],
   [
-    // alchemyProvider({ apiKey: import.meta.env.VITE_ALCHEMY_API_KEY }),
+    // alchemyProvider({ apiKey: process.env.REACT_APP_ALCHEMY_API_KEY }),
     // jsonRpcProvider({
     //   rpc: (chain) => ({
     //     http: `https://xbank.global/api/v1/jsonrpc?network=eth-goerli`,

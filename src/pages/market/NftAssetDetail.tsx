@@ -934,7 +934,7 @@ const NftAssetDetail = () => {
     () =>
       isAddressEqual(
         assetVariable?.contractAddress,
-        import.meta.env.VITE_BANBAN_COLLECTION_ADDRESS,
+        process.env.REACT_APP_BANBAN_COLLECTION_ADDRESS,
       ),
     [assetVariable],
   )
