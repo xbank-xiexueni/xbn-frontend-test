@@ -2,13 +2,14 @@ import { Box, Button, Text } from '@chakra-ui/react'
 import {
   useAccount,
   useContractRead,
+  useContractWrite,
   useSendTransaction,
   useSignMessage,
   useSignTypedData,
 } from 'wagmi'
 import { apiPostAuthChallenge, apiPostAuthLogin } from 'api/user'
 import { useState } from 'react'
-import { parseEther } from 'viem'
+import { formatUnits, parseEther, parseUnits } from 'viem'
 import WETH_ABI from 'constants/wethAbi.json'
 // All properties on a domain are optional
 const domain = {
@@ -70,15 +71,28 @@ const Test = () => {
     error: contractReadDataError,
     isError: contractReadDataIsError,
     isLoading: contractReadDataIsLoading,
+    refetch,
   } = useContractRead({
     address: process.env.REACT_APP_WETH_CONTRACT_ADDRESS as any,
+    // address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
     abi: WETH_ABI,
     functionName: 'balanceOf',
     args: [address],
     // account: address,
   })
-  console.log('contractReadData', contractReadData)
-  console.log('boolean contractReadData', Boolean(contractReadData))
+  const {
+    data: contractWriteData,
+    isLoading: contractWriteIsLoading,
+    isSuccess: contractWriteIsSuccess,
+    write,
+  } = useContractWrite({
+    address: process.env.REACT_APP_WETH_CONTRACT_ADDRESS as any,
+    // address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+    abi: WETH_ABI,
+    functionName: 'deposit',
+    value: parseUnits('0.01', 18),
+    account: address,
+  })
   return (
     <div>
       <Box
@@ -196,13 +210,36 @@ const Test = () => {
         border={'1px solid red'}
         padding={'10px'}
         margin={'10px'}>
-        {contractReadDataIsError && (
-          <div>ERROR:{JSON.stringify(contractReadDataError)}</div>
-        )}
+        <Button
+          onClick={() => {
+            refetch()
+          }}>
+          refetch
+        </Button>
         {contractReadDataIsLoading && <div>check wallet</div>}
-        {Boolean(contractReadData) && (
-          <div>{JSON.stringify(contractReadData)}</div>
-        )}
+        <Text>
+          contract read data: {formatUnits(contractReadData as bigint, 18)}
+        </Text>
+        <Text>
+          contract error:
+          {contractReadDataIsError && (
+            <div>ERROR:{JSON.stringify(contractReadDataError)}</div>
+          )}
+        </Text>
+      </Box>
+      <Box
+        border={'1px solid red'}
+        padding={'10px'}
+        margin={'10px'}>
+        <Button
+          onClick={() => {
+            write()
+          }}>
+          write
+        </Button>
+        <Text>contractWriteIsLoading: {contractWriteIsLoading + ''}</Text>
+        <Text>contractWriteIsSuccess: {contractWriteIsSuccess + ''}</Text>
+        <Text>contractWriteData: {JSON.stringify(contractWriteData)}</Text>
       </Box>
     </div>
   )
