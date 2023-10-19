@@ -47,10 +47,10 @@ root.render(
             </PhotoProvider>
           </TransactionsProvider>
         </WagmiConfig>
-        <Web3Modal
+        {/* <Web3Modal
           projectId={projectId}
           ethereumClient={ethereumClient}
-        />
+        /> */}
       </ChakraProvider>
     </ApolloProvider>
   </React.StrictMode>,

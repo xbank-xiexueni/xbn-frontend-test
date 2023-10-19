@@ -1,4 +1,5 @@
 import { Fallback } from 'components'
+import Test from 'components/Test'
 import NewComer from 'pages/new-comer/NewComer'
 import { Suspense } from 'react'
 import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'
@@ -32,12 +33,13 @@ const History = lazyWithRetries(() => import('./pages/history/History'))
 const router = createBrowserRouter([
   {
     path: '/',
-    element: (
-      <Navigate
-        to={'/market'}
-        replace
-      />
-    ),
+    element: <Test />,
+    // element: (
+    //   <Navigate
+    //     to={'/market'}
+    //     replace
+    //   />
+    // ),
   },
   {
     path: '/lending',
