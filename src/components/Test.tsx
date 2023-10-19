@@ -49,7 +49,7 @@ const Test = () => {
   const [signedLoginMessage, setSignedLoginMessage] = useState('')
   const [expires, setExpires] = useState('')
   const [token, setToken] = useState('')
-  const { data, isError, isLoading, isSuccess, signTypedData } =
+  const { data, error, isError, isLoading, isSuccess, signTypedData } =
     useSignTypedData({
       domain,
       message,
@@ -74,11 +74,11 @@ const Test = () => {
     address: process.env.REACT_APP_WETH_CONTRACT_ADDRESS as any,
     abi: WETH_ABI,
     functionName: 'balanceOf',
-    account: address,
+    args: [address],
+    // account: address,
   })
-  console.log(process.env.REACT_APP_WETH_CONTRACT_ADDRESS)
-  console.log(WETH_ABI)
-
+  console.log('contractReadData', contractReadData)
+  console.log('boolean contractReadData', Boolean(contractReadData))
   return (
     <div>
       <Box
@@ -176,7 +176,7 @@ const Test = () => {
           Sign typed data
         </Button>
         {isSuccess && <div>Signature: {data}</div>}
-        {isError && <div>Error signing message</div>}
+        {isError && <div>Error signing message {JSON.stringify(error)}</div>}
       </Box>
       <Box
         border={'1px solid red'}
@@ -200,8 +200,8 @@ const Test = () => {
           <div>ERROR:{JSON.stringify(contractReadDataError)}</div>
         )}
         {contractReadDataIsLoading && <div>check wallet</div>}
-        {!!contractReadData && (
-          <div>{JSON.stringify(contractReadDataError)}</div>
+        {Boolean(contractReadData) && (
+          <div>{JSON.stringify(contractReadData)}</div>
         )}
       </Box>
     </div>
