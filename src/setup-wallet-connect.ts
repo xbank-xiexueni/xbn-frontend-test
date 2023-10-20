@@ -66,7 +66,7 @@
 
 import { createWeb3Modal, defaultWagmiConfig } from '@web3modal/wagmi/react'
 
-import { WagmiConfig } from 'wagmi'
+// import { WagmiConfig } from 'wagmi'
 import { arbitrum, mainnet, goerli } from 'wagmi/chains'
 
 // 1. Get projectId
@@ -77,10 +77,10 @@ const metadata = {
   name: 'Web3Modal',
   description: 'Web3Modal Example',
   url: 'https://web3modal.com',
-  icons: ['https://avatars.githubusercontent.com/u/37784886']
+  icons: ['https://avatars.githubusercontent.com/u/37784886'],
 }
 
-const chains = [mainnet, arbitrum, goerli]
+const chains = [goerli, mainnet, arbitrum]
 const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata })
 
 // 3. Create modal

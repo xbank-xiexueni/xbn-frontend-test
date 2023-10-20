@@ -12,8 +12,11 @@ import {
   chakra,
   Center,
   Divider,
+  Img,
+  GenericAvatarIcon,
+  Spinner,
 } from '@chakra-ui/react'
-import { useRequest } from 'ahooks'
+import { useLocalStorageState, useRequest } from 'ahooks'
 import get from 'lodash/get'
 import {
   useCallback,
@@ -21,6 +24,7 @@ import {
   type FunctionComponent,
   useEffect,
   useState,
+  useRef,
 } from 'react'
 // import Jazzicon from 'react-jazzicon'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
@@ -38,6 +42,12 @@ import ConnectedWallet from './ConnectedWallet'
 import { BUY_NFTS_ROUTES, LENDING_ROUTES } from './constants'
 import MobileDrawBtn from './MobileDrawBtn'
 import CommunityPopover from './CommunityPopover'
+import UserPng from 'assets/user.png'
+import { useWeb3Modal } from '@web3modal/wagmi/react'
+import { useAccount, useDisconnect, useSignMessage } from 'wagmi'
+import { CloseIcon } from '@chakra-ui/icons'
+import { apiPostAuthChallenge, apiPostAuthLogin } from 'api/user'
+import moment from 'moment'
 
 const useActivePath = () => {
   const { pathname } = useLocation()
@@ -396,34 +406,192 @@ const Header = () => {
               md: 'flex',
               lg: 'none',
             }}>
-            <Flex
-              cursor='pointer'
-              onClick={() => {
-                navigate('/marketing-campaign')
-              }}
-              alignItems={'center'}
-              marginRight={'-16px'}>
-              <Image
-                src='/gift.gif'
-                style={{
-                  width: '64px',
-                  height: '64px',
-                  marginTop: '-30px',
-                }}
-              />
-            </Flex>
-            {isConnected && <AccountModal />}
+            <CusBtnUser />
+            {/* <CusMobileGiftIcon /> */}
+            {/* {isConnected && <AccountModal />} */}
             <MobileDrawBtn handleClickWallet={handleClickWallet} />
           </Flex>
         </Flex>
       </Container>
 
-      <ConnectWalletModal
+      {/* <ConnectWalletModal
         visible={isOpen}
         handleClose={onClose}
-      />
+      /> */}
     </Box>
   )
 }
 
 export default Header
+
+function CusBtnUser() {
+  const { setCurrentAccount } = useWallet()
+  const { open: openWeb3Modal } = useWeb3Modal()
+  const refLoginMsg = useRef('')
+  const { run: login } = useRequest(apiPostAuthLogin, {
+    manual: true,
+    onSuccess(data) {
+      console.log('登录成功: ', JSON.stringify(data, null, 2))
+      // alert('登录成功 token: ' + data.token)
+      if (typeof window !== 'undefined') {
+        alert('登录成功 token: ' + data.token)
+        setCurrentAccount({ ...data, address: address })
+      }
+    },
+  })
+  const { signMessage } = useSignMessage({
+    onSuccess(data) {
+      console.log('sign message success data is:', data)
+      alert('签名信息: ' + data)
+      console.log(
+        '登录参数:',
+        JSON.stringify(
+          {
+            address: address as string,
+            message: refLoginMsg.current,
+            signature: data,
+          },
+          null,
+          2,
+        ),
+      )
+      login({
+        address: address as string,
+        message: refLoginMsg.current,
+        signature: data,
+      })
+    },
+    onError(error) {
+      alert('签名错误: ' + error.message)
+    },
+  })
+  // apiPostAuthLogin({
+  //   address: address,
+  //   message: loginMessage,
+  //   signature: signedLoginMessage,
+  // }).then((resp) => {
+  //   console.log(resp)
+  //   setExpires(resp.expires)
+  //   setToken(resp.token)
+  // })
+  const { run: getLoginMessage, loading: getLoginMessageLoading } = useRequest(
+    apiPostAuthChallenge,
+    {
+      manual: true,
+      onSuccess(data) {
+        console.log('apiPostAuthChallenge data is:', data)
+        if (data.login_message) {
+          signMessage({
+            message: data.login_message,
+          })
+          refLoginMsg.current = data.login_message
+        }
+      },
+    },
+  )
+  const { isConnected, isConnecting, address } = useAccount({
+    onConnect({ address, connector, isReconnected }) {
+      if (typeof window !== 'undefined') {
+        const connectAccountLocalStorageStr =
+          window.localStorage.getItem('connect-account')
+        if (
+          typeof connectAccountLocalStorageStr === 'string' &&
+          connectAccountLocalStorageStr !== ''
+        ) {
+          const info = JSON.parse(connectAccountLocalStorageStr)
+          const expires = moment(info.expires)
+          if (expires.isBefore(moment.now())) {
+            window.localStorage.removeItem('connect-account')
+            console.log('connect to address:', address)
+            console.log('connector is:', connector)
+            console.log('is reconnected:', isReconnected)
+            getLoginMessage(address as string)
+          }
+        } else {
+          window.localStorage.removeItem('connect-account')
+          console.log('connect to address:', address)
+          console.log('connector is:', connector)
+          console.log('is reconnected:', isReconnected)
+          getLoginMessage(address as string)
+        }
+      }
+    },
+    onDisconnect() {
+      alert('disconnected')
+    },
+  })
+  const { disconnect, isLoading: disconnectIsLoading } = useDisconnect({
+    onSuccess(context) {
+      console.log('disconnect success context is:', context)
+      if (typeof window !== 'undefined') {
+        window.localStorage.removeItem('connect-account')
+      }
+    },
+    onError(e) {
+      alert('on error message is: ' + e.message)
+    },
+    onSettled(error, context) {
+      console.log('on settled error:', error)
+      console.log('on settled context:', context)
+      // alert('on settled error message is: ' + error?.message)
+    },
+  })
+  if (isConnected) {
+    return (
+      <Box
+        display={'flex'}
+        alignItems={'center'}>
+        <Text
+          // wordBreak={'keep-all'}
+          whiteSpace={'nowrap'}
+          width={'100px'}
+          fontSize={'12px'}
+          noOfLines={1}>
+          {address}
+        </Text>
+        <Button
+          variant={'plain'}
+          onClick={() => {
+            disconnect()
+          }}>
+          <CloseIcon />
+        </Button>
+      </Box>
+    )
+  }
+  return (
+    <Button
+      variant={'plain'}
+      onClick={() => {
+        openWeb3Modal()
+      }}>
+      {/* <Img src={UserPng} /> */}
+      <Image
+        src={ImgWallet}
+        boxSize={'24px'}
+      />
+    </Button>
+  )
+}
+
+function CusMobileGiftIcon() {
+  const navigate = useNavigate()
+  return (
+    <Flex
+      cursor='pointer'
+      onClick={() => {
+        navigate('/marketing-campaign')
+      }}
+      alignItems={'center'}
+      marginRight={'-16px'}>
+      <Image
+        src='/gift.gif'
+        style={{
+          width: '64px',
+          height: '64px',
+          marginTop: '-30px',
+        }}
+      />
+    </Flex>
+  )
+}

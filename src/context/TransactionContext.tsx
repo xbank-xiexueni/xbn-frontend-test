@@ -227,6 +227,7 @@ export const TransactionsProvider = ({
   } = useAccount({})
 
   const isConnected = useMemo(() => {
+    console.log('abc', currentAccount)
     if (!isWagmiConnect) return false
     if (!currentAccount) return false
     if (isEmpty(currentAccount)) return false

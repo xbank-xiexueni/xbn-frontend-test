@@ -63,6 +63,8 @@ const Loans = () => {
     noticeConfig: { data: noticeData, refresh: refreshNotice },
     isConnected,
   } = useWallet()
+  console.log('isConnected', isConnected)
+  console.log('currentAccount', currentAccount)
   const toast = useToast()
   const [repayLoadingMap, setRepayLoadingMap] =
     useState<Record<string, boolean>>()

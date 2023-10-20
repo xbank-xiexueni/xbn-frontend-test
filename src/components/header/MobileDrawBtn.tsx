@@ -28,7 +28,6 @@ import Jazzicon, { jsNumberForAddress } from 'react-jazzicon'
 import { formatAddress } from 'utils/format'
 import { BUY_NFTS_ROUTES, LENDING_ROUTES } from './constants'
 import ImgWallet from 'assets/wallet.png'
-
 const MobileDrawBtn = ({
   handleClickWallet,
 }: {
@@ -152,11 +151,11 @@ const MobileDrawBtn = ({
             <DocLink />
           </DrawerBody>
           <DrawerFooter>
-            <CusConnectWalletBtn
+            {/* <CusConnectWalletBtn
               isConnected={isConnected}
               handleClickWallet={handleClickWallet}
               handleDisconnect={handleDisconnect}
-            />
+            /> */}
           </DrawerFooter>
         </DrawerContent>
       </Drawer>
@@ -172,6 +171,7 @@ function CusConnectWalletBtn(props: {
 }) {
   return (
     <>
+      {/* <w3m-button /> */}
       {!props.isConnected ? (
         <Button
           flex={1}
