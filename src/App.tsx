@@ -33,13 +33,13 @@ const History = lazyWithRetries(() => import('./pages/history/History'))
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <Test />,
-    // element: (
-    //   <Navigate
-    //     to={'/market'}
-    //     replace
-    //   />
-    // ),
+    // element: <Test />,
+    element: (
+      <Navigate
+        to={'/market'}
+        replace
+      />
+    ),
   },
   {
     path: '/lending',

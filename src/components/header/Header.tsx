@@ -27,6 +27,7 @@ import {
   DrawerFooter,
   Divider,
 } from '@chakra-ui/react'
+import { SearchIcon } from '@chakra-ui/icons'
 import { useRequest } from 'ahooks'
 import get from 'lodash/get'
 import {
