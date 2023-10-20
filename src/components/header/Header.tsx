@@ -9,37 +9,20 @@ import {
   PopoverTrigger,
   PopoverContent,
   PopoverBody,
-  IconButton,
-  Drawer,
-  DrawerBody,
-  DrawerHeader,
-  DrawerOverlay,
-  DrawerContent,
-  DrawerCloseButton,
-  useDisclosure,
-  Accordion,
-  AccordionItem,
-  AccordionIcon,
-  AccordionButton,
-  AccordionPanel,
   chakra,
   Center,
-  DrawerFooter,
   Divider,
 } from '@chakra-ui/react'
-import { SearchIcon } from '@chakra-ui/icons'
 import { useRequest } from 'ahooks'
 import get from 'lodash/get'
 import {
   useCallback,
   useMemo,
-  useRef,
   type FunctionComponent,
   useEffect,
   useState,
 } from 'react'
 // import Jazzicon from 'react-jazzicon'
-import Jazzicon, { jsNumberForAddress } from 'react-jazzicon'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 
 import { apiGetBoxes } from 'api/marketing-campaign'
@@ -47,43 +30,14 @@ import Icon from 'assets/logo.png'
 import ImgWallet from 'assets/wallet.png'
 import { RESPONSIVE_MAX_W } from 'constants/index'
 import { useWallet } from 'hooks'
-import { formatAddress } from 'utils/format'
 
 import { ConnectWalletModal, SvgComponent } from '..'
-import { COMMUNITY_DATA } from '../footer/Footer'
 
 import AccountModal from './AccountModal'
 import ConnectedWallet from './ConnectedWallet'
-
-const LENDING_ROUTES = [
-  {
-    name: 'Collections',
-    route: '/lending/collections',
-  },
-  {
-    name: 'My Pools',
-    route: '/lending/my-pools',
-  },
-  {
-    name: 'Loans',
-    route: '/lending/loans',
-  },
-]
-
-const BUY_NFTS_ROUTES = [
-  {
-    name: 'Market',
-    route: '/market',
-  },
-  {
-    name: 'Repay Loans',
-    route: '/loans',
-  },
-  {
-    name: 'Loan History',
-    route: '/history',
-  },
-]
+import { BUY_NFTS_ROUTES, LENDING_ROUTES } from './constants'
+import MobileDrawBtn from './MobileDrawBtn'
+import CommunityPopover from './CommunityPopover'
 
 const useActivePath = () => {
   const { pathname } = useLocation()
@@ -186,89 +140,6 @@ const PopoverWrapper: FunctionComponent<{
   )
 }
 
-const CommunityPopover = () => {
-  return (
-    <Popover
-      isLazy
-      trigger='hover'
-      placement='bottom-start'>
-      {({ isOpen: visible }) => {
-        return (
-          <>
-            <PopoverTrigger>
-              <Flex
-                fontSize='16px'
-                px={0}
-                gap={'4px'}
-                _focus={{ bg: 'transparent' }}
-                _hover={{
-                  bg: 'transparent',
-                  color: 'var(--chakra-colors-blue-1)',
-                }}
-                color={visible ? 'blue.1' : 'black.1'}
-                fontWeight='700'
-                alignItems={'center'}
-                cursor='pointer'>
-                Community
-                <SvgComponent
-                  svgId={'icon-arrow-down'}
-                  fill={
-                    visible
-                      ? 'var(--chakra-colors-blue-1)'
-                      : 'var(--chakra-colors-black-1)'
-                  }
-                  transition='all 0.2s'
-                  transform={`rotate(${visible ? '180deg' : '0deg'})`}
-                  mt='2px'
-                />
-              </Flex>
-              {/* </Link> */}
-            </PopoverTrigger>
-            <PopoverContent
-              w={'140px'}
-              top='16px'
-              borderRadius={8}>
-              <PopoverBody
-                px={0}
-                p={'20px'}>
-                <Flex
-                  flexDir={'column'}
-                  gap='20px'>
-                  {COMMUNITY_DATA.map(({ icon, title, url }) => (
-                    <chakra.a
-                      key={title}
-                      href={url}
-                      target='_blank'>
-                      <Flex
-                        borderBottomColor='gray.5'
-                        alignItems={'center'}
-                        gap='8px'
-                        className='custom-hover-style'>
-                        <SvgComponent
-                          svgId={icon}
-                          fill='gray.6'
-                        />
-                        <Text
-                          fontSize='16px'
-                          _hover={{
-                            color: `blue.1`,
-                          }}
-                          color='black.1'>
-                          {title}
-                        </Text>
-                      </Flex>
-                    </chakra.a>
-                  ))}
-                </Flex>
-              </PopoverBody>
-            </PopoverContent>
-          </>
-        )
-      }}
-    </Popover>
-  )
-}
-
 const CHAKRA_A_PROPS = {
   fontSize: '16px',
   px: 0,
@@ -282,239 +153,7 @@ const CHAKRA_A_PROPS = {
   alignItems: 'center',
   cursor: 'pointer',
 }
-const MobileDrawBtn = ({
-  handleClickWallet,
-}: {
-  handleClickWallet: () => void
-}) => {
-  const {
-    isOpen: drawVisible,
-    onOpen: openDraw,
-    onClose: closeDraw,
-  } = useDisclosure()
-  // const activePath = useActivePath()
-  const btnRef = useRef<HTMLButtonElement>(null)
-  const { isConnected, handleDisconnect, currentAccount } = useWallet()
 
-  return (
-    <>
-      <IconButton
-        icon={
-          <SvgComponent
-            svgId='icon-expand1'
-            svgSize={'24px'}
-          />
-        }
-        ref={btnRef}
-        aria-label=''
-        onClick={openDraw}
-        bg='white'
-        isDisabled={window.location.pathname === '/demo'}
-      />
-      <Drawer
-        isOpen={drawVisible}
-        placement='right'
-        onClose={closeDraw}
-        finalFocusRef={btnRef}>
-        <DrawerOverlay
-          bg='transparent'
-          top={'4px'}
-        />
-        <DrawerContent maxW='100%'>
-          <Box
-            bg='linear-gradient(270deg, #E404E6 0%, #5843F4 53.65%, #1EF6F0 100%)'
-            h={'1px'}
-          />
-          <DrawerCloseButton
-            pt='40px'
-            size={'24px'}
-            mr='24px'
-          />
-          <DrawerHeader
-            textAlign={'center'}
-            mt='24px'>
-            {isConnected && (
-              <Flex
-                alignItems={'center'}
-                justify={'center'}
-                gap={'8px'}>
-                <Jazzicon
-                  diameter={24}
-                  seed={jsNumberForAddress(currentAccount?.address || '')}
-                />
-                {formatAddress(currentAccount?.address)}
-              </Flex>
-            )}
-          </DrawerHeader>
-
-          <DrawerBody mt='20px'>
-            <Accordion>
-              <AccordionItem border={'none'}>
-                <AccordionButton>
-                  <Box
-                    as='span'
-                    flex='1'
-                    textAlign='left'
-                    fontSize={'24px'}
-                    fontWeight='700'>
-                    Buy NFTs
-                  </Box>
-                  <AccordionIcon />
-                </AccordionButton>
-                <AccordionPanel
-                  px={8}
-                  py={'28px'}>
-                  <Flex
-                    flexDir={'column'}
-                    gap={8}
-                    onClick={closeDraw}>
-                    {BUY_NFTS_ROUTES.map(({ name, route }) => (
-                      <Link
-                        to={route}
-                        key={name}>
-                        <Flex
-                          fontSize='16px'
-                          color='gray.3'>
-                          {name}
-                        </Flex>
-                      </Link>
-                    ))}
-                  </Flex>
-                </AccordionPanel>
-              </AccordionItem>
-              <AccordionItem border={'none'}>
-                <AccordionButton>
-                  <Box
-                    as='span'
-                    flex='1'
-                    textAlign='left'
-                    fontSize={'24px'}
-                    fontWeight='700'>
-                    Lend
-                  </Box>
-                  <AccordionIcon />
-                </AccordionButton>
-                <AccordionPanel
-                  px={8}
-                  py={'28px'}>
-                  <Flex
-                    flexDir={'column'}
-                    gap={8}
-                    onClick={closeDraw}>
-                    {LENDING_ROUTES.map(({ name, route }) => (
-                      <Link
-                        to={route}
-                        key={name}>
-                        <Flex
-                          fontSize='16px'
-                          color='gray.3'>
-                          {name}
-                        </Flex>
-                      </Link>
-                    ))}
-                  </Flex>
-                </AccordionPanel>
-              </AccordionItem>
-
-              <AccordionItem border={'none'}>
-                <AccordionButton>
-                  <Box
-                    as='span'
-                    flex='1'
-                    textAlign='left'
-                    fontSize={'24px'}
-                    fontWeight='700'>
-                    Community
-                  </Box>
-                  <AccordionIcon />
-                </AccordionButton>
-                <AccordionPanel
-                  px={8}
-                  py={'28px'}>
-                  <Flex
-                    flexDir={'column'}
-                    gap={8}
-                    onClick={closeDraw}>
-                    {COMMUNITY_DATA.map(({ title, icon, url }) => (
-                      <chakra.a
-                        href={url}
-                        key={title}>
-                        <Flex
-                          fontSize='16px'
-                          color='gray.3'
-                          alignItems={'center'}
-                          gap={'4px'}>
-                          <SvgComponent svgId={icon} />
-                          {title}
-                        </Flex>
-                      </chakra.a>
-                    ))}
-                  </Flex>
-                </AccordionPanel>
-              </AccordionItem>
-            </Accordion>
-
-            <Link
-              to={'/my-assets'}
-              hidden={!isConnected}>
-              <Flex
-                py={2}
-                px={4}
-                fontSize={'24px'}
-                color={'black.1'}
-                fontWeight={'700'}
-                lineHeight={'2'}>
-                My Assets
-              </Flex>
-            </Link>
-            <chakra.a
-              py={2}
-              px={4}
-              fontSize={'24px'}
-              color={'black.1'}
-              fontWeight={'700'}
-              lineHeight={'2'}
-              href={process.env.REACT_APP_DOCS_URL}
-              target='_blank'>
-              Docs
-            </chakra.a>
-          </DrawerBody>
-          <DrawerFooter>
-            {!isConnected ? (
-              <Button
-                flex={1}
-                borderRadius={4}
-                leftIcon={
-                  <Image
-                    src={ImgWallet}
-                    boxSize={'24px'}
-                  />
-                }
-                bg='gray.5'
-                iconSpacing={'4px'}
-                py={'4px'}
-                px='10px'
-                onClick={handleClickWallet}>
-                Connect Wallet
-              </Button>
-            ) : (
-              <Button
-                flex={1}
-                borderRadius={4}
-                bg='gray.5'
-                iconSpacing={'4px'}
-                py={'4px'}
-                px='10px'
-                onClick={handleDisconnect}>
-                Disconnect
-              </Button>
-            )}
-          </DrawerFooter>
-        </DrawerContent>
-      </Drawer>
-    </>
-  )
-}
 const Header = () => {
   const { pathname } = useLocation()
   const activePath = useActivePath()

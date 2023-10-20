@@ -61,7 +61,7 @@ const AllowanceModal: FunctionComponent<{
     isError: isApproveError,
     error: approveError,
   } = useContractWrite({
-    address: WETH_CONTRACT_ADDRESS,
+    address: WETH_CONTRACT_ADDRESS as `0x${string}` | undefined,
     abi: [WETH_CONTRACT_ABI.find((i) => i.name === 'approve')],
     functionName: 'approve',
   })

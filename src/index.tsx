@@ -17,6 +17,7 @@ import 'video-react/dist/video-react.css'
 import theme from 'themes'
 import { TOAST_OPTION_CONFIG } from './constants/index'
 import { TransactionsProvider } from 'context/TransactionContext'
+// import ErrorBoundary from 'components/ErrorBoundary'
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
