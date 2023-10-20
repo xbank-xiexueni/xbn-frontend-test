@@ -213,6 +213,7 @@ const Header = () => {
   useEffect(() => {
     queryBox()
   }, [currentAccount, queryBox])
+  const { open: openWeb3Modal } = useWeb3Modal()
   return (
     <Box
       position={'sticky'}
@@ -387,7 +388,10 @@ const Header = () => {
                 iconSpacing={'4px'}
                 py={'4px'}
                 px='10px'
-                onClick={() => interceptFn()}>
+                // onClick={() => interceptFn()}
+                onClick={() => {
+                  openWeb3Modal()
+                }}>
                 Connect Wallet
               </Button>
             )}
