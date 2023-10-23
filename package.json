@@ -75,9 +75,13 @@
     ]
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "^3.2.2",
+    "@graphql-codegen/client-preset": "^2.1.1",
+    "@graphql-codegen/typescript-react-apollo": "^3.3.7",
     "@craco/craco": "^7.1.0",
     "@types/lodash-es": "^4.17.10",
     "@types/react-slick": "^0.23.10",
-    "webpack": "^5.89.0"
+    "webpack": "^5.89.0",
+    "cross-env": "^7.0.3"
   }
 }
