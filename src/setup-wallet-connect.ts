@@ -69,6 +69,9 @@ import { createWeb3Modal, defaultWagmiConfig } from '@web3modal/wagmi/react'
 // import { WagmiConfig } from 'wagmi'
 import { arbitrum, mainnet, goerli } from 'wagmi/chains'
 
+import { MetaMaskConnector } from 'wagmi/connectors/metaMask'
+
+
 // 1. Get projectId
 export const projectId = '9d97dd16d0f0be1131e835d5dd571e23'
 
@@ -81,6 +84,9 @@ const metadata = {
 }
 
 const chains = [goerli, mainnet, arbitrum]
+export const metamaskConnector = new MetaMaskConnector({
+  chains
+})
 const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata })
 
 // 3. Create modal

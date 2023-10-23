@@ -15,8 +15,15 @@ import {
   Img,
   GenericAvatarIcon,
   Spinner,
+  useDisclosure,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalOverlay,
+  ModalHeader,
+  ModalCloseButton,
 } from '@chakra-ui/react'
-import { useLocalStorageState, useRequest } from 'ahooks'
+import { useLocalStorageState, useRequest, useToggle } from 'ahooks'
 import get from 'lodash/get'
 import {
   useCallback,
@@ -32,7 +39,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { apiGetBoxes } from '@/api/marketing-campaign'
 import Icon from '@/assets/logo.png'
 import ImgWallet from '@/assets/wallet.png'
-import { RESPONSIVE_MAX_W } from '@/constants/index'
+import { RESPONSIVE_MAX_W, WALLET_ICON } from '@/constants/index'
 import { useWallet } from '@/hooks'
 
 import { ConnectWalletModal, SvgComponent } from '..'
@@ -44,10 +51,13 @@ import MobileDrawBtn from './MobileDrawBtn'
 import CommunityPopover from './CommunityPopover'
 import UserPng from '@/assets/user.png'
 import { useWeb3Modal } from '@web3modal/wagmi/react'
-import { useAccount, useDisconnect, useSignMessage } from 'wagmi'
+import { useAccount, useConnect, useDisconnect, useSignMessage } from 'wagmi'
 import { CloseIcon } from '@chakra-ui/icons'
 import { apiPostAuthChallenge, apiPostAuthLogin } from '@/api/user'
 import moment from 'moment'
+import CusConnectModal from './CusConnectModal'
+import IconRight from '@/assets/right.svg'
+import metamaskConnector from '@/setup-wallet-connect'
 
 const useActivePath = () => {
   const { pathname } = useLocation()
@@ -167,10 +177,122 @@ const CHAKRA_A_PROPS = {
 const Header = () => {
   const { pathname } = useLocation()
   const activePath = useActivePath()
-
-  const { isOpen, onClose, interceptFn, isConnected, currentAccount } =
-    useWallet()
-  const navigate = useNavigate()
+  const { connectors, connectAsync } = useConnect()
+  const {
+    setCurrentAccount,
+    isOpen,
+    onClose,
+    interceptFn,
+    isConnected,
+    currentAccount,
+  } = useWallet()
+  const { open: openWeb3Modal } = useWeb3Modal()
+  const refLoginMsg = useRef('')
+  const { run: login } = useRequest(apiPostAuthLogin, {
+    manual: true,
+    onSuccess(data) {
+      console.log('登录成功: ', JSON.stringify(data, null, 2))
+      // alert('登录成功 token: ' + data.token)
+      if (typeof window !== 'undefined') {
+        alert('登录成功 token: ' + data.token)
+        setCurrentAccount({ ...data, address: address })
+      }
+    },
+  })
+  const { signMessage } = useSignMessage({
+    onSuccess(data) {
+      console.log('sign message success data is:', data)
+      alert('签名信息: ' + data)
+      console.log(
+        '登录参数:',
+        JSON.stringify(
+          {
+            address: address as string,
+            message: refLoginMsg.current,
+            signature: data,
+          },
+          null,
+          2,
+        ),
+      )
+      login({
+        address: address as string,
+        message: refLoginMsg.current,
+        signature: data,
+      })
+    },
+    onError(error) {
+      alert('签名错误: ' + error.message)
+    },
+  })
+  const { run: getLoginMessage, loading: getLoginMessageLoading } = useRequest(
+    apiPostAuthChallenge,
+    {
+      manual: true,
+      onSuccess(data) {
+        console.log('apiPostAuthChallenge data is:', data)
+        if (data.login_message) {
+          signMessage({
+            message: data.login_message,
+          })
+          refLoginMsg.current = data.login_message
+        }
+      },
+    },
+  )
+  const { address } = useAccount({
+    onConnect({ address, connector, isReconnected }) {
+      if (typeof window !== 'undefined') {
+        const connectAccountLocalStorageStr =
+          window.localStorage.getItem('connect-account')
+        if (
+          typeof connectAccountLocalStorageStr === 'string' &&
+          connectAccountLocalStorageStr !== ''
+        ) {
+          const info = JSON.parse(connectAccountLocalStorageStr)
+          const expires = moment(info.expires)
+          if (expires.isBefore(moment.now())) {
+            window.localStorage.removeItem('connect-account')
+            console.log('connect to address:', address)
+            console.log('connector is:', connector)
+            console.log('is reconnected:', isReconnected)
+            getLoginMessage(address as string)
+          }
+        } else {
+          window.localStorage.removeItem('connect-account')
+          console.log('connect to address:', address)
+          console.log('connector is:', connector)
+          console.log('is reconnected:', isReconnected)
+          getLoginMessage(address as string)
+        }
+      }
+    },
+    onDisconnect() {
+      alert('disconnected')
+    },
+    onError(e) {
+      console.log('onConnect Error:', e)
+    },
+  })
+  const { disconnect, isLoading: disconnectIsLoading } = useDisconnect({
+    onSuccess(context) {
+      console.log('disconnect success context is:', context)
+      if (typeof window !== 'undefined') {
+        window.localStorage.removeItem('connect-account')
+      }
+    },
+    onError(e) {
+      alert('on error message is: ' + e.message)
+    },
+    onSettled(error, context) {
+      console.log('on settled error:', error)
+      console.log('on settled context:', context)
+      // alert('on settled error message is: ' + error?.message)
+    },
+  })
+  console.log('connectors', connectors)
+  // const { isOpen, onClose, interceptFn, isConnected, currentAccount } =
+  //   useWallet()
   const handleClickWallet = useCallback(async () => {
     interceptFn(() => {})
   }, [interceptFn])
@@ -213,7 +335,11 @@ const Header = () => {
   useEffect(() => {
     queryBox()
   }, [currentAccount, queryBox])
-  const { open: openWeb3Modal } = useWeb3Modal()
+  // const { open: openWeb3Modal } = useWeb3Modal()
+  const [
+    cusConnectModalIsOpen,
+    { setRight: cusConnectModalOnOpen, setLeft: cusConnectModalOnClose },
+  ] = useToggle(false)
   return (
     <Box
       position={'sticky'}
@@ -390,7 +516,9 @@ const Header = () => {
                 px='10px'
                 // onClick={() => interceptFn()}
                 onClick={() => {
-                  openWeb3Modal()
+                  console.log('hi')
+                  cusConnectModalOnOpen()
+                  // openWeb3Modal()
                 }}>
                 Connect Wallet
               </Button>
@@ -410,137 +538,131 @@ const Header = () => {
               md: 'flex',
               lg: 'none',
             }}>
-            <CusBtnUser />
+            <CusBtnUser
+              isConnected={isConnected}
+              address={address}
+              disconnect={disconnect}
+              openWeb3Modal={openWeb3Modal}
+            />
             {/* <CusMobileGiftIcon /> */}
             {/* {isConnected && <AccountModal />} */}
             <MobileDrawBtn handleClickWallet={handleClickWallet} />
           </Flex>
         </Flex>
+        <Modal
+          isOpen={cusConnectModalIsOpen}
+          onClose={cusConnectModalOnClose}>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>
+              <Box
+                display={'flex'}
+                justifyContent={'space-between'}>
+                <Text>Connect wallet</Text>
+                <ModalCloseButton />
+              </Box>
+            </ModalHeader>
+            <ModalBody paddingBottom={'40px'}>
+              <Box
+                display={'flex'}
+                flexDir={'column'}>
+                <Button
+                  marginBottom={'10px'}
+                  variant={'unstyled'}
+                  onClick={() => {
+                    const targetConnector = connectors.find((x) => {
+                      return x.name === 'MetaMask'
+                    })
+                    if (targetConnector) {
+                      connectAsync({
+                        chainId: Number(process.env.REACT_APP_TARGET_CHAIN_ID),
+                        connector: targetConnector,
+                      })
+                        .then((resp) => {
+                          console.log('connectAsync resp is:', resp)
+                          cusConnectModalOnClose()
+                        })
+                        .catch((e) => {
+                          console.log('connectAsync error:', e)
+                        })
+                    } else {
+                      console.log('没有安装metamask')
+                    }
+                  }}>
+                  <Box
+                    display={'flex'}
+                    justifyContent={'space-between'}
+                    alignItems={'center'}>
+                    <Box
+                      display={'flex'}
+                      alignItems={'center'}>
+                      <Image
+                        width={'40px'}
+                        height={'40px'}
+                        marginRight={'16px'}
+                        src={WALLET_ICON.metaMask}
+                      />
+                      <Text
+                        fontFamily={'HarmonyOS Sans SC'}
+                        fontSize={'16px'}
+                        fontWeight={700}>
+                        MetaMask
+                      </Text>
+                    </Box>
+                    <Img
+                      src={IconRight}
+                      width={'16px'}></Img>
+                  </Box>
+                </Button>
+                <Button
+                  variant={'unstyled'}
+                  onClick={() => {
+                    cusConnectModalOnClose()
+                    openWeb3Modal()
+                  }}>
+                  <Box
+                    display={'flex'}
+                    justifyContent={'space-between'}
+                    alignItems={'center'}>
+                    <Box
+                      display={'flex'}
+                      alignItems={'center'}>
+                      <Image
+                        width={'40px'}
+                        height={'40px'}
+                        marginRight={'16px'}
+                        src={WALLET_ICON.walletConnect}
+                      />
+                      <Text
+                        fontFamily={'HarmonyOS Sans SC'}
+                        fontSize={'16px'}
+                        fontWeight={700}>
+                        WalletConnect
+                      </Text>
+                    </Box>
+                    <Img
+                      src={IconRight}
+                      width={'16px'}></Img>
+                  </Box>
+                </Button>
+              </Box>
+            </ModalBody>
+          </ModalContent>
+        </Modal>
       </Container>
-
-      {/* <ConnectWalletModal
-        visible={isOpen}
-        handleClose={onClose}
-      /> */}
     </Box>
   )
 }
 
 export default Header
 
-function CusBtnUser() {
-  const { setCurrentAccount } = useWallet()
-  const { open: openWeb3Modal } = useWeb3Modal()
-  const refLoginMsg = useRef('')
-  const { run: login } = useRequest(apiPostAuthLogin, {
-    manual: true,
-    onSuccess(data) {
-      console.log('登录成功: ', JSON.stringify(data, null, 2))
-      // alert('登录成功 token: ' + data.token)
-      if (typeof window !== 'undefined') {
-        alert('登录成功 token: ' + data.token)
-        setCurrentAccount({ ...data, address: address })
-      }
-    },
-  })
-  const { signMessage } = useSignMessage({
-    onSuccess(data) {
-      console.log('sign message success data is:', data)
-      alert('签名信息: ' + data)
-      console.log(
-        '登录参数:',
-        JSON.stringify(
-          {
-            address: address as string,
-            message: refLoginMsg.current,
-            signature: data,
-          },
-          null,
-          2,
-        ),
-      )
-      login({
-        address: address as string,
-        message: refLoginMsg.current,
-        signature: data,
-      })
-    },
-    onError(error) {
-      alert('签名错误: ' + error.message)
-    },
-  })
-  // apiPostAuthLogin({
-  //   address: address,
-  //   message: loginMessage,
-  //   signature: signedLoginMessage,
-  // }).then((resp) => {
-  //   console.log(resp)
-  //   setExpires(resp.expires)
-  //   setToken(resp.token)
-  // })
-  const { run: getLoginMessage, loading: getLoginMessageLoading } = useRequest(
-    apiPostAuthChallenge,
-    {
-      manual: true,
-      onSuccess(data) {
-        console.log('apiPostAuthChallenge data is:', data)
-        if (data.login_message) {
-          signMessage({
-            message: data.login_message,
-          })
-          refLoginMsg.current = data.login_message
-        }
-      },
-    },
-  )
-  const { isConnected, isConnecting, address } = useAccount({
-    onConnect({ address, connector, isReconnected }) {
-      if (typeof window !== 'undefined') {
-        const connectAccountLocalStorageStr =
-          window.localStorage.getItem('connect-account')
-        if (
-          typeof connectAccountLocalStorageStr === 'string' &&
-          connectAccountLocalStorageStr !== ''
-        ) {
-          const info = JSON.parse(connectAccountLocalStorageStr)
-          const expires = moment(info.expires)
-          if (expires.isBefore(moment.now())) {
-            window.localStorage.removeItem('connect-account')
-            console.log('connect to address:', address)
-            console.log('connector is:', connector)
-            console.log('is reconnected:', isReconnected)
-            getLoginMessage(address as string)
-          }
-        } else {
-          window.localStorage.removeItem('connect-account')
-          console.log('connect to address:', address)
-          console.log('connector is:', connector)
-          console.log('is reconnected:', isReconnected)
-          getLoginMessage(address as string)
-        }
-      }
-    },
-    onDisconnect() {
-      alert('disconnected')
-    },
-  })
-  const { disconnect, isLoading: disconnectIsLoading } = useDisconnect({
-    onSuccess(context) {
-      console.log('disconnect success context is:', context)
-      if (typeof window !== 'undefined') {
-        window.localStorage.removeItem('connect-account')
-      }
-    },
-    onError(e) {
-      alert('on error message is: ' + e.message)
-    },
-    onSettled(error, context) {
-      console.log('on settled error:', error)
-      console.log('on settled context:', context)
-      // alert('on settled error message is: ' + error?.message)
-    },
-  })
-  if (isConnected) {
+function CusBtnUser(props: {
+  isConnected: boolean
+  address: string | undefined
+  disconnect: () => void
+  openWeb3Modal: () => void
+}) {
+  if (props.isConnected) {
     return (
       <Box
         display={'flex'}
@@ -551,12 +673,12 @@ function CusBtnUser() {
           width={'100px'}
           fontSize={'12px'}
           noOfLines={1}>
-          {address}
+          {props.address}
         </Text>
         <Button
           variant={'plain'}
           onClick={() => {
-            disconnect()
+            props.disconnect()
           }}>
           <CloseIcon />
         </Button>
@@ -567,7 +689,7 @@ function CusBtnUser() {
     <Button
       variant={'plain'}
       onClick={() => {
-        openWeb3Modal()
+        props.openWeb3Modal()
       }}>
       {/* <Img src={UserPng} /> */}
       <Image
