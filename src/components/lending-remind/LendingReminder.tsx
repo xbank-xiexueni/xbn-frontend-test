@@ -9,24 +9,24 @@ import {
 import useLocalStorageState from 'ahooks/lib/useLocalStorageState'
 import BigNumber from 'bignumber.js'
 import dayjs from 'dayjs'
-import { isEmpty, max } from 'lodash'
+import isEmpty from 'lodash-es/isEmpty'
+import max from 'lodash-es/max'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useContractWrite, useWaitForTransaction } from 'wagmi'
 
-import imgLendingReminder from 'assets/lending-reminder.png'
-import imgLowAllowance from 'assets/low-allowance.png'
+import imgLendingReminder from '@/assets/lending-reminder.png'
+import imgLowAllowance from '@/assets/low-allowance.png'
 import {
   ACCOUNT_MODAL_TAB_KEY,
   MIN_LOAN_COUNT,
   WETH_CONTRACT_ABI,
   WETH_CONTRACT_ADDRESS,
   XBANK_CONTRACT_ADDRESS,
-} from 'constants/index'
-import { useWallet } from 'hooks'
-import { formatWagmiErrorMsg } from 'utils/format'
-import { eth2Wei, wei2Eth } from 'utils/unit-conversion'
-import { isAddressEqual } from 'utils/utils'
+} from '@/constants'
+import { useWallet } from '@/hooks'
+import { formatWagmiErrorMsg } from '@/utils/format'
+import { eth2Wei, wei2Eth } from '@/utils/unit-conversion'
 
 import { CustomCheckBox, SvgComponent } from '..'
 
@@ -40,8 +40,6 @@ enum STEP_ENUM {
   WETH = 'WETH',
   LOW_ALLOWANCE = 'LOW Allowance',
 }
-
-const LENDING_REMINDER_TOAST_ID = 'lending-reminder'
 
 const WRAPPER_PROPS: FlexProps = {
   direction: 'column',
@@ -98,8 +96,10 @@ const LendingRemind = () => {
         supply_cap,
         supply_used = 0,
       }) => {
-        const nftCollection = collectionList.find((i) =>
-          isAddressEqual(i.contractAddress, collateral_contract),
+        const nftCollection = collectionList.find(
+          (i) =>
+            i.contractAddress.toLowerCase() ===
+            collateral_contract.toLowerCase(),
         )?.nftCollection
         const poolAvailable = BigNumber(supply_cap).minus(supply_used)
         return {
@@ -237,7 +237,7 @@ const LendingRemind = () => {
   const lendingToast = useToast({
     position: 'top-right',
     duration: null,
-    id: LENDING_REMINDER_TOAST_ID,
+    id: 'lending-reminder',
   })
 
   const renderFn = useCallback(() => {
@@ -276,7 +276,7 @@ const LendingRemind = () => {
                 } else {
                   setLastReadTime(dayjs(new Date()).unix() + 60 * 60)
                 }
-                lendingToast.close(LENDING_REMINDER_TOAST_ID)
+                lendingToast.closeAll()
               }}>
               GOT IT
             </Button>
@@ -351,7 +351,7 @@ const LendingRemind = () => {
             buttonConfig={{
               title: 'Swap More',
               onClick: () => {
-                lendingToast.close(LENDING_REMINDER_TOAST_ID)
+                lendingToast.closeAll()
                 onOpen(ACCOUNT_MODAL_TAB_KEY.SWAP_TAB)
               },
               isLoading: allowanceLoading,
@@ -427,12 +427,12 @@ const LendingRemind = () => {
 
   const handleToast = useCallback(() => {
     if (isEmpty(reminders)) {
-      lendingToast.close(LENDING_REMINDER_TOAST_ID)
+      lendingToast.closeAll()
       return
     }
     const currentToast = toastIdRef.current
     setLastReadTime(undefined)
-    if (!lendingToast.isActive(LENDING_REMINDER_TOAST_ID)) {
+    if (!lendingToast.isActive('lending-reminder')) {
       console.log(1)
       setStep(STEP_ENUM.SUMMARY)
 
@@ -448,7 +448,7 @@ const LendingRemind = () => {
       } else {
         console.log(3)
 
-        lendingToast.close(LENDING_REMINDER_TOAST_ID)
+        lendingToast.closeAll()
         toastIdRef.current = lendingToast({
           render: renderFn,
         })
@@ -463,7 +463,7 @@ const LendingRemind = () => {
       if (dayjs(new Date()).unix() - lastReadTime > 0) {
         handleToast()
       } else {
-        lendingToast.close(LENDING_REMINDER_TOAST_ID)
+        lendingToast.closeAll()
       }
     }
   }, [handleToast, lendingToast, lastReadTime])

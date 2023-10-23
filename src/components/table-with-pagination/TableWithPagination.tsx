@@ -1,8 +1,8 @@
 import { Flex } from '@chakra-ui/react'
 import { useMemo, useState } from 'react'
 
-import { MyTable, Pagination } from 'components'
-import type { MyTableProps } from 'components/my-table'
+import { MyTable, Pagination } from '@/components'
+import type { MyTableProps } from '@/components/my-table'
 
 import type { PaginationProps } from 'rc-pagination'
 import type { FunctionComponent } from 'react'
@@ -17,14 +17,8 @@ const TableWithPagination: FunctionComponent<{
   }, [data, cPage])
   return (
     <>
-      <MyTable
-        data={currentData}
-        {...rest}
-        key={key}
-      />
-      <Flex
-        justify={'end'}
-        mt='24px'>
+      <MyTable data={currentData} {...rest} key={key} />
+      <Flex justify={'end'} mt='24px'>
         <Pagination
           total={data?.length}
           pageSize={10}

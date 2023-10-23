@@ -26,11 +26,11 @@ import {
 } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import { apiGetConfig, apiGetFloorPrice, apiGetPoolPoints } from 'api'
-import { LoadingComponent, SvgComponent } from 'components'
-import { MODEL_HEADER_PROPS } from 'constants/index'
-import type { NftCollection } from 'hooks'
-import { computePoolPoint, computePoolScore } from 'utils/calculation'
+import { apiGetConfig, apiGetFloorPrice, apiGetPoolPoints } from '@/api'
+import { LoadingComponent, SvgComponent } from '@/components'
+import { MODEL_HEADER_PROPS } from '@/constants'
+import type { NftCollection } from '@/hooks'
+import { computePoolPoint, computePoolScore } from '@/utils/calculation'
 
 import ScoreChart from './ScoreChart'
 import UpdatePoolAmountButton from './UpdatePoolAmountButton'
@@ -121,30 +121,21 @@ const MyPoolActionRender: FunctionComponent<
   }, [onClose])
 
   return (
-    <Flex
-      alignItems='center'
-      gap={'16px'}>
-      <Flex
-        alignItems={'center'}
-        gap='1'>
-        <SvgComponent
-          svgId='icon-gauge'
-          fill={'blue.1'}
-          fontSize={'24px'}
-        />
+    <Flex alignItems='center' gap={'16px'}>
+      <Flex alignItems={'center'} gap='1'>
+        <SvgComponent svgId='icon-gauge' fill={'blue.1'} fontSize={'24px'} />
         <Text
           color='blue.1'
           cursor='pointer'
           fontWeight={'500'}
           onClick={onOpen}
-          fontSize={'14px'}>
+          fontSize={'14px'}
+        >
           My Pool Score
         </Text>
       </Flex>
 
-      <Popover
-        trigger='hover'
-        placement='bottom-start'>
+      <Popover trigger='hover' placement='bottom-start'>
         {({ isOpen: visible }) => (
           <>
             <PopoverTrigger>
@@ -157,11 +148,9 @@ const MyPoolActionRender: FunctionComponent<
                 bg='white'
                 px='16px'
                 borderColor={visible ? 'blue.1' : 'white'}
-                borderWidth={1}>
-                <Text
-                  fontWeight='700'
-                  color='blue.1'
-                  lineHeight={'16px'}>
+                borderWidth={1}
+              >
+                <Text fontWeight='700' color='blue.1' lineHeight={'16px'}>
                   Manage
                 </Text>
                 <SvgComponent
@@ -177,37 +166,25 @@ const MyPoolActionRender: FunctionComponent<
               <PopoverContent
                 borderRadius={8}
                 boxShadow='0px 2px 8px rgba(28, 60, 100, 0.1)'
-                w='200px'>
+                w='200px'
+              >
                 <PopoverBody>
                   <Flex
                     flexDir={'column'}
                     alignItems='flex-start'
                     gap={'10px'}
-                    py='10px'>
+                    py='10px'
+                  >
                     <Button
                       {...BUTTON_PROPS}
                       onClick={() => {
-                        // const searchParams = new URLSearchParams(
-                        //   // @ts-ignore
-                        //   pick(poolData, [
-                        //     'collateral_factor_multiplier',
-                        //     'tenor_multiplier',
-                        //     'max_collateral_factor',
-                        //     'single_cap',
-                        //     'max_tenor',
-                        //     'max_interest_rate',
-                        //     'supply_cap',
-                        //   ]),
-                        // ).toString()
-
-                        navigate(
-                          `/lending/edit/${poolData.collateral_contract}`,
-                          {
-                            state: {
-                              poolData,
-                            },
+                        navigate('/lending/edit', {
+                          state: {
+                            contractAddress: poolData.collateral_contract,
+                            nftCollection: collectionData,
+                            poolData,
                           },
-                        )
+                        })
                       }}
                       // hidden
                     >
@@ -217,7 +194,8 @@ const MyPoolActionRender: FunctionComponent<
                       poolData={poolData}
                       collectionSlug={collectionData?.slug}
                       onSuccess={onRefresh}
-                      {...BUTTON_PROPS}>
+                      {...BUTTON_PROPS}
+                    >
                       Reset Supply Caps
                     </UpdatePoolAmountButton>
 
@@ -245,7 +223,8 @@ const MyPoolActionRender: FunctionComponent<
         scrollBehavior='inside'
         closeOnOverlayClick={false}
         closeOnEsc={false}
-        isOpen={isOpen}>
+        isOpen={isOpen}
+      >
         <ModalOverlay bg='black.2' />
         <ModalContent
           maxW={{
@@ -254,7 +233,8 @@ const MyPoolActionRender: FunctionComponent<
             xs: '326px',
           }}
           maxH={'600px'}
-          borderRadius={16}>
+          borderRadius={16}
+        >
           <LoadingComponent
             loading={poolPointLoading || configLoading || floorPriceLoading}
             top={0}
@@ -283,10 +263,9 @@ const MyPoolActionRender: FunctionComponent<
               sm: '20px',
               xs: '20px',
             }}
-            pt={0}>
-            <Flex
-              alignItems={'center'}
-              justify={'center'}>
+            pt={0}
+          >
+            <Flex alignItems={'center'} justify={'center'}>
               <ScoreChart
                 data={point}
                 labelStyle={{

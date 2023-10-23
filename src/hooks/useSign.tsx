@@ -4,7 +4,7 @@ import dayjs from 'dayjs'
 import { useCallback } from 'react'
 import { useSignMessage } from 'wagmi'
 
-import { apiPostAuthChallenge, apiPostAuthLogin } from 'api/user'
+import { apiPostAuthChallenge, apiPostAuthLogin } from '@/api/user'
 
 import useWallet from './useWallet'
 
@@ -47,7 +47,7 @@ const useSign = () => {
         // console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
         return tokenData
       } catch (e: any) {
-        console.log(e?.cause?.message, 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
+        console.log(e.cause.message, 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
       }
     },
     [currentAccount, signMessageAsync],

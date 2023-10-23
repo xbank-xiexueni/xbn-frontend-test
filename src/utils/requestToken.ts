@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'
-import { isEmpty } from 'lodash'
+import isEmpty from 'lodash-es/isEmpty'
 
 const requestToken = () => {
   const tokenData = JSON.parse(

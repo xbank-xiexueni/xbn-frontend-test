@@ -2,10 +2,10 @@ import { Flex, IconButton } from '@chakra-ui/react'
 // import numeral from 'numeral'
 import { PhotoView } from 'react-photo-view'
 
-import { SvgComponent } from 'components'
-import type { AssetQuery } from 'hooks'
-import downloadRemoteImg from 'utils/downloadRemoteImg'
-import { judgeNftMediaType, NFT_MEDIA_TYPE } from 'utils/judgeNftMediaType'
+import { SvgComponent } from '@/components'
+import type { AssetQuery } from '@/hooks'
+import downloadRemoteImg from '@/utils/downloadRemoteImg'
+import { judgeNftMediaType, NFT_MEDIA_TYPE } from '@/utils/judgeNftMediaType'
 
 import type { FunctionComponent } from 'react'
 
@@ -35,7 +35,8 @@ const ImageToolBar: FunctionComponent<ImageToolBarProps> = ({ data }) => {
         lg: '500px',
         sm: '100%',
         xs: '100%',
-      }}>
+      }}
+    >
       {/* {!!likeCount && (
         <Flex alignItems={'center'} gap={'4px'}>
           <SvgComponent svgId='icon-like' fontSize={'20px'} />

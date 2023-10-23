@@ -1,4 +1,4 @@
-import { TooltipComponent, SvgComponent } from 'components'
+import { TooltipComponent, SvgComponent } from '@/components'
 
 import type { TooltipProps } from '@chakra-ui/react'
 import type { FunctionComponent } from 'react'
@@ -7,9 +7,7 @@ const IconTip: FunctionComponent<Omit<TooltipProps, 'children'>> = ({
   ...rest
 }) => {
   return (
-    <TooltipComponent
-      placement='auto-start'
-      {...rest}>
+    <TooltipComponent placement='auto-start' {...rest}>
       <SvgComponent
         svgId='icon-tip'
         fill='gray.1'

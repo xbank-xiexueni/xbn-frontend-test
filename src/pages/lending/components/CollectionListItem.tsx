@@ -1,6 +1,6 @@
 import { Flex, Text, type FlexProps } from '@chakra-ui/react'
 
-import { ImageWithFallback, SvgComponent } from 'components'
+import { ImageWithFallback, SvgComponent } from '@/components'
 
 import type { FunctionComponent } from 'react'
 
@@ -37,17 +37,16 @@ const CollectionListItem: FunctionComponent<
       cursor='pointer'
       bg={isActive ? 'blue.2' : 'white'}
       onClick={onClick}
-      {...rest}>
-      <Flex
-        alignItems={'center'}
-        gap='16px'
-        w={isActive ? '95%' : '100%'}>
+      {...rest}
+    >
+      <Flex alignItems={'center'} gap='16px' w={isActive ? '95%' : '100%'}>
         <Flex
           boxSize={iconSize}
           alignItems={'center'}
           bg='white'
           borderWidth={1}
-          borderRadius={8}>
+          borderRadius={8}
+        >
           <ImageWithFallback
             src={
               data?.nftCollection?.imagePreviewUrl ||
@@ -65,7 +64,8 @@ const CollectionListItem: FunctionComponent<
           overflow='hidden'
           whiteSpace='nowrap'
           textOverflow='ellipsis'
-          flex={1}>
+          flex={1}
+        >
           {data?.nftCollection?.name || '--'}
           &nbsp;
         </Text>

@@ -1,8 +1,8 @@
-import { isEmpty } from 'lodash'
+import isEmpty from 'lodash-es/isEmpty'
 import { useMemo } from 'react'
 import { useContractReads } from 'wagmi'
 
-import { WETH_CONTRACT_ABI, WETH_CONTRACT_ADDRESS } from 'constants/index'
+import { WETH_CONTRACT_ABI, WETH_CONTRACT_ADDRESS } from '@/constants'
 
 /**
  * 获取每个 pool 的 owner_address 的最新 weth 资产

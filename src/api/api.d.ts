@@ -444,7 +444,3 @@ interface TypedDataType {
     }[]
   >
 }
-
-interface BanbanMetaDataType {
-  buyable: boolean
-}

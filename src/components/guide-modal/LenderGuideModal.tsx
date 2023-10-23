@@ -10,21 +10,21 @@ import {
   Image,
   Box,
 } from '@chakra-ui/react'
-import { range } from 'lodash'
+import range from 'lodash-es/range'
 import { useState, type FunctionComponent, useMemo } from 'react'
 
-import buy11 from 'assets/buy1-1.png'
-import buy12 from 'assets/buy1-2.png'
-import buy13 from 'assets/buy1-3.png'
-import buy2 from 'assets/buy2.gif'
-import buy31 from 'assets/buy3-1.png'
-import buy32 from 'assets/buy3-2.png'
-import buy42 from 'assets/buy4-2.png'
-import imgEthRound from 'assets/eth-round.png'
-import arrowImg from 'assets/guide-arrow.png'
-import { MODEL_HEADER_PROPS } from 'constants/index'
+import buy11 from '@/assets/buy1-1.png'
+import buy12 from '@/assets/buy1-2.png'
+import buy13 from '@/assets/buy1-3.png'
+import buy2 from '@/assets/buy2.gif'
+import buy31 from '@/assets/buy3-1.png'
+import buy32 from '@/assets/buy3-2.png'
+import buy42 from '@/assets/buy4-2.png'
+import imgEthRound from '@/assets/eth-round.png'
+import arrowImg from '@/assets/guide-arrow.png'
+import { MODEL_HEADER_PROPS } from '@/constants'
 
-import icon from 'assets/icon-guide.svg'
+import icon from '@/assets/icon-guide.svg'
 
 export type StepItemType = {
   index: number
@@ -46,14 +46,16 @@ const StepImageComponent: FunctionComponent<{ order: number }> = ({
             md: '30px',
             sm: '10px',
             xs: '10px',
-          }}>
+          }}
+        >
           <Box
             position={'relative'}
             w={{
               md: '30%',
               sm: '40%',
               xs: '40%',
-            }}>
+            }}
+          >
             <Image
               src={buy11}
               w={{
@@ -69,7 +71,8 @@ const StepImageComponent: FunctionComponent<{ order: number }> = ({
                 md: '16px',
                 sm: '12px',
                 xs: '12px',
-              }}>
+              }}
+            >
               Lend WETH to NFTs
             </Text>
           </Box>
@@ -92,7 +95,8 @@ const StepImageComponent: FunctionComponent<{ order: number }> = ({
             textAlign={'center'}
             flexDir={'column'}
             alignItems={'center'}
-            justify={'center'}>
+            justify={'center'}
+          >
             <Image
               src={buy12}
               w={{
@@ -136,7 +140,8 @@ const StepImageComponent: FunctionComponent<{ order: number }> = ({
                 md: '16px',
                 sm: '12px',
                 xs: '12px',
-              }}>
+              }}
+            >
               Get Interest on your ETH and Mystery Box
             </Text>
           </Flex>
@@ -152,7 +157,8 @@ const StepImageComponent: FunctionComponent<{ order: number }> = ({
             xs: 0,
           }}
           alignItems={'center'}
-          justify={'space-between'}>
+          justify={'space-between'}
+        >
           <Image
             src={buy2}
             w={{
@@ -179,7 +185,8 @@ const StepImageComponent: FunctionComponent<{ order: number }> = ({
             md: '30px',
             sm: '10px',
             xs: '10px',
-          }}>
+          }}
+        >
           <Flex
             flexDir={'column'}
             justify={'center'}
@@ -192,7 +199,8 @@ const StepImageComponent: FunctionComponent<{ order: number }> = ({
               md: '40%',
               sm: '30%',
               xs: '30%',
-            }}>
+            }}
+          >
             <Image
               src={buy31}
               w={{
@@ -207,7 +215,8 @@ const StepImageComponent: FunctionComponent<{ order: number }> = ({
                 md: '16px',
                 sm: '12px',
                 xs: '12px',
-              }}>
+              }}
+            >
               Borrowers locks their NFT
             </Text>
           </Flex>
@@ -216,7 +225,8 @@ const StepImageComponent: FunctionComponent<{ order: number }> = ({
             justify={'center'}
             w='25%'
             alignItems={'center'}
-            gap={'10px'}>
+            gap={'10px'}
+          >
             <Image
               src={imgEthRound}
               boxSize={{
@@ -247,7 +257,8 @@ const StepImageComponent: FunctionComponent<{ order: number }> = ({
               md: '48%',
               sm: '40%',
               xs: '40%',
-            }}>
+            }}
+          >
             <Image
               src={buy32}
               w={{
@@ -268,7 +279,8 @@ const StepImageComponent: FunctionComponent<{ order: number }> = ({
                 md: '16px',
                 sm: '12px',
                 xs: '12px',
-              }}>
+              }}
+            >
               Once repaid the loan you got interest
             </Text>
           </Flex>
@@ -284,7 +296,8 @@ const StepImageComponent: FunctionComponent<{ order: number }> = ({
             md: '30px',
             sm: '10px',
             xs: '10px',
-          }}>
+          }}
+        >
           <Flex
             flexDir={'column'}
             justify={'center'}
@@ -293,7 +306,8 @@ const StepImageComponent: FunctionComponent<{ order: number }> = ({
               sm: 'flex-start',
               xs: 'flex-start',
             }}
-            w='40%'>
+            w='40%'
+          >
             <Image
               src={buy31}
               w={{
@@ -308,7 +322,8 @@ const StepImageComponent: FunctionComponent<{ order: number }> = ({
                 md: '16px',
                 sm: '12px',
                 xs: '12px',
-              }}>
+              }}
+            >
               Borrower fails to repay the loan on time
             </Text>
           </Flex>
@@ -329,7 +344,8 @@ const StepImageComponent: FunctionComponent<{ order: number }> = ({
             flexDir={'column'}
             justify={'center'}
             alignItems={'center'}
-            w='40%'>
+            w='40%'
+          >
             <Image
               src={buy42}
               w={{
@@ -349,7 +365,8 @@ const StepImageComponent: FunctionComponent<{ order: number }> = ({
                 md: '16px',
                 sm: '12px',
                 xs: '12px',
-              }}>
+              }}
+            >
               You can claim NFT to your wallet
             </Text>
           </Flex>
@@ -402,7 +419,8 @@ const LenderGuideModal: FunctionComponent<{
       closeOnOverlayClick={false}
       closeOnEsc={false}
       scrollBehavior='inside'
-      {...rest}>
+      {...rest}
+    >
       <ModalOverlay bg='black.2' />
       <ModalContent
         maxW={{
@@ -424,7 +442,8 @@ const LenderGuideModal: FunctionComponent<{
           md: 'white',
           sm: 'transparent',
           xs: 'transparent',
-        }}>
+        }}
+      >
         <ModalHeader
           {...MODEL_HEADER_PROPS}
           borderBottomRadius={0}
@@ -432,12 +451,14 @@ const LenderGuideModal: FunctionComponent<{
             md: '40px',
             sm: '10px',
             xs: '10px',
-          }}>
+          }}
+        >
           <Flex
             alignItems={'center'}
             gap='4px'
             fontWeight={'700'}
-            lineHeight={'32px'}>
+            lineHeight={'32px'}
+          >
             <Image src={icon} />
             {title}
           </Flex>
@@ -447,9 +468,7 @@ const LenderGuideModal: FunctionComponent<{
             cursor={'pointer'}
           /> */}
         </ModalHeader>
-        <ModalBody
-          m={0}
-          p={0}>
+        <ModalBody m={0} p={0}>
           <Box
             bg={'white'}
             borderBottomRadius={16}
@@ -457,7 +476,8 @@ const LenderGuideModal: FunctionComponent<{
               md: '40px',
               sm: '10px',
               xs: '10px',
-            }}>
+            }}
+          >
             <Text
               color='gray.4'
               mb='20px'
@@ -471,7 +491,8 @@ const LenderGuideModal: FunctionComponent<{
                 sm: '20px',
                 xs: '20px',
               }}
-              px={0}>
+              px={0}
+            >
               {description}
             </Text>
             <Flex
@@ -483,7 +504,8 @@ const LenderGuideModal: FunctionComponent<{
               }}
               alignItems={'center'}
               justify={'center'}
-              borderBottomRadius={20}>
+              borderBottomRadius={20}
+            >
               <StepImageComponent order={index} />
             </Flex>
           </Box>
@@ -505,7 +527,8 @@ const LenderGuideModal: FunctionComponent<{
               md: 'white',
               sm: 'transparent',
               xs: 'transparent',
-            }}>
+            }}
+          >
             <Button
               w='158px'
               h='40px'
@@ -521,7 +544,8 @@ const LenderGuideModal: FunctionComponent<{
                   onClose()
                 }
                 setStep((prev) => prev + 1)
-              }}>
+              }}
+            >
               {step < LENDER_GUIDES.length ? 'Next' : 'Continue'}
             </Button>
           </Flex>
@@ -533,7 +557,8 @@ const LenderGuideModal: FunctionComponent<{
             }}
             gap={'8px'}
             justify={'center'}
-            mt='25px'>
+            mt='25px'
+          >
             {range(LENDER_GUIDES.length).map((i) => (
               <Box
                 key={i}

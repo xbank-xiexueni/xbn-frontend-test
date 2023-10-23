@@ -1,5 +1,5 @@
-import request from 'utils/request'
-import requestToken from 'utils/requestToken'
+import request from '@/utils/request'
+import requestToken from '@/utils/requestToken'
 
 export const apiGetActiveCollection: () => Promise<
   CollectionListItemType[]

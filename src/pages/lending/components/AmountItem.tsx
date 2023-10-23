@@ -1,6 +1,6 @@
 import { Flex, Text, type FlexProps } from '@chakra-ui/react'
 
-import { SvgComponent } from 'components'
+import { SvgComponent } from '@/components'
 
 import type { FunctionComponent } from 'react'
 
@@ -18,7 +18,8 @@ const AmountItem: FunctionComponent<
       justify='center'
       alignItems={'center'}
       gap={'8px'}
-      {...rest}>
+      {...rest}
+    >
       <Flex
         fontWeight={'500'}
         color='gray.3'
@@ -33,17 +34,12 @@ const AmountItem: FunctionComponent<
           sm: 'scale(0.83333)',
           xs: 'scale(0.83333)',
         }}
-        transformOrigin='center'>
+        transformOrigin='center'
+      >
         <Text>{label}</Text>
       </Flex>
-      <Flex
-        justify={'center'}
-        alignItems='center'
-        h='35px'>
-        <SvgComponent
-          svgId='icon-eth'
-          svgSize={'20px'}
-        />
+      <Flex justify={'center'} alignItems='center' h='35px'>
+        <SvgComponent svgId='icon-eth' svgSize={'20px'} />
 
         {loading ? (
           <SvgComponent
@@ -60,7 +56,8 @@ const AmountItem: FunctionComponent<
             }}
             fontWeight='700'
             noOfLines={1}
-            lineHeight={'22px'}>
+            lineHeight={'22px'}
+          >
             {data}
           </Text>
         )}

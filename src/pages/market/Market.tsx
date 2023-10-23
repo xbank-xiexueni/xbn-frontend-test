@@ -29,15 +29,15 @@ import useDebounce from 'ahooks/lib/useDebounce'
 import useInfiniteScroll from 'ahooks/lib/useInfiniteScroll'
 import useRequest from 'ahooks/lib/useRequest'
 import bigNumber from 'bignumber.js'
-import { isEmpty } from 'lodash'
-import { max } from 'lodash'
-import { min } from 'lodash'
-import { padStart } from 'lodash'
+import isEmpty from 'lodash-es/isEmpty'
+import max from 'lodash-es/max'
+import min from 'lodash-es/min'
+import padStart from 'lodash-es/padStart'
 import moment from 'moment'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 
-import { apiGetFloorPrice, apiGetPools } from 'api'
+import { apiGetFloorPrice, apiGetPools } from '@/api'
 import {
   BuyerGuideModal,
   ConnectWalletModal,
@@ -46,12 +46,11 @@ import {
   NoticeSlider,
   SearchInput,
   TooltipComponent,
-} from 'components'
-import NewlyRichRewardsDialog from 'components/NewlyRichRewardsDialog'
+} from '@/components'
 import {
-  COLLECTION_STATUS_ENUM,
   COLLECTIONS_WITH_BOXDROP_CONFIG,
-} from 'constants/index'
+  COLLECTION_STATUS_ENUM,
+} from '@/constants'
 import {
   NftAssetStatus,
   useNftCollectionSearchAssetLazyQuery,
@@ -60,17 +59,10 @@ import {
   useNftCollectionAssetsLazyQuery,
   useWallet,
   useGuide,
-} from 'hooks'
-import type {
-  Exact,
-  InputMaybe,
-  NftAssetOrderBy,
-  NftAssetWhere,
-  NftCollectionSearchAssetQuery,
-} from 'hooks'
-import RootLayout from 'layouts/RootLayout'
-import { wei2Eth } from 'utils/unit-conversion'
-import { isAddressEqual } from 'utils/utils'
+  type NftCollectionSearchAssetQuery,
+} from '@/hooks'
+import RootLayout from '@/layouts/RootLayout'
+import { wei2Eth } from '@/utils/unit-conversion'
 
 import CollectionDescription from './components/CollectionDescription'
 import CollectionListItem from './components/CollectionListItem'
@@ -114,10 +106,6 @@ const Market = () => {
     collectionList,
     collectionLoading,
     moreCollectionList,
-    accountConfig: {
-      banbanConfig: { data: BanbanMetaDataType },
-    },
-    isConnected,
   } = useWallet()
   const {
     isOpen: drawVisible,
@@ -180,9 +168,9 @@ const Market = () => {
       return
     }
 
-    const prevCollection = pathData?.contract
-    const prevItem = collectionData.find((i) =>
-      isAddressEqual(i.contractAddress, prevCollection),
+    const prevCollectionId = pathData?.collectionId
+    const prevItem = collectionData.find(
+      (i) => i.nftCollection.id === prevCollectionId,
     )
 
     const currentItem = prevItem || collectionData[0]
@@ -192,7 +180,7 @@ const Market = () => {
   useEffect(() => {
     if (!initialCollection) return
     setSelectCollection(initialCollection)
-    navigate(`/market/${initialCollection.contractAddress}${search || ''}`)
+    navigate(`/market/${initialCollection.nftCollection.id}${search || ''}`)
   }, [initialCollection, navigate, search])
 
   const { loading: floorPriceLoading, data: floorPrice } = useRequest(
@@ -246,6 +234,14 @@ const Market = () => {
     return min([prevMax, floorPrice])
   }, [selectCollection, floorPrice, currentCollectionPools])
 
+  // useEffect(() => {
+  //   if (!selectCollection) return
+  //   const {
+  //     nftCollection: { id },
+  //   } = selectCollection
+  //   navigate(`/market/${id}${search}`)
+  // }, [selectCollection, navigate, search])
+
   // 根据 collectionId 搜索 assets
   const [fetchAssetByCollectionId] = useNftCollectionAssetsLazyQuery({
     fetchPolicy: 'network-only',
@@ -261,37 +257,16 @@ const Market = () => {
             endCursor: null,
           },
         }
-      let variables: Exact<{
-        collectionId: string
-        orderBy: NftAssetOrderBy
-        first?: InputMaybe<number>
-        after?: any
-        where?: InputMaybe<NftAssetWhere>
-      }> = {
-        collectionId: `${selectCollection?.nftCollection?.id}`,
-        orderBy: orderOption.value,
-        where: {
-          status: [NftAssetStatus.BuyNow],
-        },
-        first,
-        after,
-      }
-      if (
-        isAddressEqual(
-          selectCollection?.contractAddress,
-          process.env.REACT_APP_BANBAN_COLLECTION_ADDRESS,
-        )
-      ) {
-        variables = {
-          ...variables,
-          where: {
-            ...variables.where,
-            coinPriceLTE: process.env.REACT_APP_BANBAN_ASSET_PRICE,
-          },
-        }
-      }
       const { data } = await fetchAssetByCollectionId({
-        variables,
+        variables: {
+          collectionId: `${selectCollection?.nftCollection?.id}`,
+          orderBy: orderOption.value,
+          where: {
+            status: [NftAssetStatus.BuyNow],
+          },
+          first,
+          after,
+        },
       })
 
       return {
@@ -431,34 +406,11 @@ const Market = () => {
       window.removeEventListener('resize', resetGiftBtnPos)
     }
   }, [resetGiftBtnPos])
-  const [dialogVisible, setDialogVisible] = useState(false)
-  const handleCloseBuyerGuideModal = () => {
-    closeGuide()
-    if (typeof window !== 'undefined') {
-      if (window.localStorage.getItem('newly-dialog-disabled') !== 'true') {
-        setDialogVisible(true)
-      }
-    }
-  }
-  // useEffect(() => {
-  //   if (typeof window !== 'undefined') {
-  //     if (
-  //       window.localStorage.getItem('has-read-buyer-guide') === 'true' &&
-  //       window.localStorage.getItem('newly-dialog-disabled') !== 'true'
-  //     ) {
-  //       setDialogVisible(true)
-  //     }
-  //   }
-  // }, [])
   return (
     <RootLayout>
-      <NewlyRichRewardsDialog
-        dialogVisible={dialogVisible}
-        setDialogVisible={setDialogVisible}
-      />
       <BuyerGuideModal
         isOpen={guideVisible}
-        onClose={handleCloseBuyerGuideModal}
+        onClose={closeGuide}
       />
       <Box
         mb={{ md: '40px', sm: '20px', xs: '20px' }}
@@ -616,7 +568,7 @@ const Market = () => {
                       setOrderOption(SORT_OPTIONS[0])
                       setAssetSearchValue('')
                       setCollectionSearchValue('')
-                      navigate(`/market/${item.contractAddress}${search}`)
+                      navigate(`/market/${item.nftCollection.id}${search}`)
                     }}
                     count={item.nftCollection.assetsCount}
                     isActive={
@@ -704,7 +656,9 @@ const Market = () => {
                             setAssetSearchValue('')
                             setCollectionSearchValue('')
                             closeDraw()
-                            navigate(`/market/${item.contractAddress}${search}`)
+                            navigate(
+                              `/market/${item.nftCollection.id}${search}`,
+                            )
                           }}
                           count={item.nftCollection.assetsCount}
                           isActive={
@@ -829,15 +783,9 @@ const Market = () => {
                         xs: '174px',
                       }}
                       isDisabled={
-                        ((bestPoolAmount === undefined ||
+                        (bestPoolAmount === undefined ||
                           bestPoolAmount / item.node.orderPrice < 0.1) &&
-                          floorPrice !== undefined) ||
-                        (isAddressEqual(
-                          address,
-                          process.env.REACT_APP_BANBAN_COLLECTION_ADDRESS,
-                        ) &&
-                          !BanbanMetaDataType?.buyable &&
-                          isConnected)
+                        floorPrice !== undefined
                       }
                       key={`${tokenID}${address}${name}`}
                       onClick={() => {
@@ -848,16 +796,6 @@ const Market = () => {
                           (bestPoolAmount === undefined ||
                             bestPoolAmount / item.node.orderPrice < 0.1) &&
                           floorPrice !== undefined
-                        ) {
-                          return
-                        }
-                        if (
-                          isAddressEqual(
-                            address,
-                            process.env.REACT_APP_BANBAN_COLLECTION_ADDRESS,
-                          ) &&
-                          !BanbanMetaDataType?.buyable &&
-                          isConnected
                         ) {
                           return
                         }
@@ -917,15 +855,9 @@ const Market = () => {
                     bestPoolAmount,
                   }}
                   isDisabled={
-                    ((bestPoolAmount === undefined ||
+                    (bestPoolAmount === undefined ||
                       bestPoolAmount / searchedAsset.orderPrice < 0.1) &&
-                      floorPrice !== undefined) ||
-                    (isAddressEqual(
-                      searchedAsset.assetContractAddress,
-                      process.env.REACT_APP_BANBAN_COLLECTION_ADDRESS,
-                    ) &&
-                      !BanbanMetaDataType?.buyable &&
-                      isConnected)
+                    floorPrice !== undefined
                   }
                   key={`${searchedAsset.tokenID}${searchedAsset.assetContractAddress}${searchedAsset.name}`}
                   onClick={() => {
@@ -938,17 +870,6 @@ const Market = () => {
                       ) {
                         return
                       }
-                      if (
-                        isAddressEqual(
-                          searchedAsset?.assetContractAddress,
-                          process.env.REACT_APP_BANBAN_COLLECTION_ADDRESS,
-                        ) &&
-                        !BanbanMetaDataType?.buyable &&
-                        isConnected
-                      ) {
-                        return
-                      }
-
                       navigate(
                         `/asset/${searchedAsset?.assetContractAddress}/${searchedAsset?.tokenID}`,
                       )

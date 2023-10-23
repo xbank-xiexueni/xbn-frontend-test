@@ -6,7 +6,7 @@ import {
   type ButtonProps,
   type TextProps,
 } from '@chakra-ui/react'
-import { isEmpty } from 'lodash'
+import isEmpty from 'lodash-es/isEmpty'
 import { useNavigate } from 'react-router-dom'
 import Slider from 'react-slick'
 
@@ -46,11 +46,9 @@ const ItemWrapper: FunctionComponent<NoticeItemType> = ({
         sm: '36px',
         xs: '36px',
       }}
-      w='100%'>
-      <Flex
-        alignItems={'center'}
-        gap={'4px'}
-        flex={1}>
+      w='100%'
+    >
+      <Flex alignItems={'center'} gap={'4px'} flex={1}>
         <Text
           color='blue.1'
           fontSize={{
@@ -64,13 +62,15 @@ const ItemWrapper: FunctionComponent<NoticeItemType> = ({
             sm: '14px',
             xs: '14px',
           }}
-          {...titleProps}>
+          {...titleProps}
+        >
           {highlightTitle ? (
             <Highlight
               query={highlightTitle}
               styles={{
                 color: 'red.1',
-              }}>
+              }}
+            >
               {title}
             </Highlight>
           ) : (
@@ -104,7 +104,8 @@ const ItemWrapper: FunctionComponent<NoticeItemType> = ({
           onClick={() => {
             navigate(link)
           }}
-          {...buttonProps}>
+          {...buttonProps}
+        >
           {button}
         </Button>
       )}
@@ -130,7 +131,8 @@ const NoticeSlider: FunctionComponent<NoticeSliderProps> = ({ data }) => {
         xs: '4px',
       }}
       bg='rgba(179, 179, 255, 0.20)'
-      alignItems={'center'}>
+      alignItems={'center'}
+    >
       <SvgComponent
         svgId='icon-notice'
         fill={'red.1'}
@@ -156,12 +158,10 @@ const NoticeSlider: FunctionComponent<NoticeSliderProps> = ({ data }) => {
           slidesToScroll={1}
           pauseOnHover={true}
           // fade
-          vertical>
+          vertical
+        >
           {data.map((i) => (
-            <ItemWrapper
-              {...i}
-              key={i.title}
-            />
+            <ItemWrapper {...i} key={i.title} />
           ))}
         </Slider>
       )}

@@ -6,7 +6,7 @@ import {
   InputLeftElement,
 } from '@chakra-ui/react'
 
-import { SvgComponent } from 'components'
+import { SvgComponent } from '@/components'
 
 import type { FunctionComponent } from 'react'
 
@@ -37,11 +37,9 @@ const index: FunctionComponent<
         color='gray.300'
         fontSize='1.2em'
         h={h || '42px'}
-        left={2}>
-        <SvgComponent
-          svgId='icon-search'
-          fill='var(chakra-colors-gray-3)'
-        />
+        left={2}
+      >
+        <SvgComponent svgId='icon-search' fill='var(chakra-colors-gray-3)' />
       </InputLeftElement>
       <Input
         {...rest}

@@ -1,8 +1,8 @@
 import { createStandaloneToast } from '@chakra-ui/react'
 import axios, { type InternalAxiosRequestConfig } from 'axios'
-import { isEmpty } from 'lodash'
+import isEmpty from 'lodash-es/isEmpty'
 
-import { TOAST_OPTION_CONFIG } from 'constants/index'
+import { TOAST_OPTION_CONFIG } from '@/constants'
 // import { type Request } from 'aws4'
 // import { decrypt } from './decrypt'
 // import { PWD } from '@consts/crypt'

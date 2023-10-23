@@ -64,3 +64,9 @@ type FetchBalanceResult = {
 }
 
 declare module 'viem'
+
+declare module 'api' {
+  type apiGetActiveCollection = any;
+  type apiGetPools = any;
+  type apiGetWalletMetaData = any;
+}

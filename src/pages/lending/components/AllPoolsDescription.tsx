@@ -2,8 +2,8 @@ import { Box, Flex, Heading, Text } from '@chakra-ui/react'
 import { type FunctionComponent } from 'react'
 import Slider from 'react-slick'
 
-import { ImageWithFallback } from 'components'
-import { LENDING_SLIDER_IMAGES } from 'constants/index'
+import { ImageWithFallback } from '@/components'
+import { LENDING_SLIDER_IMAGES } from '@/constants'
 
 // import './custom-slider.css'
 
@@ -69,20 +69,23 @@ const AllPoolsDescription: FunctionComponent<{
         md: 'space-between',
       }}
       alignItems='center'
-      wrap='wrap'>
+      wrap='wrap'
+    >
       <Box
         maxW={{
           md: '40%',
           xl: '50%',
           sm: '100%',
           xs: '100%',
-        }}>
+        }}
+      >
         <Heading
           fontSize={{
             md: '64px',
             sm: '24px',
             xs: '24px',
-          }}>
+          }}
+        >
           {title}
         </Heading>
 
@@ -92,7 +95,8 @@ const AllPoolsDescription: FunctionComponent<{
           mb={{ md: '40px', sm: '32px', xs: '32px' }}
           fontSize={{ md: '20px', sm: '14px', xs: '14px' }}
           fontWeight='medium'
-          whiteSpace={'pre-wrap'}>
+          whiteSpace={'pre-wrap'}
+        >
           {description}
         </Text>
 
@@ -164,10 +168,9 @@ const AllPoolsDescription: FunctionComponent<{
           xs: 'auto',
           sm: 'auto',
           md: '218px',
-        }}>
-        <Slider
-          {...settings}
-          className='custom-slider'>
+        }}
+      >
+        <Slider {...settings} className='custom-slider'>
           <Box
             w={{
               xs: '100%',
@@ -178,7 +181,8 @@ const AllPoolsDescription: FunctionComponent<{
               xs: 'auto',
               sm: 'auto',
               md: '218px',
-            }}>
+            }}
+          >
             <ImageWithFallback
               src={img}
               preview={false}
@@ -207,7 +211,8 @@ const AllPoolsDescription: FunctionComponent<{
                   xs: 'auto',
                   sm: 'auto',
                   md: '218px',
-                }}>
+                }}
+              >
                 <ImageWithFallback
                   src={x}
                   preview={false}

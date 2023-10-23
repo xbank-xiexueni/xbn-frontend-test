@@ -9,8 +9,8 @@ import {
   type FlexProps,
 } from '@chakra-ui/react'
 
-import { SearchInput, SvgComponent, Select } from 'components'
-import { useIsMobile, useScrollMore } from 'hooks'
+import { SearchInput, SvgComponent, Select } from '@/components'
+import { useIsMobile, useScrollMore } from '@/hooks'
 
 import type { FunctionComponent } from 'react'
 
@@ -77,7 +77,8 @@ const Toolbar: FunctionComponent<ToolbarProps> = ({
       bg='white'
       pt={'25px'}
       transition='all 0.15s'
-      {...rest}>
+      {...rest}
+    >
       <Box
         w={{
           xl: '55%',
@@ -85,7 +86,8 @@ const Toolbar: FunctionComponent<ToolbarProps> = ({
           md: '50%',
           sm: '90%',
           xs: '90%',
-        }}>
+        }}
+      >
         <SearchInput
           placeholder={'Search...'}
           value={searchValue}
@@ -104,7 +106,8 @@ const Toolbar: FunctionComponent<ToolbarProps> = ({
           md: 'flex',
           sm: 'none',
           xs: 'none',
-        }}>
+        }}
+      >
         <Select
           options={sortOptions}
           value={sortValue}
@@ -120,7 +123,8 @@ const Toolbar: FunctionComponent<ToolbarProps> = ({
           borderColor={'gray.2'}
           borderWidth={1}
           borderRadius={8}
-          {...props}>
+          {...props}
+        >
           {[4, 3].map((item, i) => (
             <Flex
               p='14px'
@@ -129,7 +133,8 @@ const Toolbar: FunctionComponent<ToolbarProps> = ({
               cursor='pointer'
               key={item}
               borderLeftRadius={i === 0 ? 8 : 0}
-              borderRightRadius={i === 1 ? 8 : 0}>
+              borderRightRadius={i === 1 ? 8 : 0}
+            >
               <SvgComponent
                 svgId={`icon-grid-${item === 4 ? 'large' : 'middle'}`}
                 fill={`var(--chakra-colors-${
@@ -141,9 +146,7 @@ const Toolbar: FunctionComponent<ToolbarProps> = ({
         </Flex>
       </Flex>
       {/* mobile 排序 */}
-      <Menu
-        closeOnBlur={false}
-        placement='bottom-end'>
+      <Menu closeOnBlur={false} placement='bottom-end'>
         {({ isOpen: visible }) => (
           <>
             <MenuButton
@@ -151,7 +154,8 @@ const Toolbar: FunctionComponent<ToolbarProps> = ({
                 md: 'none',
                 sm: 'block',
                 xs: 'block',
-              }}>
+              }}
+            >
               <Flex
                 alignItems={'center'}
                 justifyContent='center'
@@ -159,7 +163,8 @@ const Toolbar: FunctionComponent<ToolbarProps> = ({
                 borderWidth='1px'
                 w='42px'
                 h='42px'
-                borderRadius={'50%'}>
+                borderRadius={'50%'}
+              >
                 <SvgComponent
                   svgId='icon-sort-label'
                   color={visible ? 'blue.1' : 'black.1'}
@@ -167,10 +172,7 @@ const Toolbar: FunctionComponent<ToolbarProps> = ({
               </Flex>
             </MenuButton>
             <MenuList>
-              <Flex
-                flexDir={'column'}
-                fontWeight={'500'}
-                gap='8px'>
+              <Flex flexDir={'column'} fontWeight={'500'} gap='8px'>
                 {sortOptions.map(({ label, value }) => (
                   <Flex
                     key={label}
@@ -181,7 +183,8 @@ const Toolbar: FunctionComponent<ToolbarProps> = ({
                     onClick={() => {
                       if (sortValue.label === label) return
                       setSortValue({ label, value })
-                    }}>
+                    }}
+                  >
                     {label}
                   </Flex>
                 ))}

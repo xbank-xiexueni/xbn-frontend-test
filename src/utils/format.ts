@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js'
 
-import { FORMAT_NUMBER } from 'constants/index'
+import { FORMAT_NUMBER } from '@/constants'
 
 import { eth2Wei, wei2Eth } from './unit-conversion'
 
@@ -42,8 +42,8 @@ const formatFloat = (
   const xx = BigNumber.isBigNumber(x)
     ? x.toNumber()
     : typeof x === 'string'
-      ? Number(x)
-      : x
+    ? Number(x)
+    : x
   if (isNaN(xx)) return '--'
   if (xx < 0) return '0'
   const yy = y || FORMAT_NUMBER

@@ -7,11 +7,10 @@ import {
   type BoxProps,
   chakra,
 } from '@chakra-ui/react'
-import BigNumber from 'bignumber.js'
 
-import { NftOrigin, SvgComponent } from 'components'
-import type { MARKET_TYPE_ENUM } from 'constants/index'
-import { formatFloat } from 'utils/format'
+import { NftOrigin, SvgComponent } from '@/components'
+import type { MARKET_TYPE_ENUM } from '@/constants'
+import { formatFloat } from '@/utils/format'
 
 import type { FunctionComponent } from 'react'
 
@@ -22,16 +21,16 @@ const DetailComponent: FunctionComponent<
       name2?: string
       price?: number
       verified: boolean
-      usdPrice?: number
+      usdPrice?: string
       platform?: MARKET_TYPE_ENUM
-      contract?: string
+      collectionId?: string
     }
     loading?: boolean
     onRefreshPrice?: () => void
     refreshLoading?: boolean
   }
 > = ({
-  data: { name1, name2, price, verified, usdPrice, platform, contract },
+  data: { name1, name2, price, verified, usdPrice, platform, collectionId },
   loading,
   onRefreshPrice,
   refreshLoading,
@@ -49,26 +48,23 @@ const DetailComponent: FunctionComponent<
     )
   }
   return (
-    <Box
-      mt={8}
-      {...rest}>
+    <Box mt={8} {...rest}>
       {/* 名称*/}
       <Flex alignItems={'baseline'}>
-        <chakra.a href={`/market/${contract}`}>
+        <chakra.a href={`/market/${collectionId}`}>
           <Text
             fontWeight={'500'}
             noOfLines={1}
             color={'black.1'}
-            _hover={{ color: 'gray.3' }}>
+            _hover={{ color: 'gray.3' }}
+          >
             {name1 || '--'}
           </Text>
         </chakra.a>
 
         {verified && <SvgComponent svgId='icon-verified-fill' />}
       </Flex>
-      <Heading
-        fontSize={'40px'}
-        noOfLines={1}>
+      <Heading fontSize={'40px'} noOfLines={1}>
         {name2}
       </Heading>
       {/* 价格 */}
@@ -78,20 +74,13 @@ const DetailComponent: FunctionComponent<
         borderRadius={16}
         p={'20px'}
         justify='space-between'
-        mt='24px'>
+        mt='24px'
+      >
         <Box>
           <Text>Price</Text>
-          <Flex
-            alignItems={'end'}
-            mt={1}
-            gap={'4px'}>
-            <SvgComponent
-              svgId='icon-eth'
-              svgSize='24px'
-            />
-            <Heading
-              fontSize={'32px'}
-              lineHeight='30px'>
+          <Flex alignItems={'end'} mt={1} gap={'4px'}>
+            <SvgComponent svgId='icon-eth' svgSize='32px' />
+            <Heading fontSize={'32px'} lineHeight='30px'>
               {formatFloat(price)}
             </Heading>
             <SvgComponent
@@ -103,13 +92,10 @@ const DetailComponent: FunctionComponent<
               animation={refreshLoading ? 'loading 1s linear infinite' : ''}
               cursor={'pointer'}
               svgSize='20px'
-              mb='-2px'
             />
-            {!!usdPrice && !!price && (
-              <Text
-                fontSize='12px'
-                lineHeight='16px'>
-                &nbsp;$ {formatFloat(BigNumber(usdPrice).multipliedBy(price))}
+            {!!usdPrice && (
+              <Text fontSize='12px' lineHeight='14px'>
+                &nbsp;$ {usdPrice}
               </Text>
             )}
           </Flex>

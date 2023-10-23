@@ -11,18 +11,16 @@ import {
 } from '@chakra-ui/react'
 import { readContract, readContracts } from '@wagmi/core'
 import useRequest from 'ahooks/lib/useRequest'
-import { range } from 'lodash'
+import range from 'lodash-es/range'
 import { useCallback, type FunctionComponent } from 'react'
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon'
 import { useNavigate } from 'react-router-dom'
 
-import { XBANK_CONTRACT_ABI, XBANK_CONTRACT_ADDRESS } from 'constants/index'
-import { useWallet } from 'hooks'
-import { formatAddress } from 'utils/format'
+import { XBANK_CONTRACT_ABI, XBANK_CONTRACT_ADDRESS } from '@/constants'
+import { useWallet } from '@/hooks'
+import { formatAddress } from '@/utils/format'
 
-const ConnectedWallet: FunctionComponent<ButtonProps & { dark?: boolean }> = (
-  p,
-) => {
+const ConnectedWallet: FunctionComponent<ButtonProps> = (p) => {
   const navigate = useNavigate()
   const { currentAccount, handleDisconnect, isConnected } = useWallet()
 
@@ -54,7 +52,6 @@ const ConnectedWallet: FunctionComponent<ButtonProps & { dark?: boolean }> = (
         <>
           <PopoverTrigger>
             <Button
-              paddingY={p.dark ? '20px' : '0px'}
               leftIcon={
                 <Jazzicon
                   diameter={24}
@@ -64,18 +61,18 @@ const ConnectedWallet: FunctionComponent<ButtonProps & { dark?: boolean }> = (
               as={Button}
               fontSize={'12px'}
               h='32px'
-              borderRadius={p.dark ? 100 : 4}
+              borderRadius={4}
               borderLeftRadius={0}
-              bg={p.dark ? 'rgba(255, 255, 255, 0.08)' : 'gray.5'}
+              bg={'gray.5'}
               _hover={{
-                bg: p.dark ? 'rgba(255, 255, 255, 0.08)' : 'gray.5',
-                color: p.dark ? '#FFFFFF' : 'blue.1',
+                bg: 'gray.5',
+                color: 'blue.1',
               }}
               _active={{
-                bg: p.dark ? 'rgba(255, 255, 255, 0.08)' : 'gray.5',
+                bg: 'gray.5',
               }}
               fontWeight={'700'}
-              color={p.dark ? '#FFFFFF' : isOpen ? 'blue.1' : 'black.1'}
+              color={isOpen ? 'blue.1' : 'black.1'}
               {...p}>
               {formatAddress(currentAccount?.address)}
             </Button>
@@ -83,12 +80,8 @@ const ConnectedWallet: FunctionComponent<ButtonProps & { dark?: boolean }> = (
           <PopoverContent
             w='140px'
             boxShadow={'var(--chakra-shadows-default)'}
-            border={'none'}
-            bg={p.dark ? 'rgba(255, 255, 255, 0.08)' : ''}>
-            <PopoverArrow
-              boxShadow={'none'}
-              bg={p.dark ? 'rgba(255, 255, 255, 0.08)' : ''}
-            />
+            border={'none'}>
+            <PopoverArrow boxShadow={'none'} />
             <PopoverBody>
               {[
                 {
@@ -107,13 +100,13 @@ const ConnectedWallet: FunctionComponent<ButtonProps & { dark?: boolean }> = (
               ].map(({ label, onClick, ...rest }) => (
                 <Flex key={label}>
                   <Link
+                    color='black.1'
                     py={'8px'}
                     px='12px'
                     onClick={onClick}
-                    color={p.dark ? '#FFFFFF' : 'black.1'}
                     _hover={{
-                      color: p.dark ? '#FFFFFF' : 'blue.1',
-                      bg: p.dark ? 'rgba(255, 255, 255, 0.08)' : 'white',
+                      color: 'blue.1',
+                      bg: 'white',
                     }}
                     {...rest}>
                     {label}

@@ -1,7 +1,7 @@
 import { useDisclosure } from '@chakra-ui/react'
 import { useCallback, useContext } from 'react'
 
-import { TransactionContext } from 'context/TransactionContext'
+import { TransactionContext } from '@/context/TransactionContext'
 
 const useWallet = () => {
   const { currentAccount, isConnected, ...rest } =

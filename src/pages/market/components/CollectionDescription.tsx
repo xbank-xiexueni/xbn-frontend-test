@@ -10,10 +10,10 @@ import {
 } from '@chakra-ui/react'
 import useSetState from 'ahooks/lib/useSetState'
 import BigNumber from 'bignumber.js'
-import { get } from 'lodash'
-import { isEmpty } from 'lodash'
-import { isNil } from 'lodash'
-import { range } from 'lodash'
+import get from 'lodash-es/get'
+import isEmpty from 'lodash-es/isEmpty'
+import isNil from 'lodash-es/isNil'
+import range from 'lodash-es/range'
 import React, {
   useRef,
   useState,
@@ -27,9 +27,9 @@ import {
   EmptyComponent,
   ImageWithFallback,
   SvgComponent,
-} from 'components'
-import { useBestCollectionBidLazyQuery, type NftCollection } from 'hooks'
-import { formatFloat } from 'utils/format'
+} from '@/components'
+import { useBestCollectionBidLazyQuery, type NftCollection } from '@/hooks'
+import { formatFloat } from '@/utils/format'
 // mock field 数据
 // const mockData = {
 //   nftCollectionStat: {
@@ -341,13 +341,8 @@ const CollectionDescription: FunctionComponent<{
     mediumUsername,
     telegramUrl,
     twitterUsername,
-    nftCollectionStat: {
-      // totalSupply,
-      // totalSales,
-      // oneDayChange,
-      // oneDayAveragePrice,
-    },
   } = data
+
   const minDownPayment =
     floorPrice !== undefined && bestPoolAmount !== undefined
       ? formatFloat(
@@ -439,11 +434,13 @@ const CollectionDescription: FunctionComponent<{
                     : undefined
                 }
                 svgId={'icon-medium'}
+                svgSize='16px'
               />
               {/* telegram */}
               <MediaWrapper
                 data={telegramUrl}
                 svgId={'icon-telegram'}
+                svgSize='20px'
               />
               {/* twitter */}
               <MediaWrapper
@@ -453,6 +450,7 @@ const CollectionDescription: FunctionComponent<{
                     : undefined
                 }
                 svgId={'icon-twitter'}
+                svgSize='18px'
               />
             </Flex>
           </Flex>

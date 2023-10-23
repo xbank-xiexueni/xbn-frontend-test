@@ -3,16 +3,14 @@ import { useCallback, useContext, useMemo, useState } from 'react'
 import { components } from 'react-select'
 import AsyncSelect from 'react-select/async'
 
-import { COLLECTION_STATUS_ENUM } from 'constants/index'
-import { TransactionContext } from 'context/TransactionContext'
+import { COLLECTION_STATUS_ENUM } from '@/constants'
+import { TransactionContext } from '@/context/TransactionContext'
 
 import { EmptyComponent, ImageWithFallback, SvgComponent } from '..'
 
 export const DropdownIndicator = ({ isDisabled, isOpen, ...props }: any) => {
   return (
-    <components.DropdownIndicator
-      isDisabled={isDisabled}
-      {...props}>
+    <components.DropdownIndicator isDisabled={isDisabled} {...props}>
       {isDisabled ? (
         <SvgComponent
           svgId='icon-locked'
@@ -41,11 +39,9 @@ export const Option = ({
     <components.Option
       isSelected={isSelected}
       isDisabled={isDisabled}
-      {...props}>
-      <Flex
-        justify={'space-between'}
-        alignItems='center'
-        py='8px'>
+      {...props}
+    >
+      <Flex justify={'space-between'} alignItems='center' py='8px'>
         {children}
         <SvgComponent
           svgId={isSelected ? selectedIcon : unSelectedIcon}
@@ -219,12 +215,7 @@ function AsyncSelectCollection({
       }}
       components={{
         IndicatorSeparator: () => null,
-        NoOptionsMessage: () => (
-          <EmptyComponent
-            my={0}
-            mt='16px'
-          />
-        ),
+        NoOptionsMessage: () => <EmptyComponent my={0} mt='16px' />,
         Option: (p) => (
           <Option
             {...p}
@@ -232,26 +223,19 @@ function AsyncSelectCollection({
             unSelectedIcon='icon-radio-inactive'
           />
         ),
-        DropdownIndicator: (p) => (
-          <DropdownIndicator
-            {...p}
-            isOpen={open}
-          />
-        ),
+        DropdownIndicator: (p) => <DropdownIndicator {...p} isOpen={open} />,
         SingleValue: ({ data, ...p }: any) => {
-          const imagePreviewUrl = data?.nftCollection?.imagePreviewUrl || ''
-          const name = data?.nftCollection?.name || ''
-          const safelistRequestStatus =
-            data?.nftCollection?.safelistRequestStatus || ''
+          let imagePreviewUrl = '',
+            name = '',
+            safelistRequestStatus = ''
+          if (data?.nftCollection) {
+            imagePreviewUrl = data?.nftCollection.imagePreviewUrl
+            name = data?.nftCollection.name
+            safelistRequestStatus = data?.nftCollection.safelistRequestStatus
+          }
           return (
-            <components.SingleValue
-              data={data}
-              {...p}>
-              <Flex
-                alignItems={'center'}
-                gap={'8px'}
-                pl={'4px'}
-                lineHeight={2}>
+            <components.SingleValue data={data} {...p}>
+              <Flex alignItems={'center'} gap={'8px'} pl={'4px'} lineHeight={2}>
                 <ImageWithFallback
                   src={imagePreviewUrl}
                   w={'20px'}
@@ -264,7 +248,8 @@ function AsyncSelectCollection({
                   overflow='hidden'
                   whiteSpace='nowrap'
                   textOverflow='ellipsis'
-                  w='80%'>
+                  w='80%'
+                >
                   {name}
                 </Text>
                 {safelistRequestStatus === 'verified' && (
@@ -290,7 +275,8 @@ function AsyncSelectCollection({
             alignItems={'center'}
             key={contractAddress}
             gap={'8px'}
-            pl={'4px'}>
+            pl={'4px'}
+          >
             <ImageWithFallback
               src={imagePreviewUrl}
               w={'20px'}

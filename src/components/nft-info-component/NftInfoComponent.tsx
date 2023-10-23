@@ -1,7 +1,7 @@
 import useRequest from 'ahooks/lib/useRequest'
 import { useMemo } from 'react'
 
-import { useAssetSimpleLazyQuery } from 'hooks'
+import { useAssetSimpleLazyQuery } from '@/hooks'
 
 type MaybeRenderProp<P> = React.ReactNode | ((props: P) => React.ReactNode)
 

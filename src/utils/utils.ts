@@ -1,7 +1,7 @@
 // a list for saving subscribed event instances
 // const subscribedEvents = {}
 import BigNumber from 'bignumber.js'
-import { range } from 'lodash'
+import range from 'lodash-es/range'
 
 import {
   BASE_RATE,
@@ -9,7 +9,7 @@ import {
   TERM_POWER_MAP,
   RATIO_POWER_MAP,
   TENOR_VALUES,
-} from 'constants/interest'
+} from '@/constants/interest'
 
 const getKeyByValue = (map: any, searchValue: string | number) => {
   for (const [key, value] of map.entries()) {
@@ -96,15 +96,4 @@ const getLenderTabledInterest = (
   return arr
 }
 
-const isAddressEqual = (add1?: string, add2?: string) => {
-  if (!add1 || !add2) return false
-  return add1.toLowerCase() === add2.toLowerCase()
-}
-
-export {
-  getKeyByValue,
-  uniq,
-  getLenderTabledInterest,
-  getBuyerExactInterest,
-  isAddressEqual,
-}
+export { getKeyByValue, uniq, getLenderTabledInterest, getBuyerExactInterest }

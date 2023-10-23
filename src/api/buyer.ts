@@ -1,6 +1,6 @@
-import type { NftCollectionsByContractAddressesQuery } from 'hooks'
-import request from 'utils/request'
-import requestToken from 'utils/requestToken'
+import type { NftCollectionsByContractAddressesQuery } from '@/hooks'
+import request from '@/utils/request'
+import requestToken from '@/utils/requestToken'
 
 export const apiPostOffers: (data: {
   signature: string
@@ -171,24 +171,4 @@ export const apiGetRepayments: (query: {
       Authorization: token,
     },
   })
-}
-
-export const apiGetWalletMetaData: (
-  borrower: string,
-) => Promise<BanbanMetaDataType> = async (borrower) => {
-  const token = requestToken()
-  if (!token) {
-    return Promise.reject({
-      code: 'unauthenticated',
-      message: 'token is expired',
-    })
-  }
-  return await request.get(
-    `/lending/api/v1/campaigns/banban/buyable/${borrower}`,
-    {
-      headers: {
-        Authorization: token,
-      },
-    },
-  )
 }

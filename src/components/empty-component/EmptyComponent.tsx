@@ -1,6 +1,6 @@
 import { Box, type BoxProps, Flex, Text } from '@chakra-ui/react'
 
-// import defaultEmptyIcon from 'assets/empty.svg'
+// import defaultEmptyIcon from '@/assets/empty.svg'
 
 // import { ImageWithFallback } from '..'
 
@@ -14,19 +14,15 @@ const EmptyComponent: FunctionComponent<
   } & BoxProps
 > = ({ description, action, ...rest }) => {
   return (
-    <Box
-      textAlign={'center'}
-      my={'80px'}
-      {...rest}>
-      <Flex
-        justify={'center'}
-        mb='16px'>
+    <Box textAlign={'center'} my={'80px'} {...rest}>
+      <Flex justify={'center'} mb='16px'>
         <svg
           width='40'
           height='40'
           viewBox='0 0 40 40'
           fill='none'
-          xmlns='http://www.w3.org/2000/svg'>
+          xmlns='http://www.w3.org/2000/svg'
+        >
           <g clipPath='url(#clip0_218_19510)'>
             <mask
               id='mask0_218_19510'
@@ -35,7 +31,8 @@ const EmptyComponent: FunctionComponent<
               x='0'
               y='0'
               width='40'
-              height='40'>
+              height='40'
+            >
               <path
                 d='M32 0H8C3.58172 0 0 3.58172 0 8V32C0 36.4183 3.58172 40 8 40H32C36.4183 40 40 36.4183 40 32V8C40 3.58172 36.4183 0 32 0Z'
                 fill='white'
@@ -56,22 +53,14 @@ const EmptyComponent: FunctionComponent<
           </g>
           <defs>
             <clipPath id='clip0_218_19510'>
-              <rect
-                width='40'
-                height='40'
-                fill='white'
-              />
+              <rect width='40' height='40' fill='white' />
             </clipPath>
           </defs>
         </svg>
 
         {/* <ImageWithFallback src={icon || defaultEmptyIcon} w='40px' h='40px' /> */}
       </Flex>
-      <Text
-        color='gray.3'
-        mb='24px'
-        fontSize='14px'
-        fontWeight={'700'}>
+      <Text color='gray.3' mb='24px' fontSize='14px' fontWeight={'700'}>
         {description || 'No data yet...'}
       </Text>
       {action && action()}

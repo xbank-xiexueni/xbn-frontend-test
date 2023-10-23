@@ -15,10 +15,10 @@ import useHover from 'ahooks/lib/useHover'
 import BigNumber from 'bignumber.js'
 import { useMemo, type FunctionComponent, useRef } from 'react'
 
-import { ImageWithFallback, NftOrigin, SvgComponent } from 'components'
-import { MARKET_TYPE_ENUM } from 'constants/index'
-import { useIsMobile } from 'hooks'
-import { formatFloat } from 'utils/format'
+import { ImageWithFallback, NftOrigin, SvgComponent } from '@/components'
+import { MARKET_TYPE_ENUM } from '@/constants'
+import { useIsMobile } from '@/hooks'
+import { formatFloat } from '@/utils/format'
 
 const MarketNftListCard: FunctionComponent<
   {
@@ -36,6 +36,11 @@ const MarketNftListCard: FunctionComponent<
     orderPriceMarket,
   } = node || {}
   const formattedDownPayment = useMemo(() => {
+    if (orderPrice === undefined || bestPoolAmount === undefined) {
+      return '--'
+    }
+
+    // const eth = wei2Eth(orderPrice)
     const res = BigNumber(orderPrice).minus(bestPoolAmount).toNumber()
     if (res < 0) return 0
     return formatFloat(res, 4)
@@ -77,12 +82,14 @@ const MarketNftListCard: FunctionComponent<
       borderColor={'gray.2'}
       borderWidth='1px'
       overflow={'hidden'}
-      ref={ref}>
+      ref={ref}
+    >
       <CardBody p={0}>
         <Box
           bg={backgroundColor || 'white'}
           borderTopRadius={'lg'}
-          overflow='hidden'>
+          overflow='hidden'
+        >
           <ImageWithFallback
             src={imageThumbnailUrl}
             alt='Green double couch with wooden legs'
@@ -125,16 +132,12 @@ const MarketNftListCard: FunctionComponent<
             md: '4px',
             sm: '4px',
             xs: '4px',
-          }}>
-          <Text
-            color={`gray.3`}
-            fontSize='14px'
-            noOfLines={1}>
+          }}
+        >
+          <Text color={`gray.3`} fontSize='14px' noOfLines={1}>
             {name || `#${tokenID}`}
           </Text>
-          <Flex
-            alignItems={'center'}
-            justify='space-between'>
+          <Flex alignItems={'center'} justify='space-between'>
             <Flex
               w={{
                 md: '100%',
@@ -157,7 +160,8 @@ const MarketNftListCard: FunctionComponent<
                 sm: '6px',
                 xs: '6px',
               }}
-              flexWrap={'wrap'}>
+              flexWrap={'wrap'}
+            >
               <Text
                 fontSize={{
                   md: '14px',
@@ -177,20 +181,17 @@ const MarketNftListCard: FunctionComponent<
                   md: 0,
                   sm: '-4px',
                   xs: '-4px',
-                }}>
+                }}
+              >
                 Pay Now
               </Text>
               <Flex
                 alignItems={'baseline'}
                 gap={'4px'}
                 maxWidth={{ md: '40%', sm: '100%', xs: '100%' }}
-                justify={'space-between'}>
-                <SvgComponent
-                  svgId='icon-eth'
-                  w={'4px'}
-                  svgSize='14px'
-                  hidden={isDisabled}
-                />
+                justify={'space-between'}
+              >
+                <SvgComponent svgId='icon-eth' w={'4px'} svgSize='14px' />
                 <Text
                   fontSize={'16px'}
                   // display='inline-block'
@@ -198,7 +199,7 @@ const MarketNftListCard: FunctionComponent<
                   // whiteSpace='nowrap'
                   // textOverflow='ellipsis'
                 >
-                  &nbsp;{isDisabled ? '--' : formattedDownPayment}
+                  &nbsp;{formattedDownPayment}
                 </Text>
               </Flex>
             </Flex>
@@ -209,7 +210,8 @@ const MarketNftListCard: FunctionComponent<
                 sm: 'block',
               }}
               color={isDisabled ? 'gray.1' : 'blue.3'}
-              fontWeight={'700'}>
+              fontWeight={'700'}
+            >
               BUY
             </Text>
           </Flex>
@@ -239,7 +241,8 @@ const MarketNftListCard: FunctionComponent<
         right={0}
         left={0}
         transition='all 0.15s'
-        w='100%'>
+        w='100%'
+      >
         {show ? (isDisabled ? 'No exact matches' : 'BUY') : ''}
       </Button>
       <CardFooter
@@ -257,35 +260,20 @@ const MarketNftListCard: FunctionComponent<
           md: 'row',
           sm: 'row-reverse',
           xs: 'row-reverse',
-        }}>
-        <Flex
-          alignItems={'center'}
-          gap={'4px'}>
+        }}
+      >
+        <Flex alignItems={'center'} gap={'4px'}>
           {nftOriginType !== undefined ? (
-            <NftOrigin
-              type={nftOriginType}
-              isHideName
-            />
+            <NftOrigin type={nftOriginType} isHideName />
           ) : (
-            <Text
-              color={`gray.3`}
-              fontSize='14px'>
+            <Text color={`gray.3`} fontSize='14px'>
               Price
             </Text>
           )}
         </Flex>
-        <Flex
-          alignItems={'center'}
-          gap={'2px'}
-          flexWrap={'nowrap'}>
-          <SvgComponent
-            svgId='icon-eth'
-            w={'4px'}
-            svgSize='14px'
-          />
-          <Text
-            fontSize={'14px'}
-            color={`gray.3`}>
+        <Flex alignItems={'center'} gap={'2px'} flexWrap={'nowrap'}>
+          <SvgComponent svgId='icon-eth' w={'4px'} svgSize='14px' />
+          <Text fontSize={'14px'} color={`gray.3`}>
             &nbsp; {formatFloat(orderPrice, 4)}
             {/* &nbsp; {wei2Eth(orderPrice)} */}
           </Text>

@@ -16,20 +16,20 @@ import {
   Button,
 } from '@chakra-ui/react'
 import useRequest from 'ahooks/lib/useRequest'
-import { isEmpty } from 'lodash'
+import isEmpty from 'lodash-es/isEmpty'
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import { apiGetMyAssets } from 'api'
+import { apiGetMyAssets } from '@/api'
 import {
   ConnectWalletModal,
   EmptyComponent,
   LoadingComponent,
   NftInfoComponent,
   SvgComponent,
-} from 'components'
-import { useSign, useWallet } from 'hooks'
-import RootLayout from 'layouts/RootLayout'
+} from '@/components'
+import { useSign, useWallet } from '@/hooks'
+import RootLayout from '@/layouts/RootLayout'
 
 import MyAssetNftListCard from './components/MyAssetNftListCard'
 
@@ -129,11 +129,9 @@ const MyAssets = () => {
           md: 'none',
           sm: 'flex',
           xs: 'flex',
-        }}>
-        <SvgComponent
-          svgId='icon-arrow-down'
-          transform={'rotate(90deg)'}
-        />
+        }}
+      >
+        <SvgComponent svgId='icon-arrow-down' transform={'rotate(90deg)'} />
       </Flex>
       <Heading
         mt={{
@@ -150,7 +148,8 @@ const MyAssets = () => {
           md: '48px',
           sm: '24px',
           xs: '24px',
-        }}>
+        }}
+      >
         My Assets
       </Heading>
       {!isConnected ? (
@@ -162,15 +161,10 @@ const MyAssets = () => {
           alignItems='center'
           justifyContent='center'
           textAlign='center'
-          height='200px'>
-          <AlertIcon
-            boxSize='40px'
-            mr={0}
-          />
-          <AlertTitle
-            mt={4}
-            mb={1}
-            fontSize='lg'>
+          height='200px'
+        >
+          <AlertIcon boxSize='40px' mr={0} />
+          <AlertTitle mt={4} mb={1} fontSize='lg'>
             Please click to sign in and accept the xBank Terms of Service
           </AlertTitle>
           <AlertDescription>
@@ -182,7 +176,8 @@ const MyAssets = () => {
               }}
               variant={'outline'}
               isDisabled={signLoading}
-              isLoading={signLoading}>
+              isLoading={signLoading}
+            >
               Click to Sign
             </Button>
           </AlertDescription>
@@ -193,7 +188,8 @@ const MyAssets = () => {
             _active={{
               color: 'blue.1',
               fontWeight: 'bold',
-            }}>
+            }}
+          >
             <Tab
               pt='16px'
               px={'4px'}
@@ -203,7 +199,8 @@ const MyAssets = () => {
                 borderBottomWidth: 2,
                 borderColor: 'blue.1',
               }}
-              fontWeight='bold'>
+              fontWeight='bold'
+            >
               Collected &nbsp;
               {!isEmpty(data) && (
                 <Tag
@@ -211,7 +208,8 @@ const MyAssets = () => {
                   color='white'
                   borderRadius={15}
                   fontSize={'12px'}
-                  lineHeight={'20px'}>
+                  lineHeight={'20px'}
+                >
                   {data?.length}
                 </Tag>
               )}
@@ -219,9 +217,7 @@ const MyAssets = () => {
           </TabList>
 
           <TabPanels>
-            <TabPanel
-              p={0}
-              pb='40px'>
+            <TabPanel p={0} pb='40px'>
               {/* <Toolbar
               loading={loading}
               searchConfig={{
@@ -247,11 +243,9 @@ const MyAssets = () => {
                 spacingY={'20px'}
                 columns={responsiveSpan}
                 position={'relative'}
-                mt='20px'>
-                <LoadingComponent
-                  loading={loading}
-                  top={0}
-                />
+                mt='20px'
+              >
+                <LoadingComponent loading={loading} top={0} />
                 {(!data || isEmpty(data)) && (
                   <GridItem colSpan={responsiveSpan}>
                     <EmptyComponent />
@@ -264,7 +258,8 @@ const MyAssets = () => {
                       <NftInfoComponent
                         tokenId={item.token_id}
                         contractAddress={item.asset_contract_address}
-                        key={`${item?.asset_contract_address}-${item?.token_id}`}>
+                        key={`${item?.asset_contract_address}-${item?.token_id}`}
+                      >
                         {({ img, name }) => (
                           <MyAssetNftListCard
                             imageSize={{
@@ -293,15 +288,12 @@ const MyAssets = () => {
                   })}
               </SimpleGrid>
 
-              <Flex
-                justifyContent='center'
-                p='20px'
-                h='35px'
-                hidden={loading}>
+              <Flex justifyContent='center' p='20px' h='35px' hidden={loading}>
                 {hasMore ? (
                   <Button
                     onClick={() => setPage((prev) => prev + 1)}
-                    variant='secondary'>
+                    variant='secondary'
+                  >
                     Load More
                   </Button>
                 ) : (
@@ -313,10 +305,7 @@ const MyAssets = () => {
         </Tabs>
       )}
 
-      <ConnectWalletModal
-        visible={isOpen}
-        handleClose={onClose}
-      />
+      <ConnectWalletModal visible={isOpen} handleClose={onClose} />
     </RootLayout>
   )
 }

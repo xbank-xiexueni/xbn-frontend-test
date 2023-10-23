@@ -1,35 +1,35 @@
-import { Fallback } from 'components'
-import Test from 'components/Test'
-import NewComer from 'pages/new-comer/NewComer'
+import Fallback from '@/components/fallback/Fallback'
+// import Test from '@/components/Test'
+// import NewComer from '@/pages/new-comer/NewComer'
 import { Suspense } from 'react'
 import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'
-import lazyWithRetries from 'utils/lazyWithRetries'
+import lazyWithRetries from '@/utils/lazyWithRetries'
 
 // Lend
-const Lend = lazyWithRetries(() => import('./pages/lending/Lend'))
+const Lend = lazyWithRetries(() => import('@/pages/lending/Lend'))
 const PoolCreateAndEdit = lazyWithRetries(
-  () => import('./pages/lending/Create'),
+  () => import('@/pages/lending/Create'),
 )
 
 // buy nfts
-const Market = lazyWithRetries(() => import('./pages/market/Market'))
-const MyAssets = lazyWithRetries(() => import('./pages/my-assets/MyAssets'))
-const LoansForBuyer = lazyWithRetries(() => import('./pages/loan/Loans'))
+const Market = lazyWithRetries(() => import('@/pages/market/Market'))
+const MyAssets = lazyWithRetries(() => import('@/pages/my-assets/MyAssets'))
+const LoansForBuyer = lazyWithRetries(() => import('@/pages/loan/Loans'))
 const CompleteList = lazyWithRetries(
-  () => import('./pages/complete-list/CompleteList'),
+  () => import('@/pages/complete-list/CompleteList'),
 )
 
 // nft detail
 const NftAssetDetail = lazyWithRetries(
-  () => import('./pages/market/NftAssetDetail'),
+  () => import('@/pages/market/NftAssetDetail'),
 )
 
 // marketing campaign
 const MarketingCampaign = lazyWithRetries(
-  () => import('./pages/marketing-campaign/MarketingCampaign'),
+  () => import('@/pages/marketing-campaign/MarketingCampaign'),
 )
-const NotFound = lazyWithRetries(() => import('./pages/404'))
-const History = lazyWithRetries(() => import('./pages/history/History'))
+const NotFound = lazyWithRetries(() => import('@/pages/404'))
+const History = lazyWithRetries(() => import('@/pages/history/History'))
 const router = createBrowserRouter([
   {
     path: '/',
@@ -148,14 +148,14 @@ const router = createBrowserRouter([
       </Suspense>
     ),
   },
-  {
-    path: '/newcomer',
-    element: (
-      <Suspense fallback={<Fallback />}>
-        <NewComer />
-      </Suspense>
-    ),
-  },
+  // {
+  //   path: '/newcomer',
+  //   element: (
+  //     <Suspense fallback={<Fallback />}>
+  //       <NewComer />
+  //     </Suspense>
+  //   ),
+  // },
   {
     path: '*',
     element: (

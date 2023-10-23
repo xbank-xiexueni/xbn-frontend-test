@@ -1,14 +1,14 @@
 import BigNumber from 'bignumber.js'
-import { find } from 'lodash'
-import { findLastIndex } from 'lodash'
+import find from 'lodash-es/find'
+import findLastIndex from 'lodash-es/findLastIndex'
 
 import {
   BASE_RATE,
   COLLATERAL_MAP,
   RATE_POWER_VALUES,
   TENOR_MAP,
-} from 'constants/interest'
-import type { LOAN_DAYS_ENUM } from 'pages/market/NftAssetDetail'
+} from '@/constants/interest'
+import type { LOAN_DAYS_ENUM } from '@/pages/market/NftAssetDetail'
 
 import { wei2Eth } from './unit-conversion'
 import { getKeyByValue } from './utils'
@@ -271,7 +271,7 @@ const computePoolScore = (
   // 贷款比例分数
   const collateralScore = BigNumber(
     loan_ratio.find((i) => i.key === max_collateral_factor.toString())?.value ||
-    0,
+      0,
   ).multipliedBy(x)
 
   // 单笔最大贷款金额分数
@@ -285,7 +285,7 @@ const computePoolScore = (
   // 贷款期限分数
   const tenorScore = BigNumber(
     loan_term.find((i) => i.key == (max_tenor / 3600 / 24).toString())?.value ||
-    0,
+      0,
   ).multipliedBy(z)
 
   const maxInterestScore = BigNumber(

@@ -12,7 +12,7 @@ import {
 } from '@chakra-ui/react'
 import { useState, type FunctionComponent, type ReactNode } from 'react'
 
-import { SvgComponent } from 'components'
+import { SvgComponent } from '@/components'
 
 const SliderWrapper: FunctionComponent<
   SliderProps & {
@@ -34,7 +34,8 @@ const SliderWrapper: FunctionComponent<
       w={{
         md: '480px',
         sm: '100%',
-      }}>
+      }}
+    >
       <Slider
         w={{
           md: '320px',
@@ -50,7 +51,8 @@ const SliderWrapper: FunctionComponent<
         onChangeEnd={() => {
           setIsOnSlide(false)
         }}
-        {...rest}>
+        {...rest}
+      >
         <Fade in={isOnSlide}>
           <SliderMark
             value={value as number}
@@ -62,7 +64,8 @@ const SliderWrapper: FunctionComponent<
             w='20'
             fontSize={'14px'}
             borderRadius={2}
-            fontWeight={'900'}>
+            fontWeight={'900'}
+          >
             {label}
             {unit}
           </SliderMark>
@@ -75,18 +78,15 @@ const SliderWrapper: FunctionComponent<
               left={'50%'}
               position={'absolute'}
               transform={'translateX(-50%)'}
-              mt='24px'>
+              mt='24px'
+            >
               {extraTip}
             </SliderMark>
           </Fade>
         )}
 
         {data?.map((item) => (
-          <SliderMark
-            value={item}
-            fontSize='14px'
-            key={item}
-            zIndex={1}>
+          <SliderMark value={item} fontSize='14px' key={item} zIndex={1}>
             <Box
               boxSize={{
                 md: '10px',
@@ -146,7 +146,8 @@ const SliderWrapper: FunctionComponent<
           md: '16px',
           sm: '12px',
           xs: '12px',
-        }}>
+        }}
+      >
         <SvgComponent svgId={svgId} />
         {label}
         {unit}

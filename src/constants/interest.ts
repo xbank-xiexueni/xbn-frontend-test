@@ -1,5 +1,3 @@
-import { MARKET_TYPE_ENUM } from '.'
-
 // 贷款天数
 export const TENOR_MAP = new Map([
   [0, 1 * 3600 * 24],
@@ -156,19 +154,3 @@ export const BASE_RATE = new Map([
   ['6-8', 1620],
   ['6-9', 1800],
 ])
-
-// 创建 banban 写死的 数据
-export const BANBAN_POOL_DEFAULT_OPTIONS = {
-  tenorKey: TENOR_KEYS[2],
-  collateralKey: COLLATERAL_KEYS[7],
-  singleCaps: '0.04',
-  ratePowerKey: RATE_POWER_KEYS[3],
-}
-
-export const LIST_BANBAN_DEFAULT_OPTIONS = {
-  durationValue: {
-    label: '3 Days',
-    value: 86400 * 3,
-  },
-  listPlatform: MARKET_TYPE_ENUM.OPENSEA,
-}

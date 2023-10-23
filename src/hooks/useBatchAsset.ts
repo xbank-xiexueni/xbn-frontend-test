@@ -1,11 +1,11 @@
-export { }
+export {}
 // import useRequest from 'ahooks/lib/useRequest'
 // import compact from 'lodash-es/compact'
 // import isEmpty from 'lodash-es/isEmpty'
 // import pLimit from 'p-limit'
 // import { useCallback } from 'react'
 
-// import { apiGetNftDetail } from 'api'
+// import { apiGetNftDetail } from '@/api'
 
 // import type { NftAsset } from '.'
 

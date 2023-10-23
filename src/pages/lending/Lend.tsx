@@ -26,12 +26,12 @@ import useDebounce from 'ahooks/lib/useDebounce'
 import useRequest from 'ahooks/lib/useRequest'
 import BigNumber from 'bignumber.js'
 import { unix } from 'dayjs'
-import { groupBy } from 'lodash'
-import { isEmpty } from 'lodash'
-import { maxBy } from 'lodash'
-import { omit } from 'lodash'
-import { reduce } from 'lodash'
-import { sortBy } from 'lodash'
+import groupBy from 'lodash-es/groupBy'
+import isEmpty from 'lodash-es/isEmpty'
+import maxBy from 'lodash-es/maxBy'
+import omit from 'lodash-es/omit'
+import reduce from 'lodash-es/reduce'
+import sortBy from 'lodash-es/sortBy'
 import {
   useEffect,
   useMemo,
@@ -42,8 +42,8 @@ import {
 // import Joyride from 'react-joyride'
 import { useLocation, useNavigate } from 'react-router-dom'
 
-import { apiGetLoans, apiGetPools } from 'api'
-import ImgLend from 'assets/LEND.png'
+import { apiGetLoans, apiGetPools } from '@/api'
+import ImgLend from '@/assets/LEND.png'
 import {
   ConnectWalletModal,
   LoadingComponent,
@@ -53,17 +53,17 @@ import {
   ImageWithFallback,
   type ColumnProps,
   SearchInput,
+  LenderGuideModal,
   NoticeSlider,
   NftInfoComponent,
   TableWithPagination,
-} from 'components'
-import { UNIT, LOAN_STATUS, FRONTEND_LOAN_STATUS } from 'constants/index'
-import type { NftCollection } from 'hooks'
-import { useWallet } from 'hooks'
-import LendLayout from 'layouts/LendLayout'
-import { formatAddress, formatFloat, formatPluralUnit } from 'utils/format'
-import { wei2Eth } from 'utils/unit-conversion'
-import { isAddressEqual } from 'utils/utils'
+} from '@/components'
+import { UNIT, LOAN_STATUS, FRONTEND_LOAN_STATUS } from '@/constants'
+import type { NftCollection } from '@/hooks'
+import { useWallet, useGuide } from '@/hooks'
+import RootLayout from '@/layouts/RootLayout'
+import { formatAddress, formatFloat, formatPluralUnit } from '@/utils/format'
+import { wei2Eth } from '@/utils/unit-conversion'
 
 import AllPoolsDescription from './components/AllPoolsDescription'
 import CollectionListItem from './components/CollectionListItem'
@@ -89,10 +89,9 @@ const TabWrapper: FunctionComponent<TabProps> = ({ children, ...rest }) => {
       //   borderColor: 'blue.1',
       // }}
       display={'inline-block'}
-      {...rest}>
-      <Text
-        fontWeight='bold'
-        fontSize='16px'>
+      {...rest}
+    >
+      <Text fontWeight='bold' fontSize='16px'>
         {children}
       </Text>
     </Tab>
@@ -113,6 +112,9 @@ const TabWrapper: FunctionComponent<TabProps> = ({ children, ...rest }) => {
  * @returns Collections  MyPools Loans
  */
 const Lend = () => {
+  const { isOpen: guideVisible, onClose: closeGuide } = useGuide({
+    key: 'has-read-lp-guide',
+  })
   const tabListRef = useRef<HTMLDivElement>(null)
 
   const [tabKey, setTabKey] = useState<TAB_KEY>(TAB_KEY.COLLECTION_TAB)
@@ -192,8 +194,10 @@ const Lend = () => {
     )
     return sortBy(
       collectionsWithPools.map(({ contractAddress, ...rest }) => {
-        const currentCollectionPools = allPoolsData.filter((item) =>
-          isAddressEqual(item.collateral_contract, contractAddress),
+        const currentCollectionPools = allPoolsData.filter(
+          (item) =>
+            item.collateral_contract.toLowerCase() ===
+            contractAddress.toLowerCase(),
         )
         const max_collateral_factor = maxBy(
           currentCollectionPools,
@@ -215,8 +219,9 @@ const Lend = () => {
         )
 
         const isContainMyPool =
-          currentCollectionPools?.findIndex((i) =>
-            isAddressEqual(i.owner, currentAccount?.address),
+          currentCollectionPools?.findIndex(
+            (i) =>
+              i.owner.toLowerCase() === currentAccount?.address.toLowerCase(),
           ) !== -1
 
         return {
@@ -257,8 +262,10 @@ const Lend = () => {
   const poolList = useMemo(() => {
     if (!myPoolsData) return []
     return myPoolsData?.map((item) => {
-      const nftCollection = collectionList.find((i) =>
-        isAddressEqual(i.contractAddress, item.collateral_contract),
+      const nftCollection = collectionList.find(
+        (i) =>
+          i.contractAddress.toLowerCase() ===
+          item.collateral_contract.toLowerCase(),
       )?.nftCollection
       return {
         ...item,
@@ -363,10 +370,7 @@ const Lend = () => {
         width: 320,
         render: (value: any) => {
           return (
-            <Flex
-              alignItems={'center'}
-              gap={'8px'}
-              w='100%'>
+            <Flex alignItems={'center'} gap={'8px'} w='100%'>
               <ImageWithFallback
                 src={value?.imagePreviewUrl}
                 boxSize={{
@@ -380,7 +384,8 @@ const Lend = () => {
                 display='inline-block'
                 overflow='hidden'
                 whiteSpace='nowrap'
-                textOverflow='ellipsis'>
+                textOverflow='ellipsis'
+              >
                 {value?.name || '--'}
               </Text>
               {value?.safelistRequestStatus === 'verified' && (
@@ -439,20 +444,24 @@ const Lend = () => {
         align: 'right',
         fixedRight: true,
         thAlign: 'right',
-        render: (_: any, info: any) => {
+        render: (value: any, info: any) => {
           return (
-            <Flex
-              alignItems='center'
-              gap={'8px'}>
+            <Flex alignItems='center' gap={'8px'}>
               <Text
                 color={info.isContainMyPool ? 'gray.1' : 'blue.1'}
                 onClick={() => {
                   interceptFn(() => {
                     if (info.isContainMyPool) return
-                    navigate(`/lending/create/${info.contractAddress}`)
+                    navigate(`/lending/create`, {
+                      state: {
+                        contractAddress: info.contractAddress,
+                        nftCollection: value,
+                      },
+                    })
                   })
                 }}
-                cursor={info.isContainMyPool ? 'not-allowed' : 'pointer'}>
+                cursor={info.isContainMyPool ? 'not-allowed' : 'pointer'}
+              >
                 Supply
               </Text>
             </Flex>
@@ -472,10 +481,7 @@ const Lend = () => {
         width: 240,
         render: (value: any) => {
           return (
-            <Flex
-              alignItems={'center'}
-              gap={'8px'}
-              w='100%'>
+            <Flex alignItems={'center'} gap={'8px'} w='100%'>
               <ImageWithFallback
                 src={value?.imagePreviewUrl}
                 boxSize={{
@@ -489,7 +495,8 @@ const Lend = () => {
                 display='inline-block'
                 overflow='hidden'
                 whiteSpace='nowrap'
-                textOverflow='ellipsis'>
+                textOverflow='ellipsis'
+              >
                 {value?.name || '--'}
               </Text>
               {value?.safelistRequestStatus === 'verified' && (
@@ -617,11 +624,10 @@ const Lend = () => {
           return (
             <NftInfoComponent
               tokenId={token_id}
-              contractAddress={info.collateral_contract}>
+              contractAddress={info.collateral_contract}
+            >
               {({ img, name }) => (
-                <Flex
-                  alignItems={'center'}
-                  gap={'8px'}>
+                <Flex alignItems={'center'} gap={'8px'}>
                   <ImageWithFallback
                     src={img}
                     w='40px'
@@ -632,7 +638,8 @@ const Lend = () => {
                     display='inline-block'
                     overflow='hidden'
                     whiteSpace='nowrap'
-                    textOverflow='ellipsis'>
+                    textOverflow='ellipsis'
+                  >
                     {name}
                   </Text>
                 </Flex>
@@ -723,15 +730,19 @@ const Lend = () => {
     onOpen: openDraw,
     onClose: closeDraw,
   } = useDisclosure()
+
   return (
-    <LendLayout mb='100px'>
+    <RootLayout mb='100px'>
+      <LenderGuideModal isOpen={guideVisible} onClose={closeGuide} />
+
       <Box
         my={{
           md: '60px',
           sm: '24px',
           xs: '24px',
         }}
-        className='my-first-step'>
+        className='my-first-step'
+      >
         <AllPoolsDescription
           data={{
             img: ImgLend,
@@ -765,7 +776,8 @@ const Lend = () => {
             default:
               break
           }
-        }}>
+        }}
+      >
         <Box
           overflowX={{
             md: 'visible',
@@ -777,7 +789,8 @@ const Lend = () => {
           position='sticky'
           top={{ md: '131px', sm: '131px', xs: '107px' }}
           bg='white'
-          zIndex={10}>
+          zIndex={10}
+        >
           {[TAB_KEY.COLLECTION_TAB, TAB_KEY.MY_POOLS_TAB].includes(tabKey) && (
             <Flex
               position={'absolute'}
@@ -789,10 +802,9 @@ const Lend = () => {
                 md: 'flex',
                 sm: 'none',
                 xs: 'none',
-              }}>
-              <ScaleFade
-                in={showSearch}
-                initialScale={0.9}>
+              }}
+            >
+              <ScaleFade in={showSearch} initialScale={0.9}>
                 <SearchInput
                   value={
                     tabKey === TAB_KEY.COLLECTION_TAB
@@ -821,11 +833,9 @@ const Lend = () => {
                 _hover={{
                   bg: `var(--chakra-colors-gray-5)`,
                 }}
-                hidden={showSearch}>
-                <SvgComponent
-                  svgId='icon-search'
-                  fill={'gray.3'}
-                />
+                hidden={showSearch}
+              >
+                <SvgComponent svgId='icon-search' fill={'gray.3'} />
               </Flex>
               {((tabKey === TAB_KEY.COLLECTION_TAB &&
                 !isEmpty(activeCollectionList)) ||
@@ -834,7 +844,8 @@ const Lend = () => {
                   variant={'secondary'}
                   minW='200px'
                   onClick={() => interceptFn(() => navigate('/lending/create'))}
-                  className='my-other-step'>
+                  className='my-other-step'
+                >
                   + Create New Pool
                 </Button>
               )}
@@ -856,7 +867,8 @@ const Lend = () => {
               xs: 'space-between',
             }}
             borderBottomWidth={'1px'}
-            borderBottomColor={'gray.1'}>
+            borderBottomColor={'gray.1'}
+          >
             <TabWrapper>Collections</TabWrapper>
             <TabWrapper>
               My Pools
@@ -872,7 +884,8 @@ const Lend = () => {
                   justifyContent='center'
                   lineHeight={2}
                   fontWeight='700'
-                  ml='4px'>
+                  ml='4px'
+                >
                   {poolList?.length}
                 </Tag>
               )}
@@ -900,7 +913,8 @@ const Lend = () => {
             (tabKey === TAB_KEY.COLLECTION_TAB &&
               isEmpty(activeCollectionList)) ||
             (tabKey === TAB_KEY.MY_POOLS_TAB && isEmpty(poolList))
-          }>
+          }
+        >
           <SearchInput
             value={
               tabKey === TAB_KEY.COLLECTION_TAB
@@ -918,9 +932,7 @@ const Lend = () => {
           />
         </Box>
         <TabPanels>
-          <TabPanel
-            p={0}
-            pb='20px'>
+          <TabPanel p={0} pb='20px'>
             <TableWithPagination
               table={{
                 loading: poolsLoading1 || collectionLoading,
@@ -936,7 +948,8 @@ const Lend = () => {
                             minW='200px'
                             onClick={() =>
                               interceptFn(() => navigate('/lending/create'))
-                            }>
+                            }
+                          >
                             + Create New Pool
                           </Button>
                         )
@@ -947,9 +960,7 @@ const Lend = () => {
               }}
             />
           </TabPanel>
-          <TabPanel
-            p={0}
-            pb='20px'>
+          <TabPanel p={0} pb='20px'>
             <TableWithPagination
               table={{
                 loading: poolsLoading2 || collectionLoading,
@@ -965,7 +976,8 @@ const Lend = () => {
                             minW='200px'
                             onClick={() =>
                               interceptFn(() => navigate('/lending/create'))
-                            }>
+                            }
+                          >
                             + Create New Pool
                           </Button>
                         )
@@ -976,13 +988,8 @@ const Lend = () => {
               }}
             />
           </TabPanel>
-          <TabPanel
-            p={0}
-            pb='20px'>
-            <Flex
-              justify={'space-between'}
-              mt='16px'
-              flexWrap='wrap'>
+          <TabPanel p={0} pb='20px'>
+            <Flex justify={'space-between'} mt='16px' flexWrap='wrap'>
               <Box
                 border={`1px solid var(--chakra-colors-gray-2)`}
                 borderRadius={12}
@@ -996,17 +1003,17 @@ const Lend = () => {
                   md: 'block',
                   sm: 'none',
                   xs: 'none',
-                }}>
-                <Heading
-                  mb='16px'
-                  fontSize={'16px'}>
+                }}
+              >
+                <Heading mb='16px' fontSize={'16px'}>
                   My Collection Pools
                 </Heading>
                 <Box
                   hidden={
                     !loanCollectionSearchValue &&
                     !filteredPoolCollectionList?.length
-                  }>
+                  }
+                >
                   <SearchInput
                     placeholder='Collections...'
                     value={loanCollectionSearchValue}
@@ -1016,10 +1023,7 @@ const Lend = () => {
                   />
                 </Box>
 
-                <List
-                  spacing='16px'
-                  mt='16px'
-                  position='relative'>
+                <List spacing='16px' mt='16px' position='relative'>
                   <LoadingComponent
                     loading={poolsLoading2 || collectionLoading}
                     top={0}
@@ -1039,10 +1043,9 @@ const Lend = () => {
                       onClick={() => setSelectKeyForOpenLoans(undefined)}
                       bg={
                         selectKeyForOpenLoans === undefined ? 'blue.2' : 'white'
-                      }>
-                      <Text
-                        fontSize='14px'
-                        fontWeight='700'>
+                      }
+                    >
+                      <Text fontSize='14px' fontWeight='700'>
                         All My Collections
                       </Text>
                       {selectKeyForOpenLoans === undefined ? (
@@ -1087,7 +1090,8 @@ const Lend = () => {
                   md: '65%',
                   sm: '100%',
                   xs: '100%',
-                }}>
+                }}
+              >
                 <TableWithPagination
                   table={{
                     tableTitle: () => (
@@ -1097,7 +1101,8 @@ const Lend = () => {
                           md: '16px',
                           sm: '20px',
                           xs: '20px',
-                        }}>
+                        }}
+                      >
                         Current Loans as Lender
                       </Heading>
                     ),
@@ -1123,14 +1128,16 @@ const Lend = () => {
                           md: '16px',
                           sm: '40px',
                           xs: '40px',
-                        }}>
+                        }}
+                      >
                         <Highlight
                           styles={{
                             fontSize: '18px',
                             fontWeight: 500,
                             color: `gray.3`,
                           }}
-                          query='(Paid Off)'>
+                          query='(Paid Off)'
+                        >
                           Previous Loans as Lender(Paid Off)
                         </Highlight>
                       </Heading>
@@ -1157,14 +1164,16 @@ const Lend = () => {
                           md: '16px',
                           sm: '40px',
                           xs: '40px',
-                        }}>
+                        }}
+                      >
                         <Highlight
                           styles={{
                             fontSize: '18px',
                             fontWeight: 500,
                             color: `gray.3`,
                           }}
-                          query='(Overdue)'>
+                          query='(Overdue)'
+                        >
                           Previous Loans as Lender(Overdue)
                         </Highlight>
                       </Heading>
@@ -1201,12 +1210,14 @@ const Lend = () => {
             alignItems='center'
             justify={'center'}
             zIndex={5}
-            px={8}>
+            px={8}
+          >
             <Button
               variant={'primary'}
               w='100%'
               h='42px'
-              onClick={() => interceptFn(() => navigate('/lending/create'))}>
+              onClick={() => interceptFn(() => navigate('/lending/create'))}
+            >
               + Create New Pool
             </Button>
           </Flex>
@@ -1224,44 +1235,33 @@ const Lend = () => {
           alignItems='center'
           justify={'center'}
           zIndex={5}
-          px={8}>
+          px={8}
+        >
           <Button
             variant={'primary'}
             w='100%'
             h='42px'
             onClick={openDraw}
-            leftIcon={
-              <SvgComponent
-                svgId='icon-search'
-                fill={'white'}
-              />
-            }>
+            leftIcon={<SvgComponent svgId='icon-search' fill={'white'} />}
+          >
             My Collection Pools
           </Button>
         </Flex>
       )}
-      <Drawer
-        placement={'bottom'}
-        onClose={closeDraw}
-        isOpen={drawVisible}>
+      <Drawer placement={'bottom'} onClose={closeDraw} isOpen={drawVisible}>
         <DrawerOverlay />
-        <DrawerContent
-          borderTopRadius={16}
-          pb='40px'
-          h='85vh'>
+        <DrawerContent borderTopRadius={16} pb='40px' h='85vh'>
           <DrawerBody>
             <DrawerCloseButton mt='40px' />
-            <Heading
-              fontSize={'24px'}
-              pt='40px'
-              pb='32px'>
+            <Heading fontSize={'24px'} pt='40px' pb='32px'>
               My Collection Pools
             </Heading>
             <Box
               hidden={
                 !loanCollectionSearchValue &&
                 !filteredPoolCollectionList?.length
-              }>
+              }
+            >
               <SearchInput
                 placeholder='Collections...'
                 value={loanCollectionSearchValue}
@@ -1269,10 +1269,7 @@ const Lend = () => {
               />
             </Box>
 
-            <List
-              spacing={'16px'}
-              position='relative'
-              mt='16px'>
+            <List spacing={'16px'} position='relative' mt='16px'>
               <LoadingComponent
                 loading={poolsLoading2 || collectionLoading}
                 top={0}
@@ -1291,10 +1288,9 @@ const Lend = () => {
                   border={`1px solid var(--chakra-colors-gray-2)`}
                   cursor='pointer'
                   onClick={() => setSelectKeyForOpenLoans(undefined)}
-                  bg={selectKeyForOpenLoans === undefined ? 'blue.2' : 'white'}>
-                  <Text
-                    fontSize='14px'
-                    fontWeight='700'>
+                  bg={selectKeyForOpenLoans === undefined ? 'blue.2' : 'white'}
+                >
+                  <Text fontSize='14px' fontWeight='700'>
                     All My Collections
                   </Text>
 
@@ -1313,8 +1309,10 @@ const Lend = () => {
                     collateral_contract,
                     loan_count,
                   }: PoolsListItemType) => {
-                    const collection_info = collectionList?.find((i) =>
-                      isAddressEqual(i.contractAddress, collateral_contract),
+                    const collection_info = collectionList?.find(
+                      (i) =>
+                        i.contractAddress.toLowerCase() ===
+                        collateral_contract.toLowerCase(),
                     )
 
                     return (
@@ -1334,11 +1332,8 @@ const Lend = () => {
           </DrawerBody>
         </DrawerContent>
       </Drawer>
-      <ConnectWalletModal
-        visible={isOpen}
-        handleClose={onClose}
-      />
-    </LendLayout>
+      <ConnectWalletModal visible={isOpen} handleClose={onClose} />
+    </RootLayout>
   )
 }
 

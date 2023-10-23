@@ -1,5 +1,5 @@
 import { Box, Flex } from '@chakra-ui/react'
-import { range } from 'lodash'
+import range from 'lodash-es/range'
 import { type FunctionComponent, useEffect, useRef, useState } from 'react'
 
 import type { FlexProps } from '@chakra-ui/react'
@@ -45,7 +45,8 @@ const ScrollNumberItem: FunctionComponent<{
           xs: 'scale(0.83333)',
         }}
         transformOrigin='center'
-        position='relative'>
+        position='relative'
+      >
         {value}
       </Box>
     )
@@ -65,7 +66,8 @@ const ScrollNumberItem: FunctionComponent<{
       ml='-5px'
       position='relative'
       display='inline-block'
-      overflow='hidden'>
+      overflow='hidden'
+    >
       <Box
         position='absolute'
         left={0}
@@ -75,7 +77,8 @@ const ScrollNumberItem: FunctionComponent<{
         transformOrigin='center'
         transition='top 0.6s'
         style={{ top: `${-1 * Number(value) * 16}px` }}
-        ref={ref}>
+        ref={ref}
+      >
         {range(0, 10).map((item) => (
           <Box
             key={item}
@@ -87,7 +90,8 @@ const ScrollNumberItem: FunctionComponent<{
               md: 'none',
               sm: 'scale(0.83333)',
               xs: 'scale(0.83333)',
-            }}>
+            }}
+          >
             {item}
           </Box>
         ))}
@@ -118,10 +122,7 @@ const ScrollNumber: FunctionComponent<ScrollNumberProps> = ({
             key={i}
             /* eslint-disable */
           >
-            <ScrollNumberItem
-              value={item}
-              callback={(e) => setEnded(e)}
-            />
+            <ScrollNumberItem value={item} callback={(e) => setEnded(e)} />
           </Flex>
         ))}
     </Flex>

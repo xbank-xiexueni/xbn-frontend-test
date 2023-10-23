@@ -1,6 +1,0 @@
-query ExchangeRates($symbols: [String!]!) {
-  exchangeRates(symbols: $symbols) {
-    price
-    symbol
-  }
-}

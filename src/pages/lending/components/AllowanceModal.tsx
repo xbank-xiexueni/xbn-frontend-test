@@ -15,17 +15,17 @@ import BigNumber from 'bignumber.js'
 import { useMemo, type FunctionComponent, useEffect, useState } from 'react'
 import { useContractWrite, useWaitForTransaction } from 'wagmi'
 
-import allowanceGif from 'assets/allowance.gif'
-import { CustomCheckBox, ImageWithFallback, SvgComponent } from 'components'
+import allowanceGif from '@/assets/allowance.gif'
+import { CustomCheckBox, ImageWithFallback, SvgComponent } from '@/components'
 import {
   MODEL_HEADER_PROPS,
   WETH_CONTRACT_ABI,
   WETH_CONTRACT_ADDRESS,
   XBANK_CONTRACT_ADDRESS,
-} from 'constants/index'
-import { useWallet } from 'hooks'
-import { formatWagmiErrorMsg } from 'utils/format'
-import { wei2Eth } from 'utils/unit-conversion'
+} from '@/constants'
+import { useWallet } from '@/hooks'
+import { formatWagmiErrorMsg } from '@/utils/format'
+import { wei2Eth } from '@/utils/unit-conversion'
 
 const AllowanceModal: FunctionComponent<{
   isOpen: boolean
@@ -61,7 +61,7 @@ const AllowanceModal: FunctionComponent<{
     isError: isApproveError,
     error: approveError,
   } = useContractWrite({
-    address: WETH_CONTRACT_ADDRESS as `0x${string}` | undefined,
+    address: WETH_CONTRACT_ADDRESS,
     abi: [WETH_CONTRACT_ABI.find((i) => i.name === 'approve')],
     functionName: 'approve',
   })

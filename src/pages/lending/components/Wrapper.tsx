@@ -1,6 +1,6 @@
 import { Flex } from '@chakra-ui/react'
 
-import { STEPS_DESCRIPTIONS } from 'constants/index'
+import { STEPS_DESCRIPTIONS } from '@/constants'
 
 import StepDescription from './StepDescription'
 
@@ -30,7 +30,8 @@ const Wrapper: FunctionComponent<
       }}
       borderRadius={16}
       bg='gray.5'
-      p={{ md: '32px', sm: '12px', xs: '12px' }}>
+      p={{ md: '32px', sm: '12px', xs: '12px' }}
+    >
       <StepDescription
         data={{
           step: stepIndex,

@@ -21,10 +21,10 @@ import useDebounce from 'ahooks/lib/useDebounce'
 import useRequest from 'ahooks/lib/useRequest'
 import BigNumber from 'bignumber.js'
 import dayjs from 'dayjs'
-import { isEmpty } from 'lodash'
-import { minBy } from 'lodash'
-import { range } from 'lodash'
-import { round } from 'lodash'
+import isEmpty from 'lodash-es/isEmpty'
+import minBy from 'lodash-es/minBy'
+import range from 'lodash-es/range'
+import round from 'lodash-es/round'
 import {
   useCallback,
   useEffect,
@@ -46,8 +46,8 @@ import {
   apiGetFloorPrice,
   apiGetPools,
   apiPostOffers,
-} from 'api'
-import imgOnOffer from 'assets/img-no-offer.png'
+} from '@/api'
+import imgOnOffer from '@/assets/img-no-offer.png'
 import {
   ConnectWalletModal,
   NotFound,
@@ -57,7 +57,7 @@ import {
   MiddleStatus,
   CustomLoader,
   TooltipComponent,
-} from 'components'
+} from '@/components'
 import {
   FORMAT_NUMBER,
   UNIT,
@@ -65,19 +65,23 @@ import {
   XBANK_CONTRACT_ADDRESS,
   XBANK_CONTRACT_ABI,
   WETH_CONTRACT_ADDRESS,
-} from 'constants/index'
-import { TENOR_VALUES, COLLATERAL_VALUES } from 'constants/interest'
-import { useWallet, useAssetQuery, useExchangeRatesQuery } from 'hooks'
-import RootLayout from 'layouts/RootLayout'
-import { amortizationCalByDays } from 'utils/calculation'
+} from '@/constants'
+import { TENOR_VALUES, COLLATERAL_VALUES } from '@/constants/interest'
+import {
+  useWallet,
+  useAssetQuery,
+  useNftCollectionsByContractAddressesQuery,
+} from '@/hooks'
+import RootLayout from '@/layouts/RootLayout'
+import { amortizationCalByDays } from '@/utils/calculation'
 import {
   formatFloat,
   formatPluralUnit,
   formatWagmiErrorMsg,
   getFullNum,
-} from 'utils/format'
-import { eth2Wei, wei2Eth } from 'utils/unit-conversion'
-import { getBuyerExactInterest, isAddressEqual } from 'utils/utils'
+} from '@/utils/format'
+import { eth2Wei, wei2Eth } from '@/utils/unit-conversion'
+import { getBuyerExactInterest } from '@/utils/utils'
 
 import BelongToCollection from './components/BelongToCollection'
 import DetailComponent from './components/DetailComponent'
@@ -89,10 +93,8 @@ import PlanItem from './components/PlanItem'
 import RadioCard from './components/RadioCard'
 import generateTypedData from './utils/generateTypedData'
 import getFilteredPools from './utils/getFilteredPools'
-import getMinAPRPool from './utils/getMinAPRPool'
 
 const COLLATERAL = [0, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000]
-const BAD_REQUEST_WARN = 'bad_request_warning'
 
 export enum LOAN_DAYS_ENUM {
   LOAN1Days = 1 * 3600 * 24,
@@ -118,7 +120,8 @@ const NFTDetailContainer: FunctionComponent<FlexProps> = ({
   <RootLayout
     px={{
       xl: '20px',
-    }}>
+    }}
+  >
     <Flex
       justify={{
         lg: 'space-between',
@@ -136,7 +139,8 @@ const NFTDetailContainer: FunctionComponent<FlexProps> = ({
         sm: 'column',
         xs: 'column',
       }}
-      {...rest}>
+      {...rest}
+    >
       {children}
     </Flex>
   </RootLayout>
@@ -155,11 +159,6 @@ const NftAssetDetail = () => {
     interceptFn,
     noticeConfig: { refresh: refreshNotice },
     chainEnable,
-    collectionList,
-    collectionLoading,
-    accountConfig: {
-      banbanConfig: { refreshAsync: refreshMetadata },
-    },
   } = useWallet()
 
   const [platform, setPlatform] = useState<MARKET_TYPE_ENUM | undefined>()
@@ -176,29 +175,38 @@ const NftAssetDetail = () => {
 
   const [commodityWeiPrice, setCommodityWeiPrice] = useState(BigNumber(0))
 
-  const collection:
-    | {
-        name: string
-        imagePreviewUrl: string
-        safelistRequestStatus: string
-        slug: string
-        id: string
-      }
-    | undefined = useMemo(() => {
-    const nftCollection = collectionList?.find((i) =>
-      isAddressEqual(i.contractAddress, assetVariable?.contractAddress),
-    )?.nftCollection
-    if (!nftCollection) return
-    const { name, slug, imagePreviewUrl, safelistRequestStatus, id } =
-      nftCollection
-    return {
-      name,
-      imagePreviewUrl,
-      slug,
-      safelistRequestStatus,
-      id,
-    }
-  }, [collectionList, assetVariable?.contractAddress])
+  const [collection, setCollection] = useState<{
+    name: string
+    imagePreviewUrl: string
+    safelistRequestStatus: string
+    slug: string
+    id: string
+  }>()
+  const { loading: collectionLoading } =
+    useNftCollectionsByContractAddressesQuery({
+      variables: {
+        assetContractAddresses: [assetVariable?.contractAddress],
+      },
+      skip: isEmpty(assetVariable),
+      onCompleted(data) {
+        if (!data) return
+        const { nftCollectionsByContractAddresses } = data
+        if (
+          !nftCollectionsByContractAddresses ||
+          isEmpty(nftCollectionsByContractAddresses)
+        )
+          return
+        const { name, slug, imagePreviewUrl, safelistRequestStatus, id } =
+          nftCollectionsByContractAddresses[0].nftCollection
+        setCollection({
+          name,
+          imagePreviewUrl,
+          slug,
+          safelistRequestStatus,
+          id,
+        })
+      },
+    })
 
   const { data: detail, loading: assetFetchLoading } = useAssetQuery({
     variables: {
@@ -231,7 +239,7 @@ const NftAssetDetail = () => {
         slug: collection?.slug || '',
       }),
     {
-      ready: !!collection && !!detail,
+      ready: !!collection,
       refreshDeps: [collection],
       onError: () => {
         toast({
@@ -422,21 +430,23 @@ const NftAssetDetail = () => {
         (i) => i.max_tenor >= item,
       )
       if (!isEmpty(currentFilterPools)) {
-        const poolWithExactApr = currentFilterPools.map((poolItem) => {
-          const { owner, hash } = poolItem
-          const apr = getBuyerExactInterest(
-            poolItem,
-            item,
-            loanPercentage,
-          ) as number
-          return {
-            tenor: item,
-            lender: owner,
-            apr,
-            offerHash: hash,
-          }
-        })
-        const currentPool = getMinAPRPool(poolWithExactApr, item / 3600 / 24)
+        const currentPool = minBy(
+          currentFilterPools.map((poolItem) => {
+            const { owner, hash } = poolItem
+            const apr = getBuyerExactInterest(
+              poolItem,
+              item,
+              loanPercentage,
+            ) as number
+            return {
+              tenor: item,
+              lender: owner,
+              apr,
+              offerHash: hash,
+            }
+          }),
+          (i) => i.apr,
+        )
         if (!!currentPool) {
           currentPools.push(currentPool)
         }
@@ -598,11 +608,6 @@ const NftAssetDetail = () => {
   }, [isWaitPayLoading, isWritePayLoading])
 
   const { signTypedDataAsync, isLoading: signLoading } = useSignTypedData()
-  const { data: exchangeData } = useExchangeRatesQuery({
-    variables: {
-      symbols: ['ETHUSDT'],
-    },
-  })
 
   /**
    * 1. client signature = wallet typed sign(message)
@@ -624,7 +629,6 @@ const NftAssetDetail = () => {
       clearTimeout(timer.current)
     }
   }, [timer])
-  const [warnMessage, setWarnMessage] = useState<string>()
   const handleClickPay = useCallback(async () => {
     interceptFn(async () => {
       if (
@@ -833,7 +837,6 @@ const NftAssetDetail = () => {
               setSubscribeLoading(false)
               // 刷新通知接口数据
               refreshNotice()
-              refreshMetadata()
               if (timer?.current) {
                 clearTimeout(timer.current)
               }
@@ -847,7 +850,6 @@ const NftAssetDetail = () => {
           refreshNotice()
           unwatch?.()
           setLoanStep('timeout')
-          refreshMetadata()
         }, 2 * 60 * 1000)
       } catch (error: any) {
         const _error = error?.error || error?.cause || error
@@ -855,16 +857,12 @@ const NftAssetDetail = () => {
           '🚀 ~ file: NftAssetDetail.tsx:743 ~ interceptFn ~ _error:',
           _error,
         )
-        if (_error?.code === BAD_REQUEST_WARN) {
-          setWarnMessage(_error?.message)
-        } else {
-          toast({
-            status: 'error',
-            title: formatWagmiErrorMsg(_error?.message),
-            isClosable: true,
-          })
-        }
 
+        toast({
+          status: 'error',
+          title: formatWagmiErrorMsg(_error?.message),
+          isClosable: true,
+        })
         // setTransferFromLoading(false)
         setSubscribeLoading(false)
         setLoanStep(undefined)
@@ -885,7 +883,6 @@ const NftAssetDetail = () => {
     interceptFn,
     platform,
     refreshNotice,
-    refreshMetadata,
     protocolFeeRate,
     runPayAsync,
     loanPercentage,
@@ -930,60 +927,36 @@ const NftAssetDetail = () => {
     { wait: 500 },
   )
 
-  const isBanban = useMemo(
-    () =>
-      isAddressEqual(
-        assetVariable?.contractAddress,
-        process.env.REACT_APP_BANBAN_COLLECTION_ADDRESS,
-      ),
-    [assetVariable],
-  )
-
   if (isEmpty(detail) && !assetFetchLoading)
     return (
       <RootLayout>
-        <NotFound
-          title='Asset not found'
-          backTo='/market'
-        />
+        <NotFound title='Asset not found' backTo='/market' />
       </RootLayout>
     )
   if (!!loanStep) {
     return (
-      <RootLayout
-        display={'flex'}
-        justifyContent={'center'}>
+      <RootLayout>
         <MiddleStatus
           imagePreviewUrl={detail?.asset?.imagePreviewUrl}
           animationUrl={detail?.asset?.animationUrl}
           onLoadingBack={() => {
             refreshNotice()
-            refreshMetadata()
             setLoanStep(undefined)
+            return
           }}
           onSuccessBack={() => {
             navigate('/loans')
-          }}
-          successButtonTitle={isBanban ? 'View My Boxdrop' : ''}
-          successButtonAction={() => {
-            navigate('/marketing-campaign')
+            return
           }}
           onTimeoutBack={() => {
             navigate('/loans')
           }}
-          successTitle='Purchase Successfully!'
-          successDescription={
-            isBanban
-              ? `Congratulations! You've successfully purchased the Banban NFT using 'Buy Now, Pay Later' and earned 30 golden boxes!`
-              : 'Loan has been initialized.'
-          }
+          successTitle='Purchase completed'
+          successDescription='Loan has been initialized.'
           step={loanStep}
           loadingText='Buying this NFT from market. If unsuccessful, the down payment will be returned.'
           timeoutText={
-            <Text
-              fontWeight={'500'}
-              mt='8px'
-              textAlign={'center'}>
+            <Text fontWeight={'500'} mt='8px' textAlign={'center'}>
               Your loan is currently being processed. Please check the result of
               your purchase on the
               <Link to={'/loans'}>&nbsp;&apos;Repay Loans&apos;&nbsp;</Link>
@@ -1005,16 +978,14 @@ const NftAssetDetail = () => {
           imgProps={{
             src: detail?.asset?.imagePreviewUrl,
           }}
-          onConfirm={() =>
-            navigate(`/market/${assetVariable?.contractAddress}`)
-          }
+          onConfirm={() => navigate(`/market/${collection?.id}`)}
         />
       )}
       {nftStatus === NFT_STATUS.NO_OFFER && (
         <NftStatusModal
           onClose={() => {
             setNftStatus(undefined)
-            navigate(`/market/${assetVariable?.contractAddress}`)
+            navigate(`/market/${collection?.id}`)
           }}
           isOpen
           status={nftStatus}
@@ -1036,10 +1007,7 @@ const NftAssetDetail = () => {
         />
       )}
       {/* 手机端 */}
-      <H5SecondaryHeader
-        title='Buy NFTs'
-        mb='20px'
-      />
+      <H5SecondaryHeader title='Buy NFTs' mb='20px' />
       {assetFetchLoading || collectionLoading || floorPriceLoading ? (
         <Skeleton
           h='120px'
@@ -1061,7 +1029,8 @@ const NftAssetDetail = () => {
             md: 'none',
             sm: 'flex',
             xs: 'flex',
-          }}>
+          }}
+        >
           <NftMedia
             data={{
               imagePreviewUrl: detail?.asset.imagePreviewUrl,
@@ -1071,17 +1040,11 @@ const NftAssetDetail = () => {
             boxSize={'64px'}
             fit='contain'
           />
-          <Flex
-            flexDir={'column'}
-            justify='center'>
-            <Text
-              fontSize={'16px'}
-              fontWeight='700'>
+          <Flex flexDir={'column'} justify='center'>
+            <Text fontSize={'16px'} fontWeight='700'>
               {detail?.asset?.name || `#${detail?.asset?.tokenID || ''}`}
             </Text>
-            <Text
-              fontSize={'12px'}
-              fontWeight='500'>
+            <Text fontSize={'12px'} fontWeight='500'>
               {formatFloat(wei2Eth(commodityWeiPrice))}&nbsp;
               {UNIT}
             </Text>
@@ -1147,13 +1110,7 @@ const NftAssetDetail = () => {
             }}
           />
           <ImageToolBar data={detail} />
-          <BelongToCollection
-            data={{
-              ...collection,
-              floorPrice,
-              contract: assetVariable?.contractAddress,
-            }}
-          />
+          <BelongToCollection data={{ ...collection, floorPrice }} />
         </Flex>
       )}
       <Box
@@ -1163,7 +1120,8 @@ const NftAssetDetail = () => {
           md: '100%',
           sm: '100%',
           xs: '100%',
-        }}>
+        }}
+      >
         {/* 价格 名称 */}
         <DetailComponent
           data={{
@@ -1172,10 +1130,7 @@ const NftAssetDetail = () => {
             price: wei2Eth(commodityWeiPrice),
             verified: collection?.safelistRequestStatus === 'verified',
             platform,
-            contract: assetVariable?.contractAddress,
-            usdPrice: exchangeData?.exchangeRates?.find(
-              (i) => i?.symbol === 'ETHUSDT',
-            )?.price,
+            collectionId: collection?.id,
           }}
           // onReFresh={}
           loading={assetFetchLoading}
@@ -1189,11 +1144,7 @@ const NftAssetDetail = () => {
         />
 
         {poolFilterLoading ? (
-          <Flex
-            w='100%'
-            h='300px'
-            alignItems={'center'}
-            justify={'center'}>
+          <Flex w='100%' h='300px' alignItems={'center'} justify={'center'}>
             <CustomLoader />
           </Flex>
         ) : (
@@ -1218,7 +1169,8 @@ const NftAssetDetail = () => {
                   md: '16px',
                   sm: '4px',
                   xs: '4px',
-                }}>
+                }}
+              >
                 {downPaymentWei && (
                   <Flex
                     py={'12px'}
@@ -1237,26 +1189,22 @@ const NftAssetDetail = () => {
                       md: '148px',
                       sm: '80px',
                       xs: '80px',
-                    }}>
-                    <SvgComponent
-                      svgId='icon-eth'
-                      svgSize='20px'
-                    />
+                    }}
+                  >
+                    <SvgComponent svgId='icon-eth' svgSize='20px' />
                     <Text
                       fontSize={{
                         md: '20px',
                         xs: '12px',
                         sm: '12px',
-                      }}>
+                      }}
+                    >
                       {formatFloat(wei2Eth(downPaymentWei))}
                     </Text>
                   </Flex>
                 )}
 
-                <Divider
-                  orientation='vertical'
-                  h={'24px'}
-                />
+                <Divider orientation='vertical' h={'24px'} />
                 <Slider
                   min={COLLATERAL[0]}
                   max={COLLATERAL[COLLATERAL.length - 1]}
@@ -1272,13 +1220,15 @@ const NftAssetDetail = () => {
                     md: '436px',
                     sm: '230px',
                     xs: '220px',
-                  }}>
+                  }}
+                >
                   {COLLATERAL.map((item) => (
                     <SliderMark
                       value={item}
                       fontSize='14px'
                       key={item}
-                      zIndex={1}>
+                      zIndex={1}
+                    >
                       <Box
                         boxSize={{
                           md: '8px',
@@ -1322,19 +1272,13 @@ const NftAssetDetail = () => {
                 justify={'center'}
                 gap={'4px'}
                 alignItems='center'
-                mt={'24px'}>
-                <Text
-                  fontSize={'12px'}
-                  fontWeight='500'>
+                mt={'24px'}
+              >
+                <Text fontSize={'12px'} fontWeight='500'>
                   Pay later
                 </Text>
-                <SvgComponent
-                  svgId='icon-eth'
-                  svgSize='12px'
-                />
-                <Text
-                  fontSize={'14px'}
-                  fontWeight='500'>
+                <SvgComponent svgId='icon-eth' svgSize='12px' />
+                <Text fontSize={'14px'} fontWeight='500'>
                   {formatFloat(wei2Eth(loanWeiAmount))}
                 </Text>
               </Flex>
@@ -1355,7 +1299,8 @@ const NftAssetDetail = () => {
             {/* Length of Payment Plan */}
             <LabelComponent
               label='Length of Payment Plan'
-              isEmpty={isEmpty(pools)}>
+              isEmpty={isEmpty(pools)}
+            >
               <Flex gap={'8px'}>
                 {pools.map(({ offerHash, apr, tenor, lender }) => {
                   return (
@@ -1368,7 +1313,8 @@ const NftAssetDetail = () => {
                         md: '80px',
                         sm: '100%',
                         xs: '100%',
-                      }}>
+                      }}
+                    >
                       <RadioCard
                         isDisabled={clickLoading}
                         onClick={() =>
@@ -1386,17 +1332,16 @@ const NftAssetDetail = () => {
                           sm: '8px',
                           xs: '8px',
                         }}
-                        isActive={selectedPool?.tenor === tenor}>
+                        isActive={selectedPool?.tenor === tenor}
+                      >
                         <Text fontWeight={700}>
                           {formatPluralUnit(tenor / 3600 / 24, 'Day')}
                         </Text>
-                        <Text
-                          fontWeight={500}
-                          fontSize='12px'
-                          color='blue.1'>
+                        <Text fontWeight={500} fontSize='12px' color='blue.1'>
                           <Highlight
                             query={'APR'}
-                            styles={{ color: `black.1` }}>
+                            styles={{ color: `black.1` }}
+                          >
                             {`${apr && round(apr / 100, 2)} % APR`}
                           </Highlight>
                         </Text>
@@ -1410,10 +1355,9 @@ const NftAssetDetail = () => {
             {/* Number of installments */}
             <LabelComponent
               label='Number of Installments'
-              isEmpty={!selectedPool || isEmpty(selectedPool)}>
-              <Flex
-                gap={'8px'}
-                flexWrap='wrap'>
+              isEmpty={!selectedPool || isEmpty(selectedPool)}
+            >
+              <Flex gap={'8px'} flexWrap='wrap'>
                 {installmentOptions?.map((value) => {
                   return (
                     <Flex
@@ -1423,18 +1367,18 @@ const NftAssetDetail = () => {
                         md: '188px',
                         sm: '100%',
                         xs: '100%',
-                      }}>
+                      }}
+                    >
                       <RadioCard
                         p='10px'
                         isDisabled={clickLoading}
                         onClick={() => setInstallmentValue(value)}
-                        isActive={value === installmentValue}>
+                        isActive={value === installmentValue}
+                      >
                         <Text fontWeight={700}>
                           Pay in {formatPluralUnit(value, 'installment')}
                         </Text>
-                        <Text
-                          fontWeight={500}
-                          fontSize='12px'>
+                        <Text fontWeight={500} fontSize='12px'>
                           {formatFloat(getPlanPer(value))}
                           &nbsp;
                           {UNIT}/per
@@ -1450,13 +1394,15 @@ const NftAssetDetail = () => {
             {!commodityWeiPrice.eq(0) && !loanWeiAmount.eq(0) && (
               <LabelComponent
                 label='Repayment Plan'
-                isEmpty={isEmpty(selectedPool)}>
+                isEmpty={isEmpty(selectedPool)}
+              >
                 <VStack
                   bg='gray.5'
                   py='24px'
                   px='16px'
                   borderRadius={12}
-                  spacing='16px'>
+                  spacing='16px'
+                >
                   <PlanItem
                     value={formatFloat(wei2Eth(downPaymentWei))}
                     label='Now'
@@ -1483,7 +1429,8 @@ const NftAssetDetail = () => {
             <LabelComponent
               label='Summary'
               borderBottom={'none'}
-              isEmpty={isEmpty(pools)}>
+              isEmpty={isEmpty(pools)}
+            >
               {!loanWeiAmount.eq(0) && !commodityWeiPrice.eq(0) && (
                 <Flex
                   border={`1px solid var(--chakra-colors-gray-1)`}
@@ -1491,7 +1438,8 @@ const NftAssetDetail = () => {
                   px='16px'
                   borderRadius={12}
                   gap='16px'
-                  direction='column'>
+                  direction='column'
+                >
                   {/* Commodity price */}
                   <Flex justify={'space-between'}>
                     <Text color='gray.3'>NFT price</Text>
@@ -1552,14 +1500,10 @@ const NftAssetDetail = () => {
                   <Divider color='gray.2' />
                   {/* Total repayment */}
                   <Flex justify={'space-between'}>
-                    <Text
-                      fontSize='16px'
-                      fontWeight='bold'>
+                    <Text fontSize='16px' fontWeight='bold'>
                       Total payment
                     </Text>
-                    <Text
-                      fontSize='16px'
-                      fontWeight='bold'>
+                    <Text fontSize='16px' fontWeight='bold'>
                       {formatFloat(
                         // 每期 * 期数
                         getPlanPer(installmentValue)
@@ -1594,6 +1538,7 @@ const NftAssetDetail = () => {
                 sm: '32px',
                 xs: '32px',
               }}
+              mb='40px'
               hidden={isEmpty(selectedPool)}
               variant={'primary'}
               display='flex'
@@ -1618,14 +1563,13 @@ const NftAssetDetail = () => {
                   borderWidth={'.5px'}
                   color={'blue.1'}
                   boxShadow={'none'}
-                  arrowShadowColor='var(--chakra-colors-blue-1)'>
-                  <SvgComponent
-                    svgId='icon-tip'
-                    svgSize={'20px'}
-                  />
+                  arrowShadowColor='var(--chakra-colors-blue-1)'
+                >
+                  <SvgComponent svgId='icon-tip' svgSize={'20px'} />
                 </TooltipComponent>
               }
-              fontWeight={'700'}>
+              fontWeight={'700'}
+            >
               <Text fontWeight={'400'}>Pay now with</Text>&nbsp;
               {formatFloat(
                 downPaymentWei
@@ -1640,30 +1584,10 @@ const NftAssetDetail = () => {
               )}
               {UNIT}
             </Button>
-            {!!warnMessage && (
-              <Flex
-                alignItems={'center'}
-                gap={'4px'}
-                mt='10px'>
-                <SvgComponent
-                  svgId='icon-tip'
-                  fill={'orange.1'}
-                  svgSize={'16px'}
-                />
-                <Text
-                  color={'orange.1'}
-                  fontSize={'14px'}>
-                  {warnMessage}
-                </Text>
-              </Flex>
-            )}
           </>
         )}
       </Box>
-      <ConnectWalletModal
-        visible={isOpen}
-        handleClose={onClose}
-      />
+      <ConnectWalletModal visible={isOpen} handleClose={onClose} />
     </NFTDetailContainer>
   )
 }

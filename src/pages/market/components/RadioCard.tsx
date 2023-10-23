@@ -35,6 +35,7 @@ const RadioCard: FunctionComponent<FlexProps & RadioCardProps> = ({
       _hover={{
         borderColor: isDisabled ? '' : isActive ? 'blue.1' : 'black.1',
       }}
+      letterSpacing={'-0.2px'}
       bg={isDisabled ? 'gray.2' : 'white'}
       p='16px'
       alignItems={{

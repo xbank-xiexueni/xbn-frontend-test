@@ -7,8 +7,8 @@ import {
   Player,
 } from 'video-react'
 
-import { ImageWithFallback } from 'components'
-import { judgeNftMediaType, NFT_MEDIA_TYPE } from 'utils/judgeNftMediaType'
+import { ImageWithFallback } from '@/components'
+import { judgeNftMediaType, NFT_MEDIA_TYPE } from '@/utils/judgeNftMediaType'
 
 type NftMediaProps = {
   data: {
@@ -51,7 +51,8 @@ const NftMedia: FunctionComponent<NftMediaProps> = ({
         boxSize={boxSize}
         alignItems={'center'}
         borderRadius={borderRadius}
-        {...rest}>
+        {...rest}
+      >
         <ImageWithFallback
           src={imagePreviewUrl}
           preview={false}
@@ -74,7 +75,8 @@ const NftMedia: FunctionComponent<NftMediaProps> = ({
           borderColor='gray.2'
           borderRadius={borderRadius}
           boxSize={boxSize}
-          {...rest}>
+          {...rest}
+        >
           <chakra.iframe
             src={animationUrl}
             referrerPolicy='no-referrer'
@@ -99,10 +101,9 @@ const NftMedia: FunctionComponent<NftMediaProps> = ({
           overflow='hidden'
           borderRadius={borderRadius}
           boxSize={boxSize}
-          {...rest}>
-          <Player
-            autoPlay={false}
-            poster={imagePreviewUrl}>
+          {...rest}
+        >
+          <Player autoPlay={false} poster={imagePreviewUrl}>
             <source src={animationUrl} />
             <BigPlayButton position='center' />
             <ControlBar>
@@ -125,7 +126,8 @@ const NftMedia: FunctionComponent<NftMediaProps> = ({
           boxSize={boxSize}
           borderRadius={borderRadius}
           alignItems={'center'}
-          {...rest}>
+          {...rest}
+        >
           <ImageWithFallback
             src={imagePreviewUrl}
             preview={false}

@@ -12,7 +12,7 @@ import {
   type TextProps,
   Box,
 } from '@chakra-ui/react'
-import { isEmpty } from 'lodash'
+import isEmpty from 'lodash-es/isEmpty'
 import { useState, type ReactElement } from 'react'
 
 import { LoadingComponent, EmptyComponent, SvgComponent } from '..'
@@ -93,12 +93,7 @@ const MyTable = ({
       }
       {isEmpty(data) && (
         <Box h='260px'>
-          <Box
-            left={0}
-            right={0}
-            top={'24px'}
-            bottom={0}
-            pos='absolute'>
+          <Box left={0} right={0} top={'24px'} bottom={0} pos='absolute'>
             {emptyRender ? emptyRender() : <EmptyComponent />}
           </Box>
         </Box>
@@ -107,14 +102,16 @@ const MyTable = ({
         <TableContainer
           position={'relative'}
           maxW={maxW || '100%'}
-          className='table-container'>
+          className='table-container'
+        >
           <ChakraTable
             variant='unstyled'
             style={{
               borderCollapse: 'collapse',
               borderSpacing: '0px 8px',
             }}
-            className='my-table'>
+            className='my-table'
+          >
             <Thead>
               <Tr pos='relative'>
                 {columns.map(
@@ -189,7 +186,8 @@ const MyTable = ({
                             direction: 'ASC',
                           })
                         }
-                      }}>
+                      }}
+                    >
                       <Flex
                         justify={
                           thAlign === 'center'
@@ -205,7 +203,8 @@ const MyTable = ({
                         }
                         py={'12px'}
                         px={i !== 0 ? '24px' : 0}
-                        {...styleConfig?.thTextProps}>
+                        {...styleConfig?.thTextProps}
+                      >
                         {title}
                         {sortable && sortParams.field !== dataIndex && (
                           <SvgComponent svgId='icon-unsort' />
@@ -227,9 +226,7 @@ const MyTable = ({
             </Thead>
             <Tbody>
               {data?.map((item) => (
-                <Tr
-                  key={JSON.stringify(item)}
-                  pos='relative'>
+                <Tr key={JSON.stringify(item)} pos='relative'>
                   {columns.map(
                     (
                       {
@@ -266,7 +263,8 @@ const MyTable = ({
                             : 0
                         }
                         borderBottomLeftRadius={colIndex === 0 ? 10 : 0}
-                        borderTopLeftRadius={colIndex === 0 ? 10 : 0}>
+                        borderTopLeftRadius={colIndex === 0 ? 10 : 0}
+                      >
                         <Box
                           lineHeight={{ md: '40px', sm: '20px', xs: '20px' }}
                           boxShadow={
@@ -289,7 +287,8 @@ const MyTable = ({
                             colIndex === columns?.length - 1 ? 10 : 0
                           }
                           {...styleConfig?.tdTextProps}
-                          {...tdStyleConfig}>
+                          {...tdStyleConfig}
+                        >
                           {!!render ? (
                             <Flex justifyContent={align}>
                               {render(item[dataIndex], item)}
@@ -309,9 +308,7 @@ const MyTable = ({
       )}
 
       {!!caption && (
-        <Flex
-          justify={'center'}
-          my={'64px'}>
+        <Flex justify={'center'} my={'64px'}>
           {!loading && caption()}
         </Flex>
       )}

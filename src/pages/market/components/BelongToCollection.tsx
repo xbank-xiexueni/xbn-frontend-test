@@ -2,9 +2,9 @@ import { Box, type BoxProps, Heading, Flex, Text } from '@chakra-ui/react'
 import { type FunctionComponent } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import { ImageWithFallback, SvgComponent } from 'components'
-import { UNIT } from 'constants/index'
-import { formatFloat } from 'utils/format'
+import { ImageWithFallback, SvgComponent } from '@/components'
+import { UNIT } from '@/constants'
+import { formatFloat } from '@/utils/format'
 
 const BelongToCollection: FunctionComponent<
   BoxProps & {
@@ -14,7 +14,6 @@ const BelongToCollection: FunctionComponent<
       safelistRequestStatus?: string
       floorPrice?: number
       id?: string
-      contract: string
     }
   }
 > = ({
@@ -23,7 +22,7 @@ const BelongToCollection: FunctionComponent<
     imagePreviewUrl = '',
     safelistRequestStatus,
     floorPrice,
-    contract,
+    id,
   },
   ...rest
 }) => {
@@ -38,14 +37,13 @@ const BelongToCollection: FunctionComponent<
         sm: '100%',
         xs: '100%',
       }}
-      cursor={contract === undefined ? 'inherit' : 'pointer'}
+      cursor={id === undefined ? 'inherit' : 'pointer'}
       onClick={() => {
-        if (contract === undefined) return
-        navigate(`/market/${contract}`)
-      }}>
-      <Heading
-        size={'lg'}
-        mb='16px'>
+        if (id === undefined) return
+        navigate(`/market/${id}`)
+      }}
+    >
+      <Heading size={'lg'} mb='16px'>
         Collection
       </Heading>
       <Flex
@@ -53,13 +51,15 @@ const BelongToCollection: FunctionComponent<
         p='16px'
         borderRadius={16}
         bg='gray.5'
-        gap='16px'>
+        gap='16px'
+      >
         <Flex
           w='72px'
           h='72px'
           alignItems={'center'}
           bg='white'
-          borderRadius={2}>
+          borderRadius={2}
+        >
           <ImageWithFallback
             src={imagePreviewUrl}
             borderRadius={8}
@@ -70,9 +70,7 @@ const BelongToCollection: FunctionComponent<
 
         <Box>
           <Flex>
-            <Text
-              fontSize={'18px'}
-              fontWeight='bold'>
+            <Text fontSize={'18px'} fontWeight='bold'>
               {name}
             </Text>
             {safelistRequestStatus === 'verified' && (
@@ -80,9 +78,7 @@ const BelongToCollection: FunctionComponent<
             )}
           </Flex>
 
-          <Text
-            fontSize={'18px'}
-            fontWeight='bold'>
+          <Text fontSize={'18px'} fontWeight='bold'>
             {formatFloat(floorPrice)}
             &nbsp;
             {UNIT}

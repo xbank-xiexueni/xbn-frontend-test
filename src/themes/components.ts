@@ -97,10 +97,6 @@ const components = {
         _hover: {
           bg: 'white',
           opacity: 0.8,
-          _disabled: {
-            bg: 'transparent',
-            opacity: 0.4,
-          },
         },
       },
       outlineOther: {

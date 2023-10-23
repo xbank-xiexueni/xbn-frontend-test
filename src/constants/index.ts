@@ -2,7 +2,8 @@ import type { ModalHeaderProps, UseToastOptions } from '@chakra-ui/react'
 
 export { XBANK_CONTRACT_ABI, WETH_CONTRACT_ABI } from './contractABI'
 
-export const XBANK_CONTRACT_ADDRESS = process.env.REACT_APP_XBANK_CONTRACT_ADDRESS
+export const XBANK_CONTRACT_ADDRESS = process.env
+  .REACT_APP_XBANK_CONTRACT_ADDRESS
 export const WETH_CONTRACT_ADDRESS = process.env.REACT_APP_WETH_CONTRACT_ADDRESS
 
 /**
@@ -309,7 +310,6 @@ export const WALLET_ICON: Record<string, string> = {
   walletConnect: 'https://etherscan.io/images/svg/brands/walletconnect.svg',
 }
 
-// 创建 banban 写死的 数据
 export const LENDING_SLIDER_IMAGES: string[] = []
 
 export const COLLECTIONS_WITH_BOXDROP_CONFIG: {

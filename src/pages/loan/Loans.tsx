@@ -17,13 +17,13 @@ import {
 import useRequest from 'ahooks/lib/useRequest'
 import BigNumber from 'bignumber.js'
 import dayjs, { unix } from 'dayjs'
-import { groupBy } from 'lodash'
-import { isEmpty } from 'lodash'
-import { sortBy } from 'lodash'
+import groupBy from 'lodash-es/groupBy'
+import isEmpty from 'lodash-es/isEmpty'
+import sortBy from 'lodash-es/sortBy'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useContractWrite, useWaitForTransaction } from 'wagmi'
 
-import { apiGetCollectionDetail, apiGetLoans } from 'api'
+import { apiGetCollectionDetail, apiGetLoans } from '@/api'
 import {
   ConnectWalletModal,
   ImageWithFallback,
@@ -33,7 +33,7 @@ import {
   LoadingComponent,
   NoticeSlider,
   NftInfoComponent,
-} from 'components'
+} from '@/components'
 import {
   UNIT,
   NotificationType,
@@ -42,16 +42,16 @@ import {
   XBANK_CONTRACT_ADDRESS,
   LOAN_STATUS,
   FRONTEND_LOAN_STATUS,
-} from 'constants/index'
-import { useWallet } from 'hooks'
-import RootLayout from 'layouts/RootLayout'
+} from '@/constants'
+import { useWallet } from '@/hooks'
+import RootLayout from '@/layouts/RootLayout'
 import {
   formatAddress,
   formatFloat,
   formatPluralUnit,
   formatWagmiErrorMsg,
-} from 'utils/format'
-import { wei2Eth } from 'utils/unit-conversion'
+} from '@/utils/format'
+import { wei2Eth } from '@/utils/unit-conversion'
 
 const Loans = () => {
   // const navigate = useNavigate()
@@ -63,8 +63,6 @@ const Loans = () => {
     noticeConfig: { data: noticeData, refresh: refreshNotice },
     isConnected,
   } = useWallet()
-  console.log('isConnected', isConnected)
-  console.log('currentAccount', currentAccount)
   const toast = useToast()
   const [repayLoadingMap, setRepayLoadingMap] =
     useState<Record<string, boolean>>()
@@ -436,9 +434,7 @@ const Loans = () => {
 
   return (
     <RootLayout my='100px'>
-      <Heading
-        size={'2xl'}
-        mb='60px'>
+      <Heading size={'2xl'} mb='60px'>
         Loans
       </Heading>
 
@@ -447,9 +443,7 @@ const Loans = () => {
           (i) => i.type === NotificationType.loan_repayment,
         )}
       />
-      <Flex
-        justify={'space-between'}
-        mt='16px'>
+      <Flex justify={'space-between'} mt='16px'>
         <Box w='100%'>
           <TableWithPagination
             table={{
@@ -488,11 +482,10 @@ const Loans = () => {
                     return (
                       <NftInfoComponent
                         tokenId={token_id}
-                        contractAddress={info.collateral_contract}>
+                        contractAddress={info.collateral_contract}
+                      >
                         {({ img, name }) => (
-                          <Flex
-                            alignItems={'center'}
-                            gap={'8px'}>
+                          <Flex alignItems={'center'} gap={'8px'}>
                             <ImageWithFallback
                               src={img}
                               w='40px'
@@ -505,7 +498,8 @@ const Loans = () => {
                               display='inline-block'
                               overflow='hidden'
                               whiteSpace='nowrap'
-                              textOverflow='ellipsis'>
+                              textOverflow='ellipsis'
+                            >
                               {name}
                             </Text>
                           </Flex>
@@ -565,17 +559,16 @@ const Loans = () => {
                           })
                         }}
                         w='68px'
-                        textAlign={'center'}>
+                        textAlign={'center'}
+                      >
                         {repayLoadingMap && repayLoadingMap[value] ? (
-                          <Spinner
-                            color='blue.1'
-                            size={'sm'}
-                          />
+                          <Spinner color='blue.1' size={'sm'} />
                         ) : (
                           <Text
                             color='blue.1'
                             fontSize='14px'
-                            fontWeight={'500'}>
+                            fontWeight={'500'}
+                          >
                             Repay
                           </Text>
                         )}
@@ -593,11 +586,9 @@ const Loans = () => {
                         borderRadius={8}
                         cursor='pointer'
                         onClick={() => handleClickPayInAdvance(info)}
-                        textAlign={'center'}>
-                        <Text
-                          color='blue.1'
-                          fontSize='14px'
-                          fontWeight={'500'}>
+                        textAlign={'center'}
+                      >
+                        <Text color='blue.1' fontSize='14px' fontWeight={'500'}>
                           Pay Off Now
                         </Text>
                       </Box>
@@ -628,16 +619,15 @@ const Loans = () => {
                 loading: loading,
               },
               tableTitle: () => (
-                <Heading
-                  fontSize={'20px'}
-                  mt={'40px'}>
+                <Heading fontSize={'20px'} mt={'40px'}>
                   <Highlight
                     styles={{
                       fontSize: '18px',
                       fontWeight: 500,
                       color: `gray.3`,
                     }}
-                    query='(Paid Off)'>
+                    query='(Paid Off)'
+                  >
                     Previous Loans(Paid Off)
                   </Highlight>
                 </Heading>
@@ -660,11 +650,10 @@ const Loans = () => {
                     return (
                       <NftInfoComponent
                         tokenId={token_id}
-                        contractAddress={info.collateral_contract}>
+                        contractAddress={info.collateral_contract}
+                      >
                         {({ img, name }) => (
-                          <Flex
-                            alignItems={'center'}
-                            gap={'8px'}>
+                          <Flex alignItems={'center'} gap={'8px'}>
                             <ImageWithFallback
                               src={img}
                               w='40px'
@@ -677,7 +666,8 @@ const Loans = () => {
                               display='inline-block'
                               overflow='hidden'
                               whiteSpace='nowrap'
-                              textOverflow='ellipsis'>
+                              textOverflow='ellipsis'
+                            >
                               {name}
                             </Text>
                           </Flex>
@@ -709,16 +699,15 @@ const Loans = () => {
                 },
               },
               tableTitle: () => (
-                <Heading
-                  fontSize={'20px'}
-                  mt={'40px'}>
+                <Heading fontSize={'20px'} mt={'40px'}>
                   <Highlight
                     styles={{
                       fontSize: '18px',
                       fontWeight: 500,
                       color: `gray.3`,
                     }}
-                    query='(Overdue)'>
+                    query='(Overdue)'
+                  >
                     Previous Loans(Overdue)
                   </Highlight>
                 </Heading>
@@ -744,11 +733,10 @@ const Loans = () => {
                     return (
                       <NftInfoComponent
                         tokenId={token_id}
-                        contractAddress={info.collateral_contract}>
+                        contractAddress={info.collateral_contract}
+                      >
                         {({ img, name }) => (
-                          <Flex
-                            alignItems={'center'}
-                            gap={'8px'}>
+                          <Flex alignItems={'center'} gap={'8px'}>
                             <ImageWithFallback
                               src={img}
                               w='40px'
@@ -761,7 +749,8 @@ const Loans = () => {
                               display='inline-block'
                               overflow='hidden'
                               whiteSpace='nowrap'
-                              textOverflow='ellipsis'>
+                              textOverflow='ellipsis'
+                            >
                               {name}
                             </Text>
                           </Flex>
@@ -782,16 +771,14 @@ const Loans = () => {
           />
         </Box>
       </Flex>
-      <ConnectWalletModal
-        visible={isOpen}
-        handleClose={onClose}
-      />
+      <ConnectWalletModal visible={isOpen} handleClose={onClose} />
 
       <Modal
         onClose={handleClose}
         isOpen={!!prepayData}
         isCentered
-        scrollBehavior='inside'>
+        scrollBehavior='inside'
+      >
         <ModalOverlay bg='black.2' />
         <ModalContent
           maxW={{
@@ -800,11 +787,9 @@ const Loans = () => {
             xs: '326px',
           }}
           maxH={'calc(100% - 5.5rem)'}
-          borderRadius={16}>
-          <LoadingComponent
-            loading={collectionLoading}
-            top={0}
-          />
+          borderRadius={16}
+        >
+          <LoadingComponent loading={collectionLoading} top={0} />
           <ModalHeader {...MODEL_HEADER_PROPS}>
             Confirm
             <SvgComponent
@@ -820,19 +805,15 @@ const Loans = () => {
               md: '40px',
               sm: '20px',
               xs: '20px',
-            }}>
+            }}
+          >
             <NftInfoComponent
               tokenId={prepayData?.token_id || ''}
-              contractAddress={prepayData?.collateral_contract || ''}>
+              contractAddress={prepayData?.collateral_contract || ''}
+            >
               {({ img, name }) => (
-                <Flex
-                  gap='12px'
-                  alignItems={'center'}
-                  mb='10px'>
-                  <Box
-                    borderRadius={8}
-                    borderWidth={1}
-                    borderColor={'gray.2'}>
+                <Flex gap='12px' alignItems={'center'} mb='10px'>
+                  <Box borderRadius={8} borderWidth={1} borderColor={'gray.2'}>
                     <ImageWithFallback
                       src={img}
                       w='100px'
@@ -841,14 +822,8 @@ const Loans = () => {
                     />
                   </Box>
 
-                  <Flex
-                    flexDir={'column'}
-                    w='60%'
-                    gap={'4px'}>
-                    <Text
-                      noOfLines={1}
-                      fontSize={'24px'}
-                      fontWeight={'700'}>
+                  <Flex flexDir={'column'} w='60%' gap={'4px'}>
+                    <Text noOfLines={1} fontSize={'24px'} fontWeight={'700'}>
                       {name}
                     </Text>
                     <Flex>
@@ -862,21 +837,12 @@ const Loans = () => {
               )}
             </NftInfoComponent>
             <Divider />
-            <Text
-              my='24px'
-              fontWeight={'700'}
-              mb='20px'>
+            <Text my='24px' fontWeight={'700'} mb='20px'>
               Payment Info
             </Text>
 
-            <Flex
-              flexDir={'column'}
-              gap='10px'
-              mb='24px'>
-              <Flex
-                color='gray.3'
-                fontSize={'14px'}
-                justify={'space-between'}>
+            <Flex flexDir={'column'} gap='10px' mb='24px'>
+              <Flex color='gray.3' fontSize={'14px'} justify={'space-between'}>
                 <Text>Outstanding Principal</Text>
                 <Text>
                   {prepayData
@@ -887,10 +853,7 @@ const Loans = () => {
                   {UNIT}
                 </Text>
               </Flex>
-              <Flex
-                color='gray.3'
-                fontSize={'14px'}
-                justify={'space-between'}>
+              <Flex color='gray.3' fontSize={'14px'} justify={'space-between'}>
                 <Text>Outstanding Interest</Text>
                 <Text>
                   {prepayData
@@ -905,9 +868,7 @@ const Loans = () => {
               </Flex>
             </Flex>
 
-            <Flex
-              justify={'space-between'}
-              mb='20px'>
+            <Flex justify={'space-between'} mb='20px'>
               <Text>Payment Amount</Text>
               <Text fontWeight={'700'}>
                 {prepayData
@@ -938,7 +899,8 @@ const Loans = () => {
               position={'sticky'}
               bottom={'0px'}
               bg='white'
-              mt='8px'>
+              mt='8px'
+            >
               <Button
                 w='100%'
                 h={{
@@ -954,7 +916,8 @@ const Loans = () => {
                   prepayData &&
                   prepayLoadingMap[prepayData.loan_id]
                 }
-                onClick={handleConfirmPayInAdvance}>
+                onClick={handleConfirmPayInAdvance}
+              >
                 Confirm
               </Button>
             </Flex>

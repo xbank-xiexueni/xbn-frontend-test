@@ -14,22 +14,16 @@ import {
   InputRightElement,
   chakra,
   useToast,
-  Input,
 } from '@chakra-ui/react'
 import useRequest from 'ahooks/lib/useRequest'
 import BigNumber from 'bignumber.js'
-import { find } from 'lodash'
-import { isEmpty } from 'lodash'
-import { isEqual } from 'lodash'
-import { range } from 'lodash'
-import { slice } from 'lodash'
-import { useMemo, useState, useEffect, useCallback, useRef } from 'react'
-import {
-  useLocation,
-  useNavigate,
-  useParams,
-  type Location,
-} from 'react-router-dom'
+import find from 'lodash-es/find'
+import isEmpty from 'lodash-es/isEmpty'
+import isEqual from 'lodash-es/isEqual'
+import range from 'lodash-es/range'
+import slice from 'lodash-es/slice'
+import { useMemo, useState, useEffect, useCallback } from 'react'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useSignTypedData } from 'wagmi'
 
 import {
@@ -39,7 +33,7 @@ import {
   apiGetPoolsTypedData,
   apiPostPool,
   apiPutPool,
-} from 'api'
+} from '@/api'
 import {
   AsyncSelectCollection,
   NotFound,
@@ -50,13 +44,13 @@ import {
   LoadingComponent,
   TooltipComponent,
   ConnectWalletModal,
-} from 'components'
+} from '@/components'
 import {
   ACCOUNT_MODAL_TAB_KEY,
   MIN_LOAN_COUNT,
   STEPS_DESCRIPTIONS,
   WETH_CONTRACT_ADDRESS,
-} from 'constants'
+} from '@/constants'
 import {
   BASE_RATE,
   COLLATERAL_KEYS,
@@ -72,19 +66,18 @@ import {
   RATIO_POWER_MAP,
   RATIO_POWER_KEYS,
   RATE_POWER_VALUES,
-  BANBAN_POOL_DEFAULT_OPTIONS,
-} from 'constants/interest'
-import { useWallet, type NftCollection, useRemind } from 'hooks'
-import LendLayout from 'layouts/LendLayout'
-import { computePoolPoint, getMaxSingleLoanScore } from 'utils/calculation'
+} from '@/constants/interest'
+import { useWallet, type NftCollection, useRemind } from '@/hooks'
+import RootLayout from '@/layouts/RootLayout'
+import { computePoolPoint, getMaxSingleLoanScore } from '@/utils/calculation'
 import {
   formatBigNum2Str,
   formatFloat,
   formatPluralUnit,
   formatTypedSignData,
-} from 'utils/format'
-import { eth2Wei, wei2Eth } from 'utils/unit-conversion'
-import { getKeyByValue, isAddressEqual } from 'utils/utils'
+} from '@/utils/format'
+import { eth2Wei, wei2Eth } from '@/utils/unit-conversion'
+import { getKeyByValue } from '@/utils/utils'
 
 import AllowanceModal from './components/AllowanceModal'
 import IconTip from './components/IconTip'
@@ -100,23 +93,20 @@ enum SUPPLY_CAPS_STATUS {
   NORMAL,
 }
 
-const CAMPAIGN_ENTRY = 'campaign'
-
 const Create = () => {
-  const { action, contract } = useParams() as {
+  const params = useParams() as {
     action: 'create' | 'edit'
-    contract?: string
   }
   const toast = useToast()
 
-  const { state, search }: Location = useLocation()
+  const { state } = useLocation() as {
+    state: {
+      contractAddress: string
+      nftCollection: NftCollection
+      poolData: PoolsListItemType
+    }
+  }
   const navigate = useNavigate()
-  const isFromCampaign = useMemo(() => {
-    return (
-      Object.fromEntries(new URLSearchParams(search))?.from === CAMPAIGN_ENTRY
-    )
-  }, [search])
-
   const {
     currentAccount,
     interceptFn,
@@ -128,7 +118,6 @@ const Create = () => {
       wethConfig: { data: wethData, loading: wethLoading },
       ethConfig: { data: ethData, loading: ethLoading },
     },
-    collectionList,
   } = useWallet()
 
   useEffect(() => {
@@ -191,22 +180,6 @@ const Create = () => {
   // 贷款天数微调 bottom
   const [tenorMultiplierKey, setTenorMultiplierKey] = useState(2)
 
-  // banban collection 需要特殊处理
-  const isBanban = useMemo(() => {
-    return isAddressEqual(
-      selectCollection?.contractAddress,
-      process.env.REACT_APP_BANBAN_COLLECTION_ADDRESS,
-    )
-  }, [selectCollection])
-  useEffect(() => {
-    if (isBanban) {
-      setTenorKey(BANBAN_POOL_DEFAULT_OPTIONS.tenorKey)
-      setCollateralKey(BANBAN_POOL_DEFAULT_OPTIONS.collateralKey)
-      setSingleCap(BANBAN_POOL_DEFAULT_OPTIONS.singleCaps)
-      setInterestPowerKey(BANBAN_POOL_DEFAULT_OPTIONS.ratePowerKey)
-    }
-  }, [isBanban])
-
   const { signTypedDataAsync, isLoading: signLoading } = useSignTypedData()
 
   const { runAsync: runGetPoolTypedData, loading: signDataLoading } =
@@ -228,24 +201,20 @@ const Create = () => {
   )
 
   const initialCollection = useMemo(() => {
-    if (!contract) return
-    const nftCollection = collectionList.find((i) =>
-      isAddressEqual(i.contractAddress, contract),
-    )?.nftCollection
-    if (!nftCollection) return
+    if (!state) return
     const prev = {
-      contractAddress: contract,
-      nftCollection,
+      contractAddress: state.contractAddress,
+      nftCollection: state.nftCollection,
     }
-    if (action === 'edit') {
+    if (params.action === 'edit') {
       return prev
     }
-    if (action === 'create') {
+    if (params?.action === 'create') {
       if (!collectionAddressWithPool) return
-      if (collectionAddressWithPool.includes(contract)) return
+      if (collectionAddressWithPool.includes(prev?.contractAddress)) return
       return prev
     }
-  }, [contract, action, collectionAddressWithPool, collectionList])
+  }, [state, params, collectionAddressWithPool])
 
   const initialItems = useMemo(() => {
     let currentCollateralKey = 4
@@ -256,8 +225,8 @@ const Create = () => {
     let preSingleCap
     let preSupplyCap
 
-    // 只有编辑进来的 才需要填入默认值，supply 只需要填入 collection
-    if (state && action === 'edit') {
+    // 只有编辑进来的 才才需要填入默认值，supply 只需要填入 collection
+    if (state && params?.action === 'edit') {
       const { poolData } = state
       currentCollateralKey =
         getKeyByValue(COLLATERAL_MAP, poolData?.max_collateral_factor) ?? 4
@@ -294,7 +263,7 @@ const Create = () => {
       preSingleCap,
       preSupplyCap,
     }
-  }, [state, action])
+  }, [state, params])
 
   useEffect(() => {
     if (!initialItems) return
@@ -307,7 +276,7 @@ const Create = () => {
     setSupplyCap(initialItems?.preSupplyCap?.toString() || undefined)
   }, [initialItems])
 
-  const { data: pointData } = useRequest(
+  const { loading: poolPointLoading, data: pointData } = useRequest(
     () =>
       apiGetPoolPoints({
         contract_address: selectCollection?.contractAddress || '',
@@ -627,7 +596,7 @@ const Create = () => {
       interestPowerKey,
       collateralFactorMultiplier,
       tenorMultiplierKey,
-      preSingleCap: Number(singleCap),
+      singleCap: Number(singleCap),
       preSupplyCap: Number(supplyCap),
     })
   }, [
@@ -770,7 +739,7 @@ const Create = () => {
         toast({
           title: error?.cause?.code || error?.error?.code,
           description: error?.cause?.message || error?.error?.message,
-          duration: 10000,
+          duration: 5000,
           status: 'error',
         })
       }
@@ -796,13 +765,6 @@ const Create = () => {
   const actionLoading = useMemo(() => {
     return createLoading || updateLoading || signDataLoading || signLoading
   }, [createLoading, updateLoading, signDataLoading, signLoading])
-
-  const inputRef = useRef<any>(null)
-  useEffect(() => {
-    if (inputRef?.current && isBanban && !!floorPrice) {
-      inputRef.current.focus()
-    }
-  }, [inputRef, isBanban, floorPrice])
 
   const createBtnDisabledData = useMemo(() => {
     if (isEmpty(selectCollection)) {
@@ -891,22 +853,22 @@ const Create = () => {
     isChanged,
   ])
 
-  if (!['edit', 'create'].includes(action)) {
+  if (!params || !['edit', 'create'].includes(params?.action)) {
     return (
-      <LendLayout>
+      <RootLayout>
         <NotFound />
-      </LendLayout>
+      </RootLayout>
     )
   }
-  if (action === 'edit' && (!state || isEmpty(state))) {
+  if (params.action === 'edit' && (!state || isEmpty(state))) {
     return (
-      <LendLayout>
+      <RootLayout>
         <NotFound title='pool not found' />
-      </LendLayout>
+      </RootLayout>
     )
   }
   return (
-    <LendLayout>
+    <RootLayout>
       <H5SecondaryHeader />
 
       <Box
@@ -941,9 +903,9 @@ const Create = () => {
             xs: '24px',
           }}
           mb={'8px'}>
-          {action === 'create' ? 'Create New Pool' : 'Manage Pool'}
+          {params.action === 'create' ? 'Create New Pool' : 'Manage Pool'}
         </Heading>
-        {action === 'create' && (
+        {params.action === 'create' && (
           <Text
             color='gray.3'
             w={{
@@ -969,6 +931,7 @@ const Create = () => {
             floorPriceLoading ||
             actionLoading ||
             configLoading ||
+            poolPointLoading ||
             ethLoading ||
             wethLoading
           }
@@ -986,9 +949,7 @@ const Create = () => {
                 {...collectionSelectorProps}
                 w='360px'
                 disabledArr={process.env.DEV ? [] : collectionAddressWithPool}
-                isDisabled={
-                  action === 'edit' || actionLoading || isFromCampaign
-                }
+                isDisabled={params.action === 'edit' || actionLoading}
                 value={selectCollection}
                 onChange={(e: {
                   contractAddress: string
@@ -1008,7 +969,7 @@ const Create = () => {
               mt='24px'>
               <AsyncSelectCollection
                 {...collectionSelectorProps}
-                isDisabled={action === 'edit'}
+                isDisabled={params.action === 'edit'}
                 value={selectCollection}
                 disabledArr={collectionAddressWithPool}
                 onChange={(e: {
@@ -1061,7 +1022,6 @@ const Create = () => {
             <SliderWrapper
               unit='%'
               value={collateralKey}
-              isDisabled={isBanban}
               svgId='icon-intersect'
               defaultValue={initialItems?.collateralKey}
               data={COLLATERAL_KEYS}
@@ -1103,7 +1063,7 @@ const Create = () => {
                     />
                   </InputLeftElement>
                   <CustomNumberInput
-                    isDisabled={!selectCollection || !floorPrice || isBanban}
+                    isDisabled={!selectCollection || !floorPrice}
                     value={singleCap || ''}
                     isInvalid={singleCapsInputStatus?.status === 'error'}
                     // lineHeight='60px'
@@ -1296,63 +1256,7 @@ const Create = () => {
                       fill={'black.1'}
                     />
                   </InputLeftElement>
-                  <Input
-                    value={supplyCap || ''}
-                    isInvalid={supplyCapsInputStatus?.status === 'error'}
-                    placeholder={`Please Enter amount...(Min: ${formatFloat(
-                      minSupplyCaps?.toNumber(),
-                    )}WETH)`}
-                    px={'32px'}
-                    isDisabled={!floorPrice}
-                    ref={inputRef}
-                    w='100%'
-                    errorBorderColor='red.1'
-                    borderColor='gray.3'
-                    _hover={{
-                      borderColor: 'gray.3',
-                    }}
-                    type='number'
-                    title=''
-                    // @ts-ignore
-                    onWheel={(e) => e.target.blur()}
-                    onInput={(e: any) => {
-                      const v = e.target.value as string
-                      if (Number(v) < 0) {
-                        setSupplyCap('')
-                        return
-                      }
-
-                      if (Number(v) > 100000000) {
-                        setSupplyCap(`100000000`)
-                        return
-                      }
-                      setSupplyCap(
-                        v.includes('.')
-                          ? v.replace(/^(-)*(\\d+).(\\d{0,8}).*$/, '$1$2.$3')
-                          : v,
-                      )
-                    }}
-                    h={{
-                      md: '48px',
-                      sm: '42px',
-                      xs: '42px',
-                    }}
-                    _focus={{
-                      borderColor:
-                        supplyCapsInputStatus?.status === 'error'
-                          ? 'red.1'
-                          : 'blue.1',
-                    }}
-                    _focusVisible={{
-                      boxShadow: `0 0 0 1px var(--chakra-colors-${
-                        supplyCapsInputStatus?.status === 'error'
-                          ? 'red-1'
-                          : 'blue-1'
-                      })`,
-                    }}
-                    borderRadius={8}
-                  />
-                  {/* <CustomNumberInput
+                  <CustomNumberInput
                     value={supplyCap || ''}
                     isInvalid={supplyCapsInputStatus?.status === 'error'}
                     placeholder={`Please Enter amount...(Min: ${formatFloat(
@@ -1361,8 +1265,8 @@ const Create = () => {
                     onSetValue={(v) => setSupplyCap(v)}
                     px={'32px'}
                     h={'48px'}
-                    // isDisabled={!floorPrice}
-                  /> */}
+                    isDisabled={!floorPrice}
+                  />
 
                   {supplyCapsInputStatus?.status === 'error' && (
                     <InputRightElement
@@ -1399,7 +1303,6 @@ const Create = () => {
         {/* 贷款天数 tenor */}
         <Wrapper stepIndex={4}>
           <SliderWrapper
-            isDisabled={isBanban}
             unit={TENOR_MAP.get(tenorKey) === 1 ? 'day' : 'days'}
             value={tenorKey}
             defaultValue={initialItems?.tenorKey}
@@ -1417,7 +1320,6 @@ const Create = () => {
         {/* 贷款比率 */}
         <Wrapper stepIndex={5}>
           <SliderWrapper
-            isDisabled={isBanban}
             unit='%'
             value={interestPowerKey}
             defaultValue={initialItems?.interestPowerKey}
@@ -1608,8 +1510,7 @@ const Create = () => {
               h='36px'
               bg='transparent'
               fontWeight={'500'}
-              w='240px'
-              isDisabled={isBanban}>
+              w='240px'>
               Fine-tune interest rates
             </Button>
           </Flex>
@@ -1663,7 +1564,7 @@ const Create = () => {
           {/* <SvgComponent svgId='icon-arrow' fill='blue.1' /> */}
           Back
         </Button>
-        {action === 'create' && (
+        {params.action === 'create' && (
           <TooltipComponent label={createBtnDisabledData.label}>
             <Button
               variant={'primary'}
@@ -1680,7 +1581,7 @@ const Create = () => {
             </Button>
           </TooltipComponent>
         )}
-        {action === 'edit' && (
+        {params.action === 'edit' && (
           <TooltipComponent label={updateBtnDisabledData.label}>
             <Button
               isDisabled={updateBtnDisabledData.isDisabled}
@@ -1707,7 +1608,7 @@ const Create = () => {
         isOpen={allowanceModalVisible}
         onClose={closeAllowanceModal}
       />
-    </LendLayout>
+    </RootLayout>
   )
 }
 

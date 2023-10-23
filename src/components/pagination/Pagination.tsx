@@ -1,5 +1,5 @@
 import { Flex } from '@chakra-ui/react'
-import { ceil } from 'lodash'
+import ceil from 'lodash-es/ceil'
 import Pagination, { type PaginationProps } from 'rc-pagination'
 import { useMemo, type FunctionComponent } from 'react'
 

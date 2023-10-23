@@ -23,7 +23,7 @@ const lazyWithRetries: typeof lazy = (importer) => {
           return await import(/* @vite-ignore */ url.href)
         } catch (e) {
           console.log('retrying import')
-          // window.location.reload()
+          window.location.reload()
         }
       }
       throw error

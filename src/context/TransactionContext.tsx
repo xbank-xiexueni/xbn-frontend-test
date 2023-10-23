@@ -2,8 +2,8 @@ import { useDisclosure } from '@chakra-ui/react'
 import useLocalStorageState from 'ahooks/lib/useLocalStorageState'
 import useRequest from 'ahooks/lib/useRequest'
 import dayjs from 'dayjs'
-import { compact } from 'lodash'
-import { isEmpty } from 'lodash'
+import compact from 'lodash-es/compact'
+import isEmpty from 'lodash-es/isEmpty'
 import {
   useEffect,
   useState,
@@ -22,21 +22,20 @@ import {
   type Connector,
 } from 'wagmi'
 
-import { apiGetActiveCollection, apiGetPools, apiGetWalletMetaData } from 'api'
-import type { NoticeItemType } from 'components/notice-slider/NoticeSlider'
+import { apiGetActiveCollection, apiGetPools } from '@/api'
+import type { NoticeItemType } from '@/components/notice-slider/NoticeSlider'
 import {
   ACCOUNT_MODAL_TAB_KEY,
   WETH_CONTRACT_ABI,
   WETH_CONTRACT_ADDRESS,
   XBANK_CONTRACT_ADDRESS,
   COLLECTION_STATUS_ENUM,
-} from 'constants/index'
+} from '@/constants'
 import {
   useNftCollectionsByContractAddressesQuery,
   useNotice,
   useSign,
-} from 'hooks'
-import { isAddressEqual } from 'utils/utils'
+} from '@/hooks'
 
 export const TransactionContext = createContext<{
   connectWallet: (config: { connector?: Connector; chainId?: number }) => void
@@ -80,10 +79,6 @@ export const TransactionContext = createContext<{
       data: string
       loading: boolean
       refreshAsync: (options?: any) => Promise<any>
-    }
-    banbanConfig: {
-      data?: BanbanMetaDataType
-      refreshAsync: () => Promise<BanbanMetaDataType | undefined>
     }
   }
   runChainCheckAsync: (id?: number) => Promise<boolean>
@@ -130,12 +125,6 @@ export const TransactionContext = createContext<{
       data: '',
       loading: false,
       refreshAsync: async () => '',
-    },
-    banbanConfig: {
-      data: {
-        buyable: false,
-      },
-      refreshAsync: async () => undefined,
     },
   },
   runChainCheckAsync: async () => false,
@@ -197,8 +186,10 @@ export const TransactionsProvider = ({
       const collectionFromGraphQL =
         collectionData?.nftCollectionsByContractAddresses || []
       const res = xbnCollectionData?.map((item) => {
-        const current = collectionFromGraphQL?.find((i) =>
-          isAddressEqual(i.contractAddress, item.contract_addr),
+        const current = collectionFromGraphQL?.find(
+          (i) =>
+            i.contractAddress?.toLowerCase() ===
+            item.contract_addr?.toLowerCase(),
         )
         if (!current) return
         return {
@@ -227,7 +218,6 @@ export const TransactionsProvider = ({
   } = useAccount({})
 
   const isConnected = useMemo(() => {
-    console.log('abc', currentAccount)
     if (!isWagmiConnect) return false
     if (!currentAccount) return false
     if (isEmpty(currentAccount)) return false
@@ -246,14 +236,6 @@ export const TransactionsProvider = ({
     currentAccount?.address || '',
     {
       ready: !!currentAccount,
-    },
-  )
-
-  const { data: metaData, refreshAsync: refreshMetaDataAsync } = useRequest(
-    () => apiGetWalletMetaData(currentAccount?.address || ''),
-    {
-      ready: !!currentAccount,
-      refreshDeps: [currentAccount?.address],
     },
   )
 
@@ -462,10 +444,6 @@ export const TransactionsProvider = ({
             data: allowanceData?.toString() || '',
             loading: allowanceLoading,
             refreshAsync: refreshAllowanceData,
-          },
-          banbanConfig: {
-            data: metaData,
-            refreshAsync: refreshMetaDataAsync,
           },
         },
       }}>

@@ -28,8 +28,8 @@ import useHover from 'ahooks/lib/useHover'
 import useRequest from 'ahooks/lib/useRequest'
 import BigNumber from 'bignumber.js'
 import dayjs from 'dayjs'
-import { isEmpty } from 'lodash'
-import { isEqual } from 'lodash'
+import isEmpty from 'lodash-es/isEmpty'
+import isEqual from 'lodash-es/isEqual'
 import {
   useMemo,
   useState,
@@ -48,9 +48,9 @@ import {
   apiGetListings,
   apiGetLoans,
   apiPostListing,
-} from 'api'
-import imgBlur from 'assets/blur-logo.png'
-import imgOpensea from 'assets/opensea-logo.png'
+} from '@/api'
+import imgBlur from '@/assets/blur-logo.png'
+import imgOpensea from '@/assets/opensea-logo.png'
 import {
   CustomNumberInput,
   ImageWithFallback,
@@ -59,7 +59,7 @@ import {
   MortgagedTag,
   Select,
   SvgComponent,
-} from 'components'
+} from '@/components'
 import {
   FORMAT_NUMBER,
   OPENSEA_LIST_DURATION,
@@ -68,12 +68,10 @@ import {
   MODEL_HEADER_PROPS,
   BLUR_LIST_DURATION,
   MARKET_TYPE_ENUM,
-} from 'constants/index'
-import { LIST_BANBAN_DEFAULT_OPTIONS } from 'constants/interest'
-import { useExchangeRatesLazyQuery, useIsMobile, useWallet } from 'hooks'
-import { formatFloat } from 'utils/format'
-import { wei2Eth } from 'utils/unit-conversion'
-import { isAddressEqual } from 'utils/utils'
+} from '@/constants'
+import { useIsMobile, useWallet } from '@/hooks'
+import { formatFloat } from '@/utils/format'
+import { wei2Eth } from '@/utils/unit-conversion'
 
 export type ListDataType = {
   assetData?: {
@@ -86,13 +84,7 @@ const DURATION_PROPS = {
   placeholder: 'Please select',
   h: '60px',
   borderColor: 'var(--chakra-colors-gray-4)',
-  img: (
-    <SvgComponent
-      svgId='icon-calendar'
-      ml='12px'
-      svgSize={'20px'}
-    />
-  ),
+  img: <SvgComponent svgId='icon-calendar' ml='12px' svgSize={'20px'} />,
   maxContentHeight: 240,
 }
 
@@ -132,10 +124,9 @@ const NftInfoBox: FunctionComponent<
         sm: '280px',
         xs: '280px',
       }}
-      {...rest}>
-      <Flex
-        gap={'12px'}
-        alignItems={'center'}>
+      {...rest}
+    >
+      <Flex gap={'12px'} alignItems={'center'}>
         <ImageWithFallback
           src={data?.img}
           boxSize={'64px'}
@@ -147,11 +138,9 @@ const NftInfoBox: FunctionComponent<
             md: '320px',
             sm: '100px',
             xs: '100px',
-          }}>
-          <Text
-            fontSize={'20px'}
-            fontWeight={'700'}
-            noOfLines={1}>
+          }}
+        >
+          <Text fontSize={'20px'} fontWeight={'700'} noOfLines={1}>
             {data?.name}
           </Text>
           <Flex alignItems={'center'}>
@@ -163,12 +152,8 @@ const NftInfoBox: FunctionComponent<
         </Box>
       </Flex>
 
-      <Flex
-        flexDir={'column'}
-        alignItems={'flex-end'}>
-        <Text
-          color='gray.3'
-          fontSize={'12px'}>
+      <Flex flexDir={'column'} alignItems={'flex-end'}>
+        <Text color='gray.3' fontSize={'12px'}>
           Listing price
         </Text>
         <Text fontWeight={'700'}>
@@ -187,20 +172,13 @@ const Item: FunctionComponent<
   }
 > = ({ label, value, color = 'gray.3', fontWeight = '500', ...rest }) => {
   return (
-    <Flex
-      justify={'space-between'}
-      {...rest}>
-      <Text
-        color={color}
-        fontWeight={fontWeight}>
+    <Flex justify={'space-between'} {...rest}>
+      <Text color={color} fontWeight={fontWeight}>
         {label}
       </Text>
       <Flex gap={'8px'}>
         {typeof value === 'string' ? (
-          <Text
-            color={color}
-            fontWeight={fontWeight}
-            noOfLines={1}>
+          <Text color={color} fontWeight={fontWeight} noOfLines={1}>
             {value}
           </Text>
         ) : (
@@ -213,7 +191,6 @@ const Item: FunctionComponent<
 
 // 目前还不知道怎么获取
 const gas = 0
-const BANBAN_PRICE = process.env.REACT_APP_BANBAN_ASSET_PRICE
 
 const MyAssetNftListCard: FunctionComponent<
   {
@@ -228,13 +205,6 @@ const MyAssetNftListCard: FunctionComponent<
   const toast = useToast()
 
   const ish5 = useIsMobile()
-
-  const isBanban = useMemo(() => {
-    return isAddressEqual(
-      contractData?.asset_contract_address,
-      process.env.REACT_APP_BANBAN_COLLECTION_ADDRESS,
-    )
-  }, [contractData])
 
   // loan_status: 0 表示资产的贷款还未还清，1 表示完全拥有的（贷款已还清或者通过其它途径购买的）
   const isMortgaged = useMemo(() => contractData?.mortgaged, [contractData])
@@ -269,36 +239,12 @@ const MyAssetNftListCard: FunctionComponent<
   const [loanData, setLoanData] = useState<LoanDataType>()
   const [lastCancelDiffTime, setLastCancelDiffTime] = useState<number>(Infinity)
 
-  const [fetchExchange] = useExchangeRatesLazyQuery()
-
-  const setDefaultOption = useCallback(async () => {
-    if (isBanban) {
-      const { data: exchangeData } = await fetchExchange({
-        variables: {
-          symbols: ['ETHUSDT'],
-        },
-      })
-      const ethPrice = exchangeData?.exchangeRates?.find(
-        (i) => i?.symbol === 'ETHUSDT',
-      )?.price
-      if (!ethPrice) return
-      const listPrice = BigNumber(BANBAN_PRICE).plus(
-        BigNumber(20).dividedBy(ethPrice).toFixed(8),
-      )
-      setPrice(listPrice?.toFixed())
-      setDurationValue(LIST_BANBAN_DEFAULT_OPTIONS.durationValue)
-      setListPlatform(LIST_BANBAN_DEFAULT_OPTIONS.listPlatform)
-      return
-    }
+  useEffect(() => {
+    if (type === 'cancel') return
     setPrice('')
     setDurationValue(null)
     setListPlatform(MARKET_TYPE_ENUM.BLUR)
-  }, [isBanban, fetchExchange])
-
-  useEffect(() => {
-    if (type === 'cancel') return
-    setDefaultOption()
-  }, [type, setDefaultOption])
+  }, [type])
   const { loading: getListingLoading } = useRequest(
     () =>
       apiGetListings({
@@ -323,7 +269,6 @@ const MyAssetNftListCard: FunctionComponent<
         setLastCancelDiffTime(Infinity)
       },
 
-      debounceWait: 100,
       refreshDeps: [isConnected, contractData],
     },
   )
@@ -614,7 +559,11 @@ const MyAssetNftListCard: FunctionComponent<
           .toNumber(),
       }
       await runAsync(POST_PARAMS)
-      navigate(`/complete?img=${encodeURI(assetData?.img || '')}`)
+      navigate('/complete', {
+        state: {
+          imageUrl: assetData?.img,
+        },
+      })
     } catch (error: any) {
       const {
         error: { code: errorCode, message: errorMessage },
@@ -716,13 +665,12 @@ const MyAssetNftListCard: FunctionComponent<
 
   const handleTogglePlatform = useCallback(
     (target: MARKET_TYPE_ENUM) => {
-      if (isBanban) return
       if (listPlatform === target) return
       setListPlatform(target)
       setDurationValue(null)
       setPrice('')
     },
-    [listPlatform, isBanban],
+    [listPlatform],
   )
 
   return (
@@ -739,16 +687,16 @@ const MyAssetNftListCard: FunctionComponent<
         borderColor={'gray.2'}
         borderWidth='1px'
         ref={ref}
-        {...rest}>
-        <CardBody
-          p={0}
-          border='none'>
+        {...rest}
+      >
+        <CardBody p={0} border='none'>
           <Box
             bg={'white'}
             borderTopRadius={16}
             overflow='hidden'
             pos={'relative'}
-            w='100%'>
+            w='100%'
+          >
             <ImageWithFallback
               src={assetData?.img}
               borderRadius={0}
@@ -767,7 +715,8 @@ const MyAssetNftListCard: FunctionComponent<
                 display={'inline-flex'}
                 justifyContent={'center'}
                 alignItems={'center'}
-                gap={'4px'}>
+                gap={'4px'}
+              >
                 <ImageWithFallback
                   preview={false}
                   src={
@@ -791,7 +740,8 @@ const MyAssetNftListCard: FunctionComponent<
               sm: 'wrap',
               xs: 'wrap',
             }}
-            pos={'relative'}>
+            pos={'relative'}
+          >
             <Text
               fontSize={{
                 lg: '18px',
@@ -806,7 +756,8 @@ const MyAssetNftListCard: FunctionComponent<
                   : { xl: '70%', lg: '55%', md: '40%', sm: '100%', xs: '100%' }
               }
               noOfLines={2}
-              lineHeight={'22px'}>
+              lineHeight={'22px'}
+            >
               {title}
             </Text>
 
@@ -861,7 +812,8 @@ const MyAssetNftListCard: FunctionComponent<
             }
             setType('create')
             setListPlatform(MARKET_TYPE_ENUM.BLUR)
-          }}>
+          }}
+        >
           {show && !isListing && 'List for sale'}
           {show && isListing && 'Cancel'}
         </Button>
@@ -883,7 +835,8 @@ const MyAssetNftListCard: FunctionComponent<
         onClose={closeModal}
         isOpen={!!type}
         isCentered
-        scrollBehavior='inside'>
+        scrollBehavior='inside'
+      >
         <ModalOverlay bg='black.2' />
         <ModalContent
           maxW={{
@@ -892,7 +845,8 @@ const MyAssetNftListCard: FunctionComponent<
             xs: '326px',
           }}
           maxH={'calc(100% - 5.5rem)'}
-          borderRadius={16}>
+          borderRadius={16}
+        >
           <LoadingComponent
             loading={fetchInfoLoading}
             top={0}
@@ -917,7 +871,8 @@ const MyAssetNftListCard: FunctionComponent<
                 md: '40px',
                 sm: '20px',
                 xs: '20px',
-              }}>
+              }}
+            >
               <NftInfoBox
                 data={assetData}
                 price={
@@ -928,9 +883,7 @@ const MyAssetNftListCard: FunctionComponent<
                 collectionData={collectionData}
               />
               <Divider />
-              <Text
-                my='24px'
-                fontWeight={'700'}>
+              <Text my='24px' fontWeight={'700'}>
                 You can only cancel the list once within 10 minutes
               </Text>
               {/* button */}
@@ -949,7 +902,8 @@ const MyAssetNftListCard: FunctionComponent<
                 position={'sticky'}
                 bottom={'0px'}
                 bg='white'
-                mt='8px'>
+                mt='8px'
+              >
                 <Button
                   w='100%'
                   h={{
@@ -961,7 +915,8 @@ const MyAssetNftListCard: FunctionComponent<
                   isLoading={listingLoading}
                   variant='primary'
                   px='30px'
-                  onClick={handleCancelList}>
+                  onClick={handleCancelList}
+                >
                   Cancel
                   {lastCancelDiffTime < 10 &&
                     `(after ${10 - lastCancelDiffTime} minutes)`}
@@ -977,11 +932,10 @@ const MyAssetNftListCard: FunctionComponent<
                 md: '40px',
                 sm: '20px',
                 xs: '20px',
-              }}>
+              }}
+            >
               {nftError ? (
-                <Flex
-                  px='40px'
-                  pb='40px'>
+                <Flex px='40px' pb='40px'>
                   <Alert
                     px={'40px'}
                     status='error'
@@ -990,15 +944,10 @@ const MyAssetNftListCard: FunctionComponent<
                     alignItems='center'
                     justifyContent='center'
                     textAlign='center'
-                    height='200px'>
-                    <AlertIcon
-                      boxSize='40px'
-                      mr={0}
-                    />
-                    <AlertTitle
-                      mt={4}
-                      mb={1}
-                      fontSize='lg'>
+                    height='200px'
+                  >
+                    <AlertIcon boxSize='40px' mr={0} />
+                    <AlertTitle mt={4} mb={1} fontSize='lg'>
                       Error, the current loan does not exist
                     </AlertTitle>
                     <Flex>
@@ -1035,15 +984,12 @@ const MyAssetNftListCard: FunctionComponent<
                     flexDir={'column'}
                     py='24px'
                     borderBottomColor={'gray.2'}
-                    borderBottomWidth={1}>
-                    <Text
-                      fontWeight={'700'}
-                      mb='16px'>
+                    borderBottomWidth={1}
+                  >
+                    <Text fontWeight={'700'} mb='16px'>
                       Listing to
                     </Text>
-                    <Flex
-                      gap={'8px'}
-                      mb='16px'>
+                    <Flex gap={'8px'} mb='16px'>
                       {[
                         {
                           name: 'Blur',
@@ -1057,7 +1003,7 @@ const MyAssetNftListCard: FunctionComponent<
                         },
                       ].map(({ icon, name, key }) => (
                         <Flex
-                          cursor={isBanban ? 'not-allowed' : 'pointer'}
+                          cursor={'pointer'}
                           alignItems={'center'}
                           gap={'8px'}
                           key={key}
@@ -1076,7 +1022,8 @@ const MyAssetNftListCard: FunctionComponent<
                           }
                           color={listPlatform === key ? 'blue.1' : 'gray.3'}
                           fontSize={'14px'}
-                          fontWeight={'500'}>
+                          fontWeight={'500'}
+                        >
                           <ImageWithFallback
                             src={icon}
                             boxSize={'20px'}
@@ -1088,9 +1035,7 @@ const MyAssetNftListCard: FunctionComponent<
                     </Flex>
                     {/* Set a price */}
                     <Box>
-                      <Text
-                        fontWeight={'700'}
-                        mb='16px'>
+                      <Text fontWeight={'700'} mb='16px'>
                         Set a price
                       </Text>
                       {/* 快速填充 */}
@@ -1102,7 +1047,8 @@ const MyAssetNftListCard: FunctionComponent<
                             md: 'nowrap',
                             sm: 'wrap',
                             xs: 'wrap',
-                          }}>
+                          }}
+                        >
                           {[
                             floorPrice,
                             // collectionData?.maxFloorPrice,
@@ -1119,21 +1065,20 @@ const MyAssetNftListCard: FunctionComponent<
                               py={{ md: '20px', sm: '12px', xs: '12px' }}
                               w='100%'
                               lineHeight={'18px'}
-                              cursor={isBanban ? 'not-allowed' : 'pointer'}
+                              cursor={'pointer'}
                               _hover={{
-                                bg: isBanban ? 'white' : 'gray.5',
+                                bg: 'gray.5',
                               }}
-                              onClick={() => {
-                                if (isBanban) return
-                                setPrice(item.toString())
-                              }}>
+                              onClick={() => setPrice(item.toString())}
+                            >
                               <Highlight
                                 query={['Floor', 'Top attribute']}
                                 styles={{
                                   color: 'blue.1',
                                   fontWeight: '700',
                                   marginRight: '8px',
-                                }}>
+                                }}
+                              >
                                 {`Floor ${item} ${UNIT}`}
                               </Highlight>
                             </Flex>
@@ -1147,13 +1092,10 @@ const MyAssetNftListCard: FunctionComponent<
                           onSetValue={(v) => setPrice(v)}
                           value={price}
                           isInvalid={isAmountError}
-                          isDisabled={isBanban}
                         />
 
                         {isAmountError && (
-                          <InputRightElement
-                            mr='110px'
-                            h='60px'>
+                          <InputRightElement mr='110px' h='60px'>
                             <SvgComponent
                               svgId='icon-tip'
                               svgSize='24px'
@@ -1179,7 +1121,8 @@ const MyAssetNftListCard: FunctionComponent<
                           pl='32px'
                           top={'1.5px'}
                           right={'1px'}
-                          fontWeight={'700'}>
+                          fontWeight={'700'}
+                        >
                           {UNIT}
                         </InputRightElement>
                       </InputGroup>
@@ -1190,7 +1133,8 @@ const MyAssetNftListCard: FunctionComponent<
                           flexDir={'column'}
                           color='red.1'
                           fontSize={'14px'}
-                          fontWeight={'500'}>
+                          fontWeight={'500'}
+                        >
                           Min input:&nbsp;
                           {minInput.toFormat(FORMAT_NUMBER)}
                           <br />
@@ -1207,7 +1151,8 @@ const MyAssetNftListCard: FunctionComponent<
                             fontSize={'14px'}
                             fontWeight={'500'}
                             alignItems={'center'}
-                            lineHeight={'24px'}>
+                            lineHeight={'24px'}
+                          >
                             <SvgComponent
                               svgId='icon-tip'
                               fill={'orange.1'}
@@ -1221,9 +1166,7 @@ const MyAssetNftListCard: FunctionComponent<
                     </Box>
                     {/* Duration */}
                     <Box>
-                      <Text
-                        fontWeight={'700'}
-                        mb='16px'>
+                      <Text fontWeight={'700'} mb='16px'>
                         Duration
                       </Text>
                       <Box
@@ -1231,13 +1174,13 @@ const MyAssetNftListCard: FunctionComponent<
                           md: 'block',
                           sm: 'none',
                           xs: 'none',
-                        }}>
+                        }}
+                      >
                         <Select
                           {...DURATION_PROPS}
                           onChange={(e: any) => setDurationValue(e)}
                           value={durationValue}
                           options={durationOptions}
-                          isDisabled={isBanban}
                         />
                       </Box>
                       <Box
@@ -1245,7 +1188,8 @@ const MyAssetNftListCard: FunctionComponent<
                           md: 'none',
                           sm: 'block',
                           xs: 'block',
-                        }}>
+                        }}
+                      >
                         <Select
                           {...DURATION_PROPS}
                           h='42px'
@@ -1269,10 +1213,7 @@ const MyAssetNftListCard: FunctionComponent<
                   </Flex>
 
                   {/* price summary */}
-                  <Flex
-                    flexDir={'column'}
-                    gap={'12px'}
-                    py='24px'>
+                  <Flex flexDir={'column'} gap={'12px'} py='24px'>
                     <Item
                       label='Listing price'
                       value={`${price ?? '--'} ${UNIT}`}
@@ -1301,7 +1242,8 @@ const MyAssetNftListCard: FunctionComponent<
                                 ? 'green.1'
                                 : 'black.1'
                             }
-                            fontWeight={'700'}>
+                            fontWeight={'700'}
+                          >
                             {formatFloat(
                               currentPlatformFees?.marketPlaceFee.multipliedBy(
                                 100,
@@ -1339,7 +1281,8 @@ const MyAssetNftListCard: FunctionComponent<
                     }}
                     position={'sticky'}
                     bottom={'0px'}
-                    bg='white'>
+                    bg='white'
+                  >
                     <Button
                       onClick={handleListing}
                       variant={'primary'}
@@ -1352,7 +1295,8 @@ const MyAssetNftListCard: FunctionComponent<
                       isDisabled={
                         !durationValue || !isChanged || !price || isAmountError
                       }
-                      isLoading={listingLoading}>
+                      isLoading={listingLoading}
+                    >
                       Complete listing
                     </Button>
                   </Flex>

@@ -1,5 +1,5 @@
-import { NotFound } from 'components'
-import RootLayout from 'layouts/RootLayout'
+import { NotFound } from '@/components'
+import RootLayout from '@/layouts/RootLayout'
 
 const Index = () => {
   return (

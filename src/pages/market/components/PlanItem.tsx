@@ -1,7 +1,7 @@
 import { Flex, Text } from '@chakra-ui/react'
 
-import { SvgComponent } from 'components'
-import { UNIT } from 'constants/index'
+import { SvgComponent } from '@/components'
+import { UNIT } from '@/constants'
 
 import type { FunctionComponent } from 'react'
 
@@ -10,9 +10,7 @@ const PlanItem: FunctionComponent<{
   value?: number | string
 }> = ({ label, value }) => {
   return (
-    <Flex
-      justify={'space-between'}
-      w='100%'>
+    <Flex justify={'space-between'} w='100%'>
       <Flex>
         <SvgComponent svgId='icon-calendar' />
         &nbsp;&nbsp;

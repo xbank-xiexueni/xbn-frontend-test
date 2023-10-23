@@ -1,12 +1,12 @@
 import { Box, Flex, Button, Spinner, Text } from '@chakra-ui/react'
 import Lottie from 'lottie-react'
 
-import uiSuccessJson from 'assets/ui-sucess.json'
-import { H5SecondaryHeader, NftMedia, SvgComponent } from 'components'
+import uiSuccessJson from '@/assets/ui-sucess.json'
+import { H5SecondaryHeader, NftMedia, SvgComponent } from '@/components'
 
 import type { ReactNode, FunctionComponent } from 'react'
 
-export type MiddleStatusProps = {
+const MiddleStatus: FunctionComponent<{
   step: 'loading' | 'success' | 'timeout'
   imagePreviewUrl?: string
   animationUrl?: string
@@ -17,11 +17,8 @@ export type MiddleStatusProps = {
   successDescription?: string
   isShowBack?: boolean
   loadingText?: string
-  successButtonTitle?: string
-  successButtonAction?: () => void
   timeoutText?: ReactNode
-}
-const MiddleStatus: FunctionComponent<MiddleStatusProps> = ({
+}> = ({
   step,
   imagePreviewUrl,
   onLoadingBack,
@@ -31,8 +28,6 @@ const MiddleStatus: FunctionComponent<MiddleStatusProps> = ({
   successTitle,
   isShowBack = true,
   loadingText,
-  successButtonTitle,
-  successButtonAction,
   timeoutText,
   onTimeoutBack,
 }) => {
@@ -51,7 +46,8 @@ const MiddleStatus: FunctionComponent<MiddleStatusProps> = ({
           xs: '32px',
         }}
         m='0 auto'
-        w={'60%'}>
+        w={'60%'}
+      >
         <Button
           hidden={!isShowBack}
           leftIcon={<SvgComponent svgId='icon-arrow-left' />}
@@ -75,19 +71,23 @@ const MiddleStatus: FunctionComponent<MiddleStatusProps> = ({
             xs: 'none',
           }}
           minW={'100px'}
-          mr='120px'>
+          mr='120px'
+        >
           Back
         </Button>
         <Flex
           flexDir='column'
+          justifyContent={'center'}
           alignItems='center'
-          w='400px'>
+          w='400px'
+        >
           <Flex
             position={'relative'}
             mb={{ md: '40px', sm: '28px', xs: '28px' }}
             w={{ md: '285px', sm: '244px', xs: '244px' }}
             alignItems={'center'}
-            justify='center'>
+            justify='center'
+          >
             <NftMedia
               data={{
                 imagePreviewUrl,
@@ -101,37 +101,27 @@ const MiddleStatus: FunctionComponent<MiddleStatusProps> = ({
               }}
               fit='contain'
             />
-            <Flex
-              pos='absolute'
-              bottom={{
-                md: '-20px',
-                sm: '-10px',
-                xs: '-10px',
-              }}
-              right={{ md: '6px', sm: '30px', xs: '30px' }}
-              bg='white'
-              borderRadius={'100%'}
-              boxSize={{
-                md: '64px',
-                sm: '40px',
-                xs: '40px',
-              }}
-              zIndex={10}>
-              {step === 'loading' && (
-                <Spinner
-                  color='blue.1'
-                  boxSize={'52px'}
-                  thickness='3px'
-                  speed='0.6s'
-                />
-              )}
-              {step === 'success' && (
-                <Lottie
-                  animationData={uiSuccessJson}
-                  loop={false}
-                />
-              )}
-            </Flex>
+            {step === 'success' && (
+              <Flex
+                pos='absolute'
+                bottom={{
+                  md: '-20px',
+                  sm: '-10px',
+                  xs: '-10px',
+                }}
+                right={{ md: '6px', sm: '30px', xs: '30px' }}
+                bg='white'
+                borderRadius={'100%'}
+                boxSize={{
+                  md: '64px',
+                  sm: '40px',
+                  xs: '40px',
+                }}
+                zIndex={10}
+              >
+                <Lottie animationData={uiSuccessJson} loop={false} />
+              </Flex>
+            )}
             {step === 'loading' && (
               <Flex
                 pos='absolute'
@@ -148,7 +138,8 @@ const MiddleStatus: FunctionComponent<MiddleStatusProps> = ({
                   sm: '40px',
                   xs: '40px',
                 }}
-                zIndex={10}>
+                zIndex={10}
+              >
                 <Spinner
                   color='blue.1'
                   boxSize={'52px'}
@@ -159,23 +150,16 @@ const MiddleStatus: FunctionComponent<MiddleStatusProps> = ({
             )}
           </Flex>
           {step === 'loading' && (
-            <Flex
-              flexDir={'column'}
-              alignItems={'center'}>
+            <Flex flexDir={'column'} alignItems={'center'}>
               {loadingText && (
-                <Text
-                  fontWeight={'500'}
-                  mt='8px'
-                  textAlign={'center'}>
+                <Text fontWeight={'500'} mt='8px' textAlign={'center'}>
                   {loadingText}
                 </Text>
               )}
             </Flex>
           )}
           {step === 'timeout' && (
-            <Flex
-              flexDir={'column'}
-              alignItems={'center'}>
+            <Flex flexDir={'column'} alignItems={'center'}>
               {timeoutText}
             </Flex>
           )}
@@ -188,7 +172,8 @@ const MiddleStatus: FunctionComponent<MiddleStatusProps> = ({
                   md: '28px',
                   sm: '24px',
                   xs: '24px',
-                }}>
+                }}
+              >
                 {successTitle}
               </Text>
               <Text
@@ -203,20 +188,10 @@ const MiddleStatus: FunctionComponent<MiddleStatusProps> = ({
                   sm: '8px',
                   xs: '8px',
                 }}
-                fontWeight={'500'}>
+                fontWeight={'500'}
+              >
                 {successDescription}
               </Text>
-
-              {!!successButtonTitle && (
-                <Button
-                  mt='52px'
-                  onClick={successButtonAction}
-                  variant={'primary'}
-                  w='100%'
-                  h='48px'>
-                  {successButtonTitle}
-                </Button>
-              )}
             </Box>
           )}
         </Flex>

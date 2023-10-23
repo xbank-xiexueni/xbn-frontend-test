@@ -26,22 +26,22 @@ import {
 } from 'react'
 import { useSignTypedData } from 'wagmi'
 
-import { apiGetFloorPrice, apiGetPoolsTypedData, apiPutPool } from 'api'
+import { apiGetFloorPrice, apiGetPoolsTypedData, apiPutPool } from '@/api'
 import {
   ConnectWalletModal,
   CustomNumberInput,
   LoadingComponent,
   SvgComponent,
   TooltipComponent,
-} from 'components'
-import { MIN_LOAN_COUNT } from 'constants/index'
-import { useWallet } from 'hooks'
+} from '@/components'
+import { MIN_LOAN_COUNT } from '@/constants'
+import { useWallet } from '@/hooks'
 import {
   formatBigNum2Str,
   formatFloat,
   formatTypedSignData,
-} from 'utils/format'
-import { eth2Wei, wei2Eth } from 'utils/unit-conversion'
+} from '@/utils/format'
+import { eth2Wei, wei2Eth } from '@/utils/unit-conversion'
 
 import AmountItem from './AmountItem'
 
@@ -302,9 +302,7 @@ const UpdatePoolAmountButton: FunctionComponent<
   }, [defaultAmount, amount])
   return (
     <>
-      <Button
-        onClick={() => interceptFn(() => onOpenUpdate())}
-        {...rest}>
+      <Button onClick={() => interceptFn(() => onOpenUpdate())} {...rest}>
         {children}
       </Button>
 
@@ -313,7 +311,8 @@ const UpdatePoolAmountButton: FunctionComponent<
         finalFocusRef={finalRef}
         isOpen={isOpenUpdate}
         onClose={onCloseUpdate}
-        isCentered>
+        isCentered
+      >
         <ModalOverlay bg='black.2' />
         <ModalContent
           maxW={{
@@ -324,17 +323,20 @@ const UpdatePoolAmountButton: FunctionComponent<
             xs: '326px',
           }}
           px={{ md: '40px', sm: '20px', xs: '20px' }}
-          borderRadius={16}>
+          borderRadius={16}
+        >
           <ModalHeader
             pt={'40px'}
             px={0}
             alignItems='center'
             display={'flex'}
-            justifyContent='space-between'>
+            justifyContent='space-between'
+          >
             <Text
               fontSize={{ md: '28px', sm: '24px', xs: '24px' }}
               fontWeight='700'
-              noOfLines={1}>
+              noOfLines={1}
+            >
               Reset Supply Caps
             </Text>
             <SvgComponent
@@ -344,14 +346,8 @@ const UpdatePoolAmountButton: FunctionComponent<
               svgSize='16px'
             />
           </ModalHeader>
-          <ModalBody
-            pb={'24px'}
-            px={0}
-            position={'relative'}>
-            <LoadingComponent
-              loading={loading}
-              top={2}
-            />
+          <ModalBody pb={'24px'} px={0} position={'relative'}>
+            <LoadingComponent loading={loading} top={2} />
             {/* 数值们 */}
             <Flex
               py={{ md: '32px', sm: '20px', xs: '20px' }}
@@ -359,24 +355,20 @@ const UpdatePoolAmountButton: FunctionComponent<
               bg={'gray.5'}
               borderRadius={16}
               justify='space-between'
-              mb='32px'>
+              mb='32px'
+            >
               {AmountDataItems.map((item) => (
-                <AmountItem
-                  key={item.label}
-                  {...item}
-                />
+                <AmountItem key={item.label} {...item} />
               ))}
             </Flex>
             <FormControl>
               <FormLabel
                 fontWeight={'700'}
                 display={'flex'}
-                justifyContent={'space-between '}>
+                justifyContent={'space-between '}
+              >
                 Amount
-                <Text
-                  fontWeight={'500'}
-                  fontSize={'14px'}
-                  color='gray.3'>
+                <Text fontWeight={'500'} fontSize={'14px'} color='gray.3'>
                   Min input:
                   {formatFloat(
                     ((floorPrice || 0) * max_collateral_factor) / 10000,
@@ -392,11 +384,9 @@ const UpdatePoolAmountButton: FunctionComponent<
                     md: '12px',
                     sm: '6px',
                     xs: '6px',
-                  }}>
-                  <SvgComponent
-                    svgId='icon-eth'
-                    fill={'black.1'}
-                  />
+                  }}
+                >
+                  <SvgComponent svgId='icon-eth' fill={'black.1'} />
                 </InputLeftElement>
                 <CustomNumberInput
                   w='100%'
@@ -423,18 +413,14 @@ const UpdatePoolAmountButton: FunctionComponent<
                   color={
                     poolAmountStatus?.status === 'error' ? 'red.1' : 'orange.1'
                   }
-                  fontSize={'14px'}>
+                  fontSize={'14px'}
+                >
                   {poolAmountStatus.message}
                 </Text>
               )}
               {poolAmountStatus?.status !== 'error' && !!amount && (
-                <Flex
-                  mt={'4px'}
-                  color={'gray.3'}>
-                  <Text
-                    fontSize={'14px'}
-                    color='blue.1'
-                    fontWeight={'700'}>
+                <Flex mt={'4px'} color={'gray.3'}>
+                  <Text fontSize={'14px'} color='blue.1' fontWeight={'700'}>
                     Expected to lend&nbsp;
                     {expectedLoanCount}
                     &nbsp;loans
@@ -443,7 +429,8 @@ const UpdatePoolAmountButton: FunctionComponent<
                     label={`Based on the loan amount you have set, number of loans = amount deposited / set loan amount , \nFor example: ${amount}/${formatFloat(
                       defaultAmount,
                     )} = ${expectedLoanCount}`}
-                    placement='auto'>
+                    placement='auto'
+                  >
                     <SvgComponent
                       svgId='icon-tip'
                       fill='gray.1'
@@ -481,16 +468,14 @@ const UpdatePoolAmountButton: FunctionComponent<
             fontSize='16px'
             isLoading={
               updateLoading || refreshLoading || signDataLoading || signLoading
-            }>
+            }
+          >
             Confirm
           </Button>
           {/* </ModalFooter> */}
         </ModalContent>
       </Modal>
-      <ConnectWalletModal
-        visible={isOpen}
-        handleClose={onClose}
-      />
+      <ConnectWalletModal visible={isOpen} handleClose={onClose} />
     </>
   )
 }

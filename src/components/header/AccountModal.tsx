@@ -31,24 +31,24 @@ import {
   useSwitchNetwork,
 } from 'wagmi'
 
-import ImgStyledArrow from 'assets/icon-styled-arrow.png'
+import ImgStyledArrow from '@/assets/icon-styled-arrow.png'
 import {
   ACCOUNT_MODAL_TAB_KEY,
   WETH_CONTRACT_ABI,
   WETH_CONTRACT_ADDRESS,
   XBANK_CONTRACT_ADDRESS,
-} from 'constants/index'
-import { useWallet } from 'hooks'
-import UpdatePoolAmountButton from 'pages/lending/components/UpdatePoolAmountButton'
-import { formatFloat, formatBalance, formatWagmiErrorMsg } from 'utils/format'
-import { eth2Wei, wei2Eth } from 'utils/unit-conversion'
-import { isAddressEqual } from 'utils/utils'
+} from '@/constants'
+import { useWallet } from '@/hooks'
+import UpdatePoolAmountButton from '@/pages/lending/components/UpdatePoolAmountButton'
+import { formatFloat, formatBalance, formatWagmiErrorMsg } from '@/utils/format'
+import { eth2Wei, wei2Eth } from '@/utils/unit-conversion'
 
 import CustomNumberInput from '../custom-number-input/CustomNumberInput'
 import ImageWithFallback from '../image-with-fallback/ImageWithFallback'
 import LoadingComponent from '../loading/LoadingComponent'
 import SvgComponent from '../svg-component/SvgComponent'
 import TooltipComponent from '../tooltip-component/TooltipComponent'
+
 const EDIT_SVG = (
   <svg
     width='24'
@@ -107,9 +107,7 @@ enum SWAP_DIRECTION {
 
 const MAX_POOL_LENGTH = 4
 
-const AccountModal: FunctionComponent<
-  ButtonProps & { dark?: boolean; disableToggle?: boolean }
-> = (p) => {
+const AccountModal: FunctionComponent<ButtonProps> = (p) => {
   const navigate = useNavigate()
   const { chain } = useNetwork()
   const [swapValue, setSwapValue] = useState<string>('')
@@ -176,8 +174,10 @@ const AccountModal: FunctionComponent<
     return pools
       .slice(0, MAX_POOL_LENGTH)
       ?.map(({ collateral_contract, ...rest }) => {
-        const nftCollection = collectionList.find((i: any) =>
-          isAddressEqual(i.contractAddress, collateral_contract),
+        const nftCollection = collectionList.find(
+          (i: any) =>
+            i.contractAddress.toLowerCase() ===
+            collateral_contract.toLowerCase(),
         )?.nftCollection
         return {
           ...rest,
@@ -442,43 +442,37 @@ const AccountModal: FunctionComponent<
               await runChainCheckAsync(chain?.id)
               return
             }
-            if (chainEnable && p.disableToggle) {
-              // 黑色样式在新人活动页中应用，不需要弹出swap弹窗
-              return
-            }
             onToggle()
           }}
           variant={'ghost'}
-          className={p.dark ? '' : 'custom-hover-style'}
+          className='custom-hover-style'
           leftIcon={
             chainEnable ? (
               <SvgComponent
                 svgId='icon-eth'
-                fontSize={'12px'}
+                fontSize={'10px'}
                 marginInlineEnd={0}
-                fill={p.dark ? '#fff' : isOpen ? 'blue.1' : 'black.1'}
+                fill={isOpen ? 'blue.1' : 'black.1'}
                 mt='2px'
-                mr={'4px'}
               />
             ) : undefined
           }
           as={Button}
-          paddingY={p.dark ? '20px' : '0px'}
-          borderRadius={p.dark ? 100 : 4}
+          borderRadius={4}
           iconSpacing={0}
           fontSize={'12px'}
           borderRightRadius={0}
           h='32px'
-          bg={p.dark ? 'rgba(255, 255, 255, 0.08)' : 'gray.5'}
+          bg={'gray.5'}
           _hover={{
-            bg: p.dark ? 'rgba(255, 255, 255, 0.08)' : 'gray.5',
-            color: p.dark ? '#FFFFFF' : 'blue.1',
+            bg: 'gray.5',
+            color: 'blue.1',
           }}
           _active={{
-            bg: p.dark ? 'rgba(255, 255, 255, 0.08)' : 'gray.5',
+            bg: 'gray.5',
           }}
           fontWeight={'700'}
-          color={p.dark ? '#FFFFFF' : isOpen ? 'blue.1' : 'black.1'}
+          color={isOpen ? 'blue.1' : 'black.1'}
           isLoading={ethLoading || wethLoading}
           minW={'82px'}
           {...p}>

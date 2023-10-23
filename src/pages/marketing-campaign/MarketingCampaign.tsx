@@ -24,12 +24,11 @@ import {
 import { useAsyncEffect, useRequest, useSetState } from 'ahooks'
 import BigNumber from 'bignumber.js'
 import dayjs from 'dayjs'
-import get from 'lodash/get'
 import React, { useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAccount } from 'wagmi'
 
-import { apiGetLoans } from 'api'
+import { apiGetLoans } from '@/api'
 import {
   apiGalxeRedeem,
   apiGalxeStatus,
@@ -37,47 +36,46 @@ import {
   apiGetInviteCode,
   apiGetRanking,
   apiRewardExists,
-} from 'api/marketing-campaign'
-// import BannerImg from 'assets/marketing/banner-4x.png'
-import ImgH5LeaderBoard from 'assets/marketing/ROLLING 24H LEADERBOARD.png'
-import ImgDialogBanner from 'assets/marketing/banner-dialog.png'
-import BannerImg from 'assets/marketing/banner.png'
-import BoxShadow from 'assets/marketing/box-shadow.png'
-import Box1 from 'assets/marketing/box1.png'
-import Box2 from 'assets/marketing/box2.png'
-import Box3 from 'assets/marketing/box3.png'
-import Box4 from 'assets/marketing/box4.png'
-import IconCopied from 'assets/marketing/copied.png'
-import ImgH5Prize from 'assets/marketing/h5-price.png'
-import IconInviteFriend from 'assets/marketing/icon-box-check-line.png'
-import IconCopy from 'assets/marketing/icon-copy.png'
-import ImgQuestionBox from 'assets/marketing/icon-win-box.png'
-import ImgLeaderBoardIcon from 'assets/marketing/leader-board-icon.png'
-import ImgLeaderBoardTitle from 'assets/marketing/leader-board-title.png'
-import ImgNo1 from 'assets/marketing/no1.png'
-import ImgNo2 from 'assets/marketing/no2.png'
-import ImgNo3 from 'assets/marketing/no3.png'
-import IconTelegram from 'assets/marketing/telegram.png'
-import IconTwitter from 'assets/marketing/twitter.png'
-import IconLogo from 'assets/marketing/xbank-logo.png'
-import { ConnectWalletModal, LoadingComponent } from 'components'
-import NewVersionHeader from 'components/NewVersionHeader'
-import { useSign, useWallet } from 'hooks'
+} from '@/api/marketing-campaign'
+// import BannerImg from '@/assets/marketing/banner-4x.png'
+import ImgH5LeaderBoard from '@/assets/marketing/ROLLING 24H LEADERBOARD.png'
+import ImgDialogBanner from '@/assets/marketing/banner-dialog.png'
+import BannerImg from '@/assets/marketing/banner.png'
+import BoxShadow from '@/assets/marketing/box-shadow.png'
+import Box1 from '@/assets/marketing/box1.png'
+import Box2 from '@/assets/marketing/box2.png'
+import Box3 from '@/assets/marketing/box3.png'
+import Box4 from '@/assets/marketing/box4.png'
+import IconCopied from '@/assets/marketing/copied.png'
+import ImgH5Prize from '@/assets/marketing/h5-price.png'
+import IconInviteFriend from '@/assets/marketing/icon-box-check-line.png'
+import IconCopy from '@/assets/marketing/icon-copy.png'
+import ImgQuestionBox from '@/assets/marketing/icon-win-box.png'
+import ImgLeaderBoardIcon from '@/assets/marketing/leader-board-icon.png'
+import ImgLeaderBoardTitle from '@/assets/marketing/leader-board-title.png'
+import ImgNo1 from '@/assets/marketing/no1.png'
+import ImgNo2 from '@/assets/marketing/no2.png'
+import ImgNo3 from '@/assets/marketing/no3.png'
+import IconTelegram from '@/assets/marketing/telegram.png'
+import IconTwitter from '@/assets/marketing/twitter.png'
+import IconLogo from '@/assets/marketing/xbank-logo.png'
+import { ConnectWalletModal, Header, LoadingComponent } from '@/components'
+import { useSign, useWallet } from '@/hooks'
 
-import Icon0 from 'assets/marketing/icon-0.svg'
-import Icon1 from 'assets/marketing/icon-1.svg'
-import Icon2 from 'assets/marketing/icon-2.svg'
-import Icon3 from 'assets/marketing/icon-3.svg'
-import Icon4 from 'assets/marketing/icon-4.svg'
-import ImgBrowser from 'assets/marketing/icon-browser.svg'
-import ImgCoinInBox from 'assets/marketing/icon-coin-in-box.svg'
-import ImgPlusWallet from 'assets/marketing/icon-plus-wallet.svg'
-import ImgWalletOk from 'assets/marketing/icon-wallet-ok.svg'
+import Icon0 from '@/assets/marketing/icon-0.svg'
+import Icon1 from '@/assets/marketing/icon-1.svg'
+import Icon2 from '@/assets/marketing/icon-2.svg'
+import Icon3 from '@/assets/marketing/icon-3.svg'
+import Icon4 from '@/assets/marketing/icon-4.svg'
+import ImgBrowser from '@/assets/marketing/icon-browser.svg'
+import ImgCoinInBox from '@/assets/marketing/icon-coin-in-box.svg'
+import ImgPlusWallet from '@/assets/marketing/icon-plus-wallet.svg'
+import ImgWalletOk from '@/assets/marketing/icon-wallet-ok.svg'
 
 import type { FlexProps, TextProps } from '@chakra-ui/react'
 import type { FunctionComponent } from 'react'
 
-const { REACT_APP_GALXE_TAKS_LINK } = process.env
+const { REACT_APP_APP_GALXE_TAKS_LINK } = process.env
 const SHARE_TELEGRAM_TEXT = `Buy NFT pay later with 0% down payment, win Boxdrop`
 const SHARE_TWITTER_TEXT = `xBank is An NFT Open Money Market Powering Web3 Adopters with Onboarding Leverage with NFT BNPL and Improving Money Efficiency for Holders\nJoin @xBank_Official, buy top NFTs pay later, with 0% downpayment, and earn Boxdrop`
 const INITIAL_TEXT_PROPS: TextProps = {
@@ -436,7 +434,6 @@ export default function MarketingCampaign() {
     onOpen: openConnectWalletModal,
     isOpen: isConnectWalletModalOpen,
     onClose: closeConnectWalletModal,
-    interceptFn,
   } = useWallet()
   const { debounceRunAsync: handleSignDebounce } = useSign()
 
@@ -483,18 +480,6 @@ export default function MarketingCampaign() {
         box_platinum: boxResp?.box_platinum || 0,
         box_silver: boxResp?.box_silver || 0,
       })
-      if (typeof window !== 'undefined') {
-        const totalBoxCount =
-          get(boxResp, 'box_bronze', 0) +
-          get(boxResp, 'box_diamond', 0) +
-          get(boxResp, 'box_gold', 0) +
-          get(boxResp, 'box_platinum', 0) +
-          get(boxResp, 'box_silver', 0)
-        window.localStorage.setItem(
-          `box-counter-${currentAccount?.address}`,
-          totalBoxCount + '',
-        )
-      }
     }
   }, [state.expired, isConnected])
   useAsyncEffect(async () => {
@@ -568,13 +553,8 @@ export default function MarketingCampaign() {
   }, [state.expired, isConnected, currentAccount])
   return (
     <Box bgGradient={'linear-gradient(0deg, #071E38, #071E38), #F9F9FF;'}>
-      <NewVersionHeader
-        isConnected={isConnected}
-        interceptFn={interceptFn}
-      />
-      {/* <Header /> */}
+      <Header />
       <Box
-        marginTop={'-72px'}
         marginBottom={{
           md: '68px',
           sm: '16px',
@@ -599,14 +579,6 @@ export default function MarketingCampaign() {
           sm: '',
           xs: '',
         }}>
-        <Box
-          bg={'rgb(4,4,4)'}
-          width={'250px'}
-          h={'50px'}
-          position={'absolute'}
-          top={'40px'}
-          left={'60px'}
-        />
         <Flex
           alignItems={'center'}
           gap={'16px'}
@@ -1017,7 +989,10 @@ export default function MarketingCampaign() {
                             variant={'linear'}
                             textShadow={'0px 1px 0px #0000FF'}
                             onClick={() => {
-                              window.open(REACT_APP_GALXE_TAKS_LINK, '_blank')
+                              window.open(
+                                REACT_APP_APP_GALXE_TAKS_LINK,
+                                '_blank',
+                              )
                             }}>
                             Claim
                           </Button>

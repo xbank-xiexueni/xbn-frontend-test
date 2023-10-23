@@ -1,7 +1,7 @@
 import { Flex, Box, Text } from '@chakra-ui/react'
 import { type FunctionComponent } from 'react'
 
-import { TooltipComponent, SvgComponent } from 'components'
+import { TooltipComponent, SvgComponent } from '@/components'
 
 import type { FlexProps } from '@chakra-ui/react'
 
@@ -26,10 +26,9 @@ const SecondaryWrapper: FunctionComponent<
         sm: 'wrap',
         xs: 'wrap',
       }}
-      gap='10px'>
-      <Flex
-        alignItems={'center'}
-        gap='6px'>
+      gap='10px'
+    >
+      <Flex alignItems={'center'} gap='6px'>
         <Box
           boxSize={'16px'}
           borderRadius={'100%'}
@@ -42,9 +41,7 @@ const SecondaryWrapper: FunctionComponent<
           }}
         />
         <Text fontWeight={'500'}> {title}</Text>
-        <TooltipComponent
-          label={description}
-          placement='auto-start'>
+        <TooltipComponent label={description} placement='auto-start'>
           <SvgComponent
             svgId='icon-tip'
             fill='gray.1'
@@ -61,7 +58,8 @@ const SecondaryWrapper: FunctionComponent<
           md: 'auto',
           sm: '100%',
           xs: '100%',
-        }}>
+        }}
+      >
         {children}
       </Box>
     </Flex>

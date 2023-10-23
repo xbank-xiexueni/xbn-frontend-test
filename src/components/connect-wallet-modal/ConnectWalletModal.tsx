@@ -22,10 +22,10 @@ import {
 } from 'react'
 import { useAccount, useConnect, useDisconnect } from 'wagmi'
 
-import { SvgComponent } from 'components'
-import { WALLET_ICON } from 'constants/index'
-import { useSign, useWallet } from 'hooks'
-import { formatWagmiErrorMsg } from 'utils/format'
+import { SvgComponent } from '@/components'
+import { WALLET_ICON } from '@/constants'
+import { useSign, useWallet } from '@/hooks'
+import { formatWagmiErrorMsg } from '@/utils/format'
 
 import type { Connector, ConnectorData } from 'wagmi'
 
@@ -92,7 +92,7 @@ const Index: FunctionComponent<IndexProps> = ({
         setCurrentAccount({
           ...res,
           address: currentAddress,
-        })
+        } as AccountType)
       } else {
         setCurrentAccount(undefined)
       }
@@ -286,7 +286,7 @@ const Index: FunctionComponent<IndexProps> = ({
                   setCurrentAccount({
                     ...res,
                     address: changedAccount,
-                  })
+                  } as AccountType)
                 }}
                 isLoading={connectLoading || signLoading}>
                 Sign

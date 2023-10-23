@@ -1,7 +1,7 @@
 import { Box, Flex, Heading, type BoxProps } from '@chakra-ui/react'
 import { type FunctionComponent } from 'react'
 
-import { SvgComponent, TooltipComponent } from 'components'
+import { SvgComponent, TooltipComponent } from '@/components'
 
 const StepDescription: FunctionComponent<
   {
@@ -14,9 +14,7 @@ const StepDescription: FunctionComponent<
 > = ({ data: { step, title, text }, ...rest }) => {
   return (
     <Box {...rest}>
-      <Flex
-        alignItems='center'
-        gap={'12px'}>
+      <Flex alignItems='center' gap={'12px'}>
         <Flex
           bg='blue.1'
           color='white'
@@ -36,20 +34,16 @@ const StepDescription: FunctionComponent<
             md: '30px',
             sm: 'normal',
             xs: 'normal',
-          }}>
+          }}
+        >
           {step}
         </Flex>
 
-        <Heading
-          fontSize={'18px'}
-          color='black.1'
-          ml='4px'>
+        <Heading fontSize={'18px'} color='black.1' ml='4px'>
           {title}
         </Heading>
 
-        <TooltipComponent
-          label={text}
-          placement='auto-start'>
+        <TooltipComponent label={text} placement='auto-start'>
           <SvgComponent
             svgId='icon-tip'
             fill='gray.1'

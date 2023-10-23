@@ -1,7 +1,7 @@
 import { Image, type ImageProps } from '@chakra-ui/react'
 import { PhotoView } from 'react-photo-view'
 
-import defaultImg from 'assets/default.png'
+import defaultImg from '@/assets/default.png'
 
 import type { FunctionComponent } from 'react'
 
@@ -19,9 +19,7 @@ const ImageWithFallback: FunctionComponent<
 }) => {
   if (preview) {
     return (
-      <PhotoView
-        src={src}
-        key={src}>
+      <PhotoView src={src} key={src}>
         <Image
           cursor={'zoom-in'}
           alt={alt}

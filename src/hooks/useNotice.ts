@@ -1,11 +1,11 @@
 import useRequest from 'ahooks/lib/useRequest'
 import bigNumber from 'bignumber.js'
-import { compact } from 'lodash'
+import compact from 'lodash-es/compact'
 import { useMemo, type DependencyList } from 'react'
 
-import { apiGetNotice } from 'api'
-import type { NoticeItemType } from 'components/notice-slider/NoticeSlider'
-import { NotificationType } from 'constants/index'
+import { apiGetNotice } from '@/api'
+import type { NoticeItemType } from '@/components/notice-slider/NoticeSlider'
+import { NotificationType } from '@/constants'
 
 import useWallet from './useWallet'
 

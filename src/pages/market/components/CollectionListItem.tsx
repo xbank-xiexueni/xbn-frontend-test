@@ -1,6 +1,6 @@
 import { Flex, Text, type FlexProps } from '@chakra-ui/react'
 
-import { CollectionTag, ImageWithFallback, SvgComponent } from 'components'
+import { CollectionTag, ImageWithFallback, SvgComponent } from '@/components'
 
 import type { FunctionComponent } from 'react'
 
@@ -28,17 +28,16 @@ const CollectionListItem: FunctionComponent<
       cursor='pointer'
       bg={isActive ? 'blue.2' : 'white'}
       onClick={onClick}
-      {...rest}>
-      <Flex
-        alignItems={'center'}
-        gap='10px'
-        w='80%'>
+      {...rest}
+    >
+      <Flex alignItems={'center'} gap='10px' w='80%'>
         <Flex
           boxSize={iconSize}
           alignItems={'center'}
           bg='white'
           borderWidth={1}
-          borderRadius={8}>
+          borderRadius={8}
+        >
           <ImageWithFallback
             src={
               data?.nftCollection?.imagePreviewUrl ||
@@ -51,10 +50,7 @@ const CollectionListItem: FunctionComponent<
           />
         </Flex>
 
-        <Flex
-          flexDir={'column'}
-          alignItems={'flex-start'}
-          w='70%'>
+        <Flex flexDir={'column'} alignItems={'flex-start'} w='70%'>
           <Text
             fontSize='14px'
             // display='inline-block'
@@ -62,15 +58,13 @@ const CollectionListItem: FunctionComponent<
             // whiteSpace='nowrap'
             // textOverflow='ellipsis'
             noOfLines={1}
-            fontFamily={'HarmonyOS Sans Sc Bold'}>
+            fontFamily={'HarmonyOS Sans Sc Bold'}
+          >
             {data?.nftCollection?.name || '--'}
             &nbsp;
           </Text>
           {data?.tags && data?.tags?.length ? (
-            <CollectionTag
-              title={data?.tags[0]}
-              maxW={'140px'}
-            />
+            <CollectionTag title={data?.tags[0]} maxW={'140px'} />
           ) : null}
         </Flex>
       </Flex>

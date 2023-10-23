@@ -1,6 +1,6 @@
 import { Flex, Text, type FlexProps } from '@chakra-ui/react'
 
-import { formatBalance } from 'utils/format'
+import { formatBalance } from '@/utils/format'
 
 import SvgComponent from '../svg-component/SvgComponent'
 
@@ -24,30 +24,15 @@ const BalanceCard: FunctionComponent<
   }
 > = ({ balance, label, ...rest }) => {
   return (
-    <Flex
-      {...NUM_WRAPPER_PROPS}
-      {...rest}>
-      <Flex
-        alignItems={'center'}
-        gap={'2px'}>
-        <SvgComponent
-          svgId='icon-eth'
-          svgSize={'20px'}
-          mt='2px'
-          ml='-4px'
-        />
-        <Text
-          fontSize={'28px'}
-          lineHeight={1}
-          fontWeight={'700'}>
+    <Flex {...NUM_WRAPPER_PROPS} {...rest}>
+      <Flex alignItems={'center'} gap={'2px'}>
+        <SvgComponent svgId='icon-eth' svgSize={'20px'} mt='2px' ml='-4px' />
+        <Text fontSize={'28px'} lineHeight={1} fontWeight={'700'}>
           {formatBalance(balance ?? 0)}
         </Text>
       </Flex>
 
-      <Text
-        color='gray.4'
-        fontSize={'14px'}
-        lineHeight={1.1}>
+      <Text color='gray.4' fontSize={'14px'} lineHeight={1.1}>
         {label}
       </Text>
     </Flex>

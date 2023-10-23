@@ -1,9 +1,9 @@
 import { Flex, Text, type FlexProps } from '@chakra-ui/react'
 import { useMemo, type FunctionComponent } from 'react'
 
-import imgBlur from 'assets/blur-logo.png'
-import imgOpensea from 'assets/opensea-logo.png'
-import { MARKET_TYPE_ENUM } from 'constants/index'
+import imgBlur from '@/assets/blur-logo.png'
+import imgOpensea from '@/assets/opensea-logo.png'
+import { MARKET_TYPE_ENUM } from '@/constants'
 
 import { ImageWithFallback } from '..'
 
@@ -23,20 +23,10 @@ const NftOrigin: FunctionComponent<
     }
   }, [type])
   return (
-    <Flex
-      alignItems={'center'}
-      gap='4px'>
-      <ImageWithFallback
-        src={img}
-        alt='market'
-        boxSize='20px'
-        {...rest}
-      />
+    <Flex alignItems={'center'} gap='4px'>
+      <ImageWithFallback src={img} alt='market' boxSize='20px' {...rest} />
       {!isHideName && (
-        <Text
-          fontSize={'14px'}
-          fontWeight={'500'}
-          color='gray.3'>
+        <Text fontSize={'14px'} fontWeight={'500'} color='gray.3'>
           {name}
         </Text>
       )}

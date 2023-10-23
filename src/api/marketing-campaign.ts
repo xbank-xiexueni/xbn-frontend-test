@@ -1,7 +1,7 @@
 import axios from 'axios'
 
-import { AXIOS_DEFAULT_CONFIG, requestInterceptor } from 'utils/request'
-import requestToken from 'utils/requestToken'
+import { AXIOS_DEFAULT_CONFIG, requestInterceptor } from '@/utils/request'
+import requestToken from '@/utils/requestToken'
 const request = axios.create(AXIOS_DEFAULT_CONFIG)
 request.interceptors.request.use(requestInterceptor)
 request.interceptors.response.use((resp) => resp?.data)

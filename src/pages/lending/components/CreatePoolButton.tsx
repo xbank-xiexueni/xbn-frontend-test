@@ -34,16 +34,16 @@ import {
   CustomNumberInput,
   SvgComponent,
   TooltipComponent,
-} from 'components'
+} from '@/components'
 import {
   WETH_CONTRACT_ABI,
   WETH_CONTRACT_ADDRESS,
   XBANK_CONTRACT_ABI,
   XBANK_CONTRACT_ADDRESS,
-} from 'constants/index'
-import { useWallet } from 'hooks'
-import { formatFloat, formatWagmiErrorMsg } from 'utils/format'
-import { eth2Wei, wei2Eth } from 'utils/unit-conversion'
+} from '@/constants'
+import { useWallet } from '@/hooks'
+import { formatFloat, formatWagmiErrorMsg } from '@/utils/format'
+import { eth2Wei, wei2Eth } from '@/utils/unit-conversion'
 
 /**
  * create pool
@@ -300,9 +300,7 @@ const CreatePoolButton: FunctionComponent<
 
   return (
     <>
-      <Button
-        onClick={() => interceptFn(() => onOpenApprove())}
-        {...rest}>
+      <Button onClick={() => interceptFn(() => onOpenApprove())} {...rest}>
         {children}
       </Button>
 
@@ -311,7 +309,8 @@ const CreatePoolButton: FunctionComponent<
         finalFocusRef={finalRef}
         isOpen={isOpenApprove}
         onClose={handleClose}
-        isCentered>
+        isCentered
+      >
         <ModalOverlay bg='black.2' />
         <ModalContent
           borderRadius={16}
@@ -322,16 +321,19 @@ const CreatePoolButton: FunctionComponent<
             sm: '326px',
             xs: '326px',
           }}
-          px={{ md: '40px', sm: '20px', xs: '20px' }}>
+          px={{ md: '40px', sm: '20px', xs: '20px' }}
+        >
           <ModalHeader
             pt={'40px'}
             px={0}
             alignItems='center'
             display={'flex'}
-            justifyContent='space-between'>
+            justifyContent='space-between'
+          >
             <Text
               fontSize={{ md: '28px', sm: '24px', xs: '24px' }}
-              fontWeight='700'>
+              fontWeight='700'
+            >
               Approve WETH
             </Text>
             <SvgComponent
@@ -341,9 +343,7 @@ const CreatePoolButton: FunctionComponent<
               svgSize='16px'
             />
           </ModalHeader>
-          <ModalBody
-            p={0}
-            px={0}>
+          <ModalBody p={0} px={0}>
             {/* 数值们 */}
             {/* <Flex
               py={{ md: '32px', sm: '20px', xs: '20px' }}
@@ -361,12 +361,10 @@ const CreatePoolButton: FunctionComponent<
               <FormLabel
                 fontWeight={'700'}
                 display={'flex'}
-                justifyContent={'space-between '}>
+                justifyContent={'space-between '}
+              >
                 Set pool size
-                <Text
-                  fontWeight={'500'}
-                  fontSize={'14px'}
-                  color='gray.3'>
+                <Text fontWeight={'500'} fontSize={'14px'} color='gray.3'>
                   Min input:
                   {formatFloat((floorPrice * poolMaximumPercentage) / 10000)}
                 </Text>
@@ -381,11 +379,9 @@ const CreatePoolButton: FunctionComponent<
                     md: '12px',
                     sm: '6px',
                     xs: '6px',
-                  }}>
-                  <SvgComponent
-                    svgId='icon-eth'
-                    fill={'black.1'}
-                  />
+                  }}
+                >
+                  <SvgComponent svgId='icon-eth' fill={'black.1'} />
                 </InputLeftElement>
                 <CustomNumberInput
                   value={amount}
@@ -406,7 +402,8 @@ const CreatePoolButton: FunctionComponent<
                       sm: '4px',
                       xs: '4px',
                     }}
-                    mr='8px'>
+                    mr='8px'
+                  >
                     <SvgComponent
                       svgId='icon-error'
                       svgSize={{
@@ -420,21 +417,13 @@ const CreatePoolButton: FunctionComponent<
               </InputGroup>
 
               {isError && (
-                <Text
-                  mt={'8px'}
-                  color={'red.1'}>
+                <Text mt={'8px'} color={'red.1'}>
                   {errorMsg}
                 </Text>
               )}
               {!isError && !!amount && (
-                <Flex
-                  mt={'8px'}
-                  color={'gray.3'}
-                  alignItems={'center'}>
-                  <Text
-                    fontSize={'14px'}
-                    color='blue.1'
-                    fontWeight={'700'}>
+                <Flex mt={'8px'} color={'gray.3'} alignItems={'center'}>
+                  <Text fontSize={'14px'} color='blue.1' fontWeight={'700'}>
                     Expected to lend&nbsp;
                     {expectedLoanCount}
                     &nbsp;loans
@@ -453,7 +442,8 @@ const CreatePoolButton: FunctionComponent<
                     lineHeight={'18px'}
                     fontWeight={'400'}
                     color='gray.4'
-                    boxShadow={'0px 0px 10px #D1D6DC'}>
+                    boxShadow={'0px 0px 10px #D1D6DC'}
+                  >
                     <SvgComponent
                       svgId='icon-tip'
                       fill='gray.1'
@@ -471,15 +461,9 @@ const CreatePoolButton: FunctionComponent<
           </ModalBody>
 
           {/* <ModalFooter justifyContent={'center'}> */}
-          <Box
-            h='42px'
-            px='20px'
-            mt='8px'>
+          <Box h='42px' px='20px' mt='8px'>
             {(approveLoading || createLoading || subscribeLoading) && (
-              <Text
-                color={'gray.1'}
-                fontSize={'14px'}
-                textAlign={'center'}>
+              <Text color={'gray.1'} fontSize={'14px'} textAlign={'center'}>
                 It is expected to take one or two minutes, ultimately depending
                 on the Ethereum transaction processing time.
               </Text>
@@ -510,7 +494,8 @@ const CreatePoolButton: FunctionComponent<
                 : ''
             }
             fontSize='16px'
-            isLoading={approveLoading || createLoading || subscribeLoading}>
+            isLoading={approveLoading || createLoading || subscribeLoading}
+          >
             Approve
           </Button>
           {/* {(isWriteCreateError || isWriteApproveError) && (
@@ -524,10 +509,7 @@ const CreatePoolButton: FunctionComponent<
           {/* </ModalFooter> */}
         </ModalContent>
       </Modal>
-      <ConnectWalletModal
-        visible={isOpen}
-        handleClose={onClose}
-      />
+      <ConnectWalletModal visible={isOpen} handleClose={onClose} />
     </>
   )
 }

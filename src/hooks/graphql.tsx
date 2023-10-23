@@ -41,12 +41,6 @@ export enum BuyYouFirstNftLabel {
   MostFamous = 'MOST_FAMOUS',
 }
 
-export type ExchangeRate = {
-  __typename?: 'ExchangeRate'
-  price: Scalars['Float']
-  symbol: Scalars['String']
-}
-
 /** gas price 统计 */
 export type GasPriceStatistic = {
   __typename?: 'GasPriceStatistic'
@@ -251,10 +245,6 @@ export type NftAssetTrait = {
 export type NftAssetWhere = {
   /** 货币筛选 */
   CryptoCurrency?: InputMaybe<Scalars['String'][]>
-  /** 币种价格大于等于 */
-  coinPriceGTE?: InputMaybe<Scalars['Float']>
-  /** 币种价格小于等于 */
-  coinPriceLTE?: InputMaybe<Scalars['Float']>
   /** 产品运营配置的 collectionId */
   famous?: InputMaybe<Scalars['ID'][]>
   /** 认证状态筛选条件 */
@@ -529,7 +519,6 @@ export type Query = {
   assetsChannel: NftAssetConnection
   /** Buy you first NFTs */
   buyYouFirstNFTs: Maybe<BuyYouFirstNft>[]
-  exchangeRates?: Maybe<Maybe<ExchangeRate>[]>
   /** 获取点赞上升速度最快的 assets */
   fastestRisingAssets: Maybe<NftAsset>[]
   /** 获取收藏 asset 列表 */
@@ -619,10 +608,6 @@ export type QueryAssetsChannelArgs = {
   orderBy: NftAssetOrderBy
   tags?: InputMaybe<Scalars['String'][]>
   where?: InputMaybe<NftAssetWhere>
-}
-
-export type QueryExchangeRatesArgs = {
-  symbols: Scalars['String'][]
 }
 
 export type QueryFastestRisingAssetsArgs = {
@@ -863,17 +848,6 @@ export type BestCollectionBidQuery = {
       unit: string
     }
   }
-}
-
-export type ExchangeRatesQueryVariables = Exact<{
-  symbols: Scalars['String'][] | Scalars['String']
-}>
-
-export type ExchangeRatesQuery = {
-  __typename?: 'Query'
-  exchangeRates?:
-    | ({ __typename?: 'ExchangeRate'; price: number; symbol: string } | null)[]
-    | null
 }
 
 export type NftCollectionAssetsQueryVariables = Exact<{
@@ -1301,65 +1275,6 @@ export type BestCollectionBidLazyQueryHookResult = ReturnType<
 export type BestCollectionBidQueryResult = Apollo.QueryResult<
   BestCollectionBidQuery,
   BestCollectionBidQueryVariables
->
-export const ExchangeRatesDocument = gql`
-  query ExchangeRates($symbols: [String!]!) {
-    exchangeRates(symbols: $symbols) {
-      price
-      symbol
-    }
-  }
-`
-
-/**
- * __useExchangeRatesQuery__
- *
- * To run a query within a React component, call `useExchangeRatesQuery` and pass it any options that fit your needs.
- * When your component renders, `useExchangeRatesQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useExchangeRatesQuery({
- *   variables: {
- *      symbols: // value for 'symbols'
- *   },
- * });
- */
-export function useExchangeRatesQuery(
-  baseOptions: Apollo.QueryHookOptions<
-    ExchangeRatesQuery,
-    ExchangeRatesQueryVariables
-  >,
-) {
-  const options = { ...defaultOptions, ...baseOptions }
-  return Apollo.useQuery<ExchangeRatesQuery, ExchangeRatesQueryVariables>(
-    ExchangeRatesDocument,
-    options,
-  )
-}
-export function useExchangeRatesLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<
-    ExchangeRatesQuery,
-    ExchangeRatesQueryVariables
-  >,
-) {
-  const options = { ...defaultOptions, ...baseOptions }
-  return Apollo.useLazyQuery<ExchangeRatesQuery, ExchangeRatesQueryVariables>(
-    ExchangeRatesDocument,
-    options,
-  )
-}
-export type ExchangeRatesQueryHookResult = ReturnType<
-  typeof useExchangeRatesQuery
->
-export type ExchangeRatesLazyQueryHookResult = ReturnType<
-  typeof useExchangeRatesLazyQuery
->
-export type ExchangeRatesQueryResult = Apollo.QueryResult<
-  ExchangeRatesQuery,
-  ExchangeRatesQueryVariables
 >
 export const NftCollectionAssetsDocument = gql`
   query NftCollectionAssets(

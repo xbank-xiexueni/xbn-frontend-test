@@ -19,12 +19,13 @@ import {
 import useRequest from 'ahooks/lib/useRequest'
 import dayjs, { unix } from 'dayjs'
 // import etherscanapi from 'etherscan-api'
-import { capitalize, isEmpty } from 'lodash'
+import capitalize from 'lodash-es/capitalize'
+import isEmpty from 'lodash-es/isEmpty'
 import { useEffect, useMemo, useState, type FunctionComponent } from 'react'
 // import Joyride from 'react-joyride'
 import { useNavigate, useParams } from 'react-router-dom'
 
-import { apiGetListings, apiGetLoanOrder, apiGetRepayments } from 'api'
+import { apiGetListings, apiGetLoanOrder, apiGetRepayments } from '@/api'
 import {
   ConnectWalletModal,
   EmptyComponent,
@@ -34,12 +35,12 @@ import {
   EthText,
   NftInfoComponent,
   TableWithPagination,
-} from 'components'
-import { LOAN_ORDER_STATUS, LISTING_ORDER_STATUS } from 'constants/index'
-import { useSign, useWallet } from 'hooks'
-import RootLayout from 'layouts/RootLayout'
-import { formatFloat, formatPluralUnit } from 'utils/format'
-import { wei2Eth } from 'utils/unit-conversion'
+} from '@/components'
+import { LOAN_ORDER_STATUS, LISTING_ORDER_STATUS } from '@/constants'
+import { useSign, useWallet } from '@/hooks'
+import RootLayout from '@/layouts/RootLayout'
+import { formatFloat, formatPluralUnit } from '@/utils/format'
+import { wei2Eth } from '@/utils/unit-conversion'
 
 enum TAB_KEY {
   LOAN_TAB = 0,
@@ -85,11 +86,9 @@ const TabWrapper: FunctionComponent<
         },
       }}
       display={'inline-flex'}
-      {...rest}>
-      <Text
-        fontWeight='bold'
-        noOfLines={1}
-        fontSize='16px'>
+      {...rest}
+    >
+      <Text fontWeight='bold' noOfLines={1} fontSize='16px'>
         {children}
       </Text>
       {!!count && (
@@ -104,7 +103,8 @@ const TabWrapper: FunctionComponent<
           justifyContent='center'
           lineHeight={2}
           fontWeight='700'
-          ml='4px'>
+          ml='4px'
+        >
           {count}
         </Tag>
       )}
@@ -235,12 +235,10 @@ const History = () => {
           return (
             <NftInfoComponent
               tokenId={value}
-              contractAddress={info.collateral_contract}>
+              contractAddress={info.collateral_contract}
+            >
               {({ img, name }) => (
-                <Flex
-                  alignItems={'center'}
-                  gap={'8px'}
-                  w='100%'>
+                <Flex alignItems={'center'} gap={'8px'} w='100%'>
                   <ImageWithFallback
                     src={img}
                     boxSize={{
@@ -255,7 +253,8 @@ const History = () => {
                     display='inline-block'
                     overflow='hidden'
                     whiteSpace='nowrap'
-                    textOverflow='ellipsis'>
+                    textOverflow='ellipsis'
+                  >
                     {name}
                   </Text>
                 </Flex>
@@ -374,12 +373,10 @@ const History = () => {
           return (
             <NftInfoComponent
               tokenId={value}
-              contractAddress={info.contract_addr}>
+              contractAddress={info.contract_addr}
+            >
               {({ img, name }) => (
-                <Flex
-                  alignItems={'center'}
-                  gap={'8px'}
-                  w='100%'>
+                <Flex alignItems={'center'} gap={'8px'} w='100%'>
                   <ImageWithFallback
                     src={img}
                     boxSize={{
@@ -394,7 +391,8 @@ const History = () => {
                     display='inline-block'
                     overflow='hidden'
                     whiteSpace='nowrap'
-                    textOverflow='ellipsis'>
+                    textOverflow='ellipsis'
+                  >
                     {name}
                   </Text>
                 </Flex>
@@ -458,12 +456,10 @@ const History = () => {
           return (
             <NftInfoComponent
               tokenId={value}
-              contractAddress={info.contract_address}>
+              contractAddress={info.contract_address}
+            >
               {({ img, name }) => (
-                <Flex
-                  alignItems={'center'}
-                  gap={'8px'}
-                  w='100%'>
+                <Flex alignItems={'center'} gap={'8px'} w='100%'>
                   <ImageWithFallback
                     src={img}
                     boxSize={{
@@ -477,7 +473,8 @@ const History = () => {
                     display='inline-block'
                     overflow='hidden'
                     whiteSpace='nowrap'
-                    textOverflow='ellipsis'>
+                    textOverflow='ellipsis'
+                  >
                     {name}
                   </Text>
                 </Flex>
@@ -594,18 +591,11 @@ const History = () => {
 
   return (
     <RootLayout mb='100px'>
-      <Box
-        mt='60px'
-        mb='40px'>
-        <Heading
-          fontWeight={'700'}
-          fontSize={'48px'}>
+      <Box mt='60px' mb='40px'>
+        <Heading fontWeight={'700'} fontSize={'48px'}>
           My Loan History
         </Heading>
-        <Text
-          color='gray.3'
-          fontWeight={'500'}
-          fontSize={'20px'}>
+        <Text color='gray.3' fontWeight={'500'} fontSize={'20px'}>
           View and track all your loan activity history
         </Text>
         <Button
@@ -620,7 +610,8 @@ const History = () => {
             //   100,
             //   'desc',
             // )
-          }}>
+          }}
+        >
           fetch
         </Button>
       </Box>
@@ -633,15 +624,10 @@ const History = () => {
           alignItems='center'
           justifyContent='center'
           textAlign='center'
-          height='200px'>
-          <AlertIcon
-            boxSize='40px'
-            mr={0}
-          />
-          <AlertTitle
-            mt={4}
-            mb={1}
-            fontSize='lg'>
+          height='200px'
+        >
+          <AlertIcon boxSize='40px' mr={0} />
+          <AlertTitle mt={4} mb={1} fontSize='lg'>
             Please click to sign in and accept the xBank Terms of Service
           </AlertTitle>
           <AlertDescription>
@@ -654,7 +640,8 @@ const History = () => {
               }}
               variant={'outline'}
               isDisabled={loading}
-              isLoading={loading}>
+              isLoading={loading}
+            >
               Click to Sign
             </Button>
           </AlertDescription>
@@ -680,7 +667,8 @@ const History = () => {
               default:
                 break
             }
-          }}>
+          }}
+        >
           <TabList
             _active={{
               color: 'blue.1',
@@ -689,16 +677,15 @@ const History = () => {
             position='sticky'
             top={{ md: '131px', sm: '131px', xs: '107px' }}
             bg='white'
-            zIndex={2}>
+            zIndex={2}
+          >
             <TabWrapper count={loanData?.length}>Loan</TabWrapper>
             <TabWrapper count={repayData?.length}>Repay</TabWrapper>
             <TabWrapper count={listData?.length}>Sale</TabWrapper>
           </TabList>
 
           <TabPanels>
-            <TabPanel
-              p={0}
-              pb='20px'>
+            <TabPanel p={0} pb='20px'>
               <TableWithPagination
                 table={{
                   loading: loanLoading,
@@ -714,7 +701,8 @@ const History = () => {
                               minW='200px'
                               onClick={() =>
                                 interceptFn(() => navigate('/market'))
-                              }>
+                              }
+                            >
                               + Buy NFTs Pay Later
                             </Button>
                           )
@@ -725,9 +713,7 @@ const History = () => {
                 }}
               />
             </TabPanel>
-            <TabPanel
-              p={0}
-              pb='20px'>
+            <TabPanel p={0} pb='20px'>
               <TableWithPagination
                 table={{
                   loading: repayLoading,
@@ -736,9 +722,7 @@ const History = () => {
                 }}
               />
             </TabPanel>
-            <TabPanel
-              p={0}
-              pb='20px'>
+            <TabPanel p={0} pb='20px'>
               <TableWithPagination
                 table={{
                   loading: listLoading,
@@ -751,10 +735,7 @@ const History = () => {
         </Tabs>
       )}
 
-      <ConnectWalletModal
-        visible={isOpen}
-        handleClose={onClose}
-      />
+      <ConnectWalletModal visible={isOpen} handleClose={onClose} />
     </RootLayout>
   )
 }
