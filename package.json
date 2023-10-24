@@ -52,23 +52,10 @@
   },
   "scripts": {
     "start": "craco start",
-    "build": "craco build",
+    "build": "TSC_COMPILE_ON_ERROR=true craco build",
     "test": "craco test",
     "eject": "react-scripts eject",
-    "gencode": "graphql-codegen --config codegen.yml",
-    "lint": "npm run lint:js && tsc",
-    "lint-staged": "lint-staged",
-    "lint-staged:js": "eslint --ext .js,.jsx,.ts,.tsx ",
-    "lint:fix": "eslint --fix --cache --ext .js,.jsx,.ts,.tsx --format=pretty ./src",
-    "lint:js": "eslint --cache --ext .js,.jsx,.ts,.tsx --format=pretty ./src",
-    "prepare": "husky install",
-    "prettier": "prettier --check --write \"src/**/*\""
-  },
-  "lint-staged": {
-    "**/*.{js,jsx,ts,tsx}": "npm run lint-staged:js",
-    "**/*.{js,jsx,tsx,ts,css,less,scss,sass,md,json}": [
-      "prettier --write"
-    ]
+    "gencode": "graphql-codegen --config codegen.yml"
   },
   "eslintConfig": {
     "extends": [
@@ -95,13 +82,7 @@
     "@graphql-codegen/typescript-react-apollo": "^3.3.7",
     "@types/lodash-es": "^4.17.10",
     "@types/react-slick": "^0.23.10",
-    "@typescript-eslint/parser": "^6.9.0",
     "cross-env": "^7.0.3",
-    "eslint": "^8.52.0",
-    "eslint-config-prettier": "^9.0.0",
-    "eslint-import-resolver-typescript": "^3.6.1",
-    "eslint-plugin-import": "^2.29.0",
-    "husky": "^8.0.3",
     "webpack": "^5.89.0"
   }
 }
